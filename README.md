@@ -20,8 +20,17 @@ In addition, there are geometrical tools for removing triangles outside of a
 polygon, generating quality analytics on the mesh, adding cell- and
 node-based attributes to a mesh, and much more.
 
-## Documentation
+## Getting Started
 
+If you have Conda, run
+
+```
+conda env create -f environment.yml
+```
+
+to pre-install all required packages and dependencies needed for TINerator.
+
+## Documentation
 
 For installation instructions and API usage,
 [refer to the documentation here](https://raw.githack.com/lanl/LaGriT/tinerator/html/index.html)

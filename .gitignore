@@ -1,2 +1,8 @@
 *DS_Store
-*__pycache__
+tinerator/__pycache__/
+build/
+internal/
+lagrit.log
+lagrit.out
+outx3dgen
+logx3dgen
