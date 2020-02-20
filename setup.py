@@ -1,9 +1,19 @@
 #from setuptools import setup
-from distutils.core import setup
+from distutils.core import setup, Extension
+
+module1 = Extension(
+        'superfastcode',
+        sources=['tinerator/test.cpp'],
+        #include_dirs=[],
+        language='c++',
+        extra_compile_args = ['-std=c++11','-stdlib=libc++'],
+        extra_link_args=["-stdlib=libc++", "-mmacosx-version-min=10.9"],
+    )
 
 setup(
     name = "tinerator",
     packages = ["tinerator"],
+    ext_modules = [module1],
     version = "0.3.1",
     description = "DEM -> Refined TIN Generation",
     license = 'BSD-3',

@@ -40,10 +40,17 @@ from tinerator.dem_class import DEM
 from tinerator.plot import plot_triplane
 from tinerator.plot import plot_full_mesh
 
+import superfastcode as _c_lib
+
 _MAJOR = 0
 _MINOR = 3
 _PATCH = 3
 VERSION = 'v{0}.{1}.{2}'.format(_MAJOR,_MINOR,_PATCH)
+
+# https://pgi-jcns.fz-juelich.de/portal/pages/using-c-from-python.html
+def test_c(v):
+    return _c_lib.fast_tanh(v)
+
 
 def reprojectShapefile(shapefile_in:str,shapefile_out:str,projection:str) -> None:
     '''
