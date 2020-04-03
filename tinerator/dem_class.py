@@ -24,14 +24,15 @@ class DEM():
     '''
     def __init__(self,filepath:str,lagrit_exe:str=None):
         self.dem = rd.LoadGDAL(filepath)
-        self.lg = PyLaGriT(lagrit_exe=lagrit_exe,verbose=False)
-        self.distance_field = None
-        self.triangles = None
+        self.lg = PyLaGriT(lagrit_exe=lagrit_exe,verbose=False) # will be deprecated :)
+        self.meshes = None
+        self.distance_field = None # will be moved
+        self.triangles = None # will be deprecated
         self.feature = None
         self.boundary = None
-        self.points = None
-        self.stacked_mesh = None
-        self.accumulation_matrix = None
+        self.points = None # will be deprecated
+        self.stacked_mesh = None # will be deprecated
+        self.accumulation_matrix = None # will be deprecated
 
         self.no_data_value = self.dem.no_data
         self.ncols = np.shape(self.dem)[1]

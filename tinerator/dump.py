@@ -3,6 +3,7 @@ import subprocess
 import numpy as np
 import tinerator.facesets as fs
 import tinerator.config as cfg
+import meshio
 
 def __get_latest_mesh(dem_object,mesh_object):
     '''
@@ -25,6 +26,33 @@ def __get_latest_mesh(dem_object,mesh_object):
 
     raise ValueError('Could not find a valid mesh')
 
+def test_meshio(dem_object,outfile:str,file_format=None):
+    '''
+    From here out, Meshio will be the driver for all
+    mesh output due to its support for a wide array of
+    meshing formats.
+    Exodus face/cellsets may not be supported: 
+        * either a seperate function will need to be written,
+        * or a PR to meshio will need to be made.
+    '''
+    points = np.array([
+        [0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0],
+    ])
+    cells = [
+        ("triangle", np.array([[0, 1, 2]]))
+    ]
+    point_data = None
+    cell_data = None
+
+    meshio.write_points_cells(
+        outfile,
+        points,
+        cells,
+        point_data=point_data,
+        cell_data=cell_data,
+    )
 
 def to_exodus(dem_object,outfile:str,facesets:list=None,mesh:str=None):
     '''

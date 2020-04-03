@@ -20,7 +20,7 @@ setup(
     author = "Daniel Livingston, David Moulton, Terry Ann Miller, Zexuan Xu, Ilhan Ozgen",
     author_email = "livingston@lanl.gov",
     url = "http://www.github.com/lanl/tinerator",
-    keywords = ["gis", "dem", "tin", "amanzi", "lagrit", "ats"],
+    keywords = ["gis", "dem", "tin", "amanzi", "lagrit", "ats", "meshing"],
     install_requires=[
         'richdem',
         'matplotlib',
@@ -31,7 +31,8 @@ setup(
         'fiona',
         'elevation',
         'scikit-fmm',
-        'panel'],
+        'panel',
+        'meshio'],
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
@@ -51,7 +52,5 @@ This library:
 - Performs watershed deliniation to determine areas of refinement
 - Triangles DEM with refinement along watershed features
 - Extrudes DEM to configurable layers
-
-This version requires Python 3 or later; a Python 2 version is available separately.
 """
 )
