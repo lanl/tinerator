@@ -8,6 +8,9 @@ class LayerType(Enum):
     UNIFORM = auto()
     PROPORTIONAL = auto()
 
+# TRANSLATE
+# FLATTEN
+
 class Layer:
     '''
     Sublayering object - when used with other Layer objects,
@@ -75,7 +78,7 @@ def stack(surfmesh, layers:list):
     for (i,layer) in enumerate(layers):
         total_layers += layer.nlayers
         n_layer_planes = layer.nlayers + 1
-        z_abs = np.mean(top_layer.z) - np.abs(layer.depth)
+        z_abs = np.min(top_layer.z) - np.abs(layer.depth)
 
         if layer.matids is None:
             mat_ids.extend([1]*layer.nlayers)
@@ -134,7 +137,7 @@ def stack(surfmesh, layers:list):
     # This should probably be in its own method
     vol_mesh.add_attribute(
         'material_id',
-        np.repeat(np.array(mat_ids),elems_per_layer),
+        np.repeat(np.array(mat_ids,dtype=int),elems_per_layer),
         attrb_type='cell'
     )
 

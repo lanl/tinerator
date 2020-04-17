@@ -16,6 +16,7 @@ perform publicly and display publicly, and to permit others to do so.
 
 '''
 
+'''
 import vtk
 import pyvista
 import rasterio
@@ -27,7 +28,9 @@ import richdem as rd
 import matplotlib.pyplot as plt
 from copy import deepcopy
 from pylagrit import PyLaGriT
+'''
 
+'''
 import tinerator.config as cfg
 import tinerator.load as load
 import tinerator.dump as dump
@@ -36,14 +39,16 @@ import tinerator.boundary as boundary
 import tinerator.utilities as util
 import tinerator.plot as plot
 from tinerator.dem_class import DEM
+'''
+import tinerator.meshing as meshing
 
 from tinerator.plot import plot_triplane
 from tinerator.plot import plot_full_mesh
 
 _MAJOR = 0
-_MINOR = 3
-_PATCH = 3
-VERSION = 'v{0}.{1}.{2}'.format(_MAJOR,_MINOR,_PATCH)
+_MINOR = 4
+_PATCH = 0
+__version__ = '{0}.{1}.{2}'.format(_MAJOR,_MINOR,_PATCH)
 
 def reprojectShapefile(shapefile_in:str,shapefile_out:str,projection:str) -> None:
     '''
