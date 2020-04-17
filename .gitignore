@@ -1,5 +1,5 @@
 *DS_Store
-tinerator/__pycache__/
+__pycache__/
 build/
 internal/
 lagrit.log
