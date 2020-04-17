@@ -14,10 +14,7 @@ class Mesh:
         self.elements = elements
         self.element_type = etype
         self.metadata = {}
-        self.attributes = {
-            'node': {}, 
-            'cell': {}
-        }
+        self.attributes = {}
     
     def __repr__(self):
         return "Mesh<name: \"{}\", nodes: {}, elements<{}>: {}>".format(
@@ -27,6 +24,40 @@ class Mesh:
             self.n_elements
         )
     
+    def get_attribute(self,name:str):
+        try:
+            return self.attributes[name]['data']
+        except KeyError:
+            raise KeyError('Attribute \'%s\' does not exist' % name)
+    
+    def add_attribute(self,name:str,vector:np.ndarray,attrb_type:str='cell'):
+        if name in self.attributes:
+            raise KeyError('Attribute %s already exists' % name)
+        
+        if not isinstance(vector,np.ndarray):
+            vector = np.array(vector)
+        
+        attrb_type = attrb_type.lower().strip()
+
+        if attrb_type not in ['cell','node']:
+            raise ValueError('`attrb_type` must be either \'cell\' or \'node\'')
+
+        sz = self.n_elements if attrb_type == 'cell' else self.n_nodes
+        vector = np.reshape(vector,(sz,))
+
+        self.attributes[name] = { 'type': attrb_type, 'data': vector }
+    
+    def rm_attribute(self,name:str):
+        try:
+            del self.attributes[name]
+        except KeyError:
+            raise KeyError('Attribute \'%s\' does not exist' % name)
+
+    @property
+    def material_id(self):
+        '''Material ID of mesh'''
+        return self.get_attribute('material_id')
+
     @property
     def x(self):
         '''X vector of mesh nodes'''

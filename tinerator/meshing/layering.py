@@ -63,10 +63,22 @@ def stack(surfmesh, layers:list):
     vol_mesh = Mesh(name='stacked mesh', etype=ElementType.PRISM)
     vol_mesh.nodes = top_layer.nodes
     vol_mesh.elements = top_layer.elements
+    vol_mesh.metadata['layering'] = {}
+    vol_mesh.metadata['layering']['nodes_per_layer'] = vol_mesh.n_nodes
+    vol_mesh.metadata['layering']['elems_per_layer'] = vol_mesh.n_elements
+
+    mat_ids = []
+    total_layers = 0
 
     for (i,layer) in enumerate(layers):
+        total_layers += layer.nlayers
         n_layer_planes = layer.nlayers + 1
         z_abs = np.mean(top_layer.z) - np.abs(layer.depth)
+
+        if layer.matids is None:
+            mat_ids.extend([1]*layer.nlayers)
+        else:
+            mat_ids.extend(layer.matids)
 
         bottom_layer = deepcopy(surfmesh) # should this be top_layer?
 
@@ -87,6 +99,8 @@ def stack(surfmesh, layers:list):
             middle_layers.append(layer_plane)
 
         # It's important that the top layer isn't added here. Duplication of nodes.
+        if middle_layers:
+            middle_layers = middle_layers[::-1]
         all_layers = [*middle_layers,bottom_layer]
 
         for l in all_layers:
@@ -95,5 +109,26 @@ def stack(surfmesh, layers:list):
             vol_mesh.elements = np.vstack((vol_mesh.elements,l.elements))
         
         top_layer = deepcopy(bottom_layer)
+    
+    vol_mesh.metadata['layering']['num_layers'] = total_layers
+
+    # Join 'stacked' triangles into prisms
+    elems_per_layer = vol_mesh.metadata['layering']['elems_per_layer']
+    n_prisms = vol_mesh.n_elements - elems_per_layer
+    prisms = np.zeros((n_prisms, 6),dtype=int)
+
+    for i in range(n_prisms):
+
+        prisms[i] = np.hstack((
+            vol_mesh.elements[i],
+            vol_mesh.elements[i+elems_per_layer],
+        ))
+
+    vol_mesh.elements = prisms
+    vol_mesh.add_attribute(
+        'material_id',
+        np.repeat(np.array(mat_ids),elems_per_layer),
+        attrb_type='cell'
+    )
 
     return vol_mesh
