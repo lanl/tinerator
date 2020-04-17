@@ -3,6 +3,7 @@ from copy import deepcopy
 from enum import Enum, auto
 from mesh import Mesh, ElementType
 
+# TODO: is this unnecessary?
 class LayerType(Enum):
     UNIFORM = auto()
     PROPORTIONAL = auto()
@@ -60,6 +61,7 @@ def stack(surfmesh, layers:list):
 
     top_layer = deepcopy(surfmesh)
 
+    # Initialize the volumetric mesh
     vol_mesh = Mesh(name='stacked mesh', etype=ElementType.PRISM)
     vol_mesh.nodes = top_layer.nodes
     vol_mesh.elements = top_layer.elements
@@ -98,11 +100,14 @@ def stack(surfmesh, layers:list):
 
             middle_layers.append(layer_plane)
 
-        # It's important that the top layer isn't added here. Duplication of nodes.
+        # Invert sandwich layers so they are in the proper order
         if middle_layers:
             middle_layers = middle_layers[::-1]
+
+        # It's important that the top layer isn't added here. Duplication of nodes.
         all_layers = [*middle_layers,bottom_layer]
 
+        # Append all nodes and elements from layers into the volumetric mesh
         for l in all_layers:
             l.elements += vol_mesh.n_nodes
             vol_mesh.nodes = np.vstack((vol_mesh.nodes,l.nodes))
@@ -117,14 +122,16 @@ def stack(surfmesh, layers:list):
     n_prisms = vol_mesh.n_elements - elems_per_layer
     prisms = np.zeros((n_prisms, 6),dtype=int)
 
+    # Generate prisms from pairwise triangles
     for i in range(n_prisms):
-
         prisms[i] = np.hstack((
             vol_mesh.elements[i],
             vol_mesh.elements[i+elems_per_layer],
         ))
 
     vol_mesh.elements = prisms
+
+    # This should probably be in its own method
     vol_mesh.add_attribute(
         'material_id',
         np.repeat(np.array(mat_ids),elems_per_layer),
