@@ -29,8 +29,14 @@ class Layer:
     def __repr__(self):
         return "Layer<{}, {}, {}>".format(self.sl_type,self.nlayers,self.data)
 
-def proportional_sublayering() -> Layer:
-    pass
+def proportional_sublayering(depth: float, sub_thick: list, matids: list = None) -> Layer:
+    return Layer(
+        LayerType.PROPORTIONAL,
+        depth,
+        len(sub_thick),
+        data = sub_thick,
+        matids = matids,
+    )
 
 def uniform_sublayering(depth: float, nsublayers: int, matids: list = None) -> Layer:
     return Layer(
@@ -66,16 +72,17 @@ def stack(surfmesh, layers:list):
 
     bottom_layer = deepcopy(surfmesh)
     bottom_layer.nodes[:,2] = np.full((bottom_layer.n_nodes,),z_abs)
-
-    n_layer_cells = layer.nlayers
-    n_layer_planes = n_layer_cells + 1
+    
+    n_layer_planes = layer.nlayers + 1
 
     middle_layers = []
+
     for i in range(n_layer_planes - 2):
         layer_plane = deepcopy(surfmesh)
-        # Below, we are just doing a basic linear interpolation function between the 
-        # top and the bottom layers.
-        layer_plane.nodes[:,2] = ((i+1)*((top_layer.z-bottom_layer.z)/(n_layer_planes-1))+bottom_layer.z)
+        # Below, we are just setting layer Z values via a basic linear interpolation function.
+        j = sum(layer.data[:i+1]) / sum(layer.data)
+        layer_plane.nodes[:,2] = float(j)*(top_layer.z - bottom_layer.z) + bottom_layer.z
+
         middle_layers.append(layer_plane)
 
     all_layers = [*middle_layers,bottom_layer]
@@ -103,10 +110,8 @@ def stack(surfmesh, layers:list):
 
 
 
-
+'''
 def proportional_sublayering(z_delta:float, sub_thick:list, matids=None):
-    '''
-    '''
     nsublayer = len(sub_thick)
     unit = z_delta / sum(sub_thick)
 
@@ -120,3 +125,4 @@ def proportional_sublayering(z_delta:float, sub_thick:list, matids=None):
         matids = [i+1 for i in range(nsublayer)]
 
     self._stacked_mesh(depths)
+'''
