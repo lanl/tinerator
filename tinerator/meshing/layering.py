@@ -3,8 +3,6 @@ from copy import deepcopy
 from enum import Enum, auto
 from mesh import Mesh, ElementType
 
-V = '1'
-
 class LayerType(Enum):
     UNIFORM = auto()
     PROPORTIONAL = auto()
@@ -60,69 +58,42 @@ def stack(surfmesh, layers:list):
     if not all([isinstance(x,Layer) for x in layers]):
         raise ValueError('`layers` must be a list of Layers')
 
-    vol_mesh = Mesh(name='stacked mesh', etype=ElementType.TRIANGLE)#etype=mesh.ElementType.PRISM)
-
-    layer = layers[0]
-
     top_layer = deepcopy(surfmesh)
+
+    vol_mesh = Mesh(name='stacked mesh', etype=ElementType.PRISM)
     vol_mesh.nodes = top_layer.nodes
     vol_mesh.elements = top_layer.elements
 
-    z_abs = np.mean(top_layer.z) - np.abs(layer.depth)
+    for (i,layer) in enumerate(layers):
+        n_layer_planes = layer.nlayers + 1
+        z_abs = np.mean(top_layer.z) - np.abs(layer.depth)
 
-    bottom_layer = deepcopy(surfmesh)
-    bottom_layer.nodes[:,2] = np.full((bottom_layer.n_nodes,),z_abs)
-    
-    n_layer_planes = layer.nlayers + 1
+        bottom_layer = deepcopy(surfmesh) # should this be top_layer?
 
-    middle_layers = []
+        # Below is where we set the bottom layer to be flat - this could (and should)
+        # have the option to be either a different topology or the same topology. Or flat!
+        bottom_layer.nodes[:,2] = np.full((bottom_layer.n_nodes,),z_abs)
 
-    for i in range(n_layer_planes - 2):
-        layer_plane = deepcopy(surfmesh)
-        # Below, we are just setting layer Z values via a basic linear interpolation function.
-        j = sum(layer.data[:i+1]) / sum(layer.data)
-        layer_plane.nodes[:,2] = float(j)*(top_layer.z - bottom_layer.z) + bottom_layer.z
+        middle_layers = []
 
-        middle_layers.append(layer_plane)
+        # Create and set middle (sandwich ingredients) layers (if any)
+        for j in range(n_layer_planes - 2):
+            layer_plane = deepcopy(surfmesh)
 
-    all_layers = [*middle_layers,bottom_layer]
+            # Below, we are just setting layer Z values via a basic linear interpolation function.
+            k = sum(layer.data[:j+1]) / sum(layer.data)
+            layer_plane.nodes[:,2] = float(k)*(top_layer.z - bottom_layer.z) + bottom_layer.z
 
-    for layer in all_layers:
-        layer.elements += vol_mesh.n_nodes
-        vol_mesh.nodes = np.vstack((vol_mesh.nodes,layer.nodes))
-        vol_mesh.elements = np.vstack((vol_mesh.elements,layer.elements))
+            middle_layers.append(layer_plane)
+
+        # It's important that the top layer isn't added here. Duplication of nodes.
+        all_layers = [*middle_layers,bottom_layer]
+
+        for l in all_layers:
+            l.elements += vol_mesh.n_nodes
+            vol_mesh.nodes = np.vstack((vol_mesh.nodes,l.nodes))
+            vol_mesh.elements = np.vstack((vol_mesh.elements,l.elements))
+        
+        top_layer = deepcopy(bottom_layer)
 
     return vol_mesh
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-def proportional_sublayering(z_delta:float, sub_thick:list, matids=None):
-    nsublayer = len(sub_thick)
-    unit = z_delta / sum(sub_thick)
-
-    top = 0
-
-    depths = [top]
-    for i in range(nsublayer):
-        depths.append(depths[i] - sub_thick[i]*unit)
-    
-    if matids is None:
-        matids = [i+1 for i in range(nsublayer)]
-
-    self._stacked_mesh(depths)
-'''
