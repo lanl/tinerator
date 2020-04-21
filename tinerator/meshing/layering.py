@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from enum import Enum, auto
-from mesh import Mesh, ElementType
+from .mesh import Mesh, ElementType
 
 # TODO: is this unnecessary?
 class LayerType(Enum):

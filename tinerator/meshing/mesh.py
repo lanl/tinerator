@@ -31,6 +31,7 @@ class Mesh:
             raise KeyError('Attribute \'%s\' does not exist' % name)
     
     def add_attribute(self,name:str,vector:np.ndarray,attrb_type:str='cell'):
+        # TODO: auto-add attribute as cell or node based on array length
         if name in self.attributes:
             raise KeyError('Attribute %s already exists' % name)
         

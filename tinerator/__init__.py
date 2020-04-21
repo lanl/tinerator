@@ -1,6 +1,6 @@
 '''
 
-(c) 2019. Triad National Security, LLC. All rights reserved.
+(c) 2020. Triad National Security, LLC. All rights reserved.
  
 This program was produced under U.S. Government contract 89233218CNA000001
 for Los Alamos National Laboratory (LANL), which is operated by Triad National
@@ -15,6 +15,13 @@ reproduce, prepare derivative works, distribute copies to the public,
 perform publicly and display publicly, and to permit others to do so.
 
 '''
+
+from tinerator._version import __version__
+import tinerator.meshing as meshing
+
+##################################
+# Everything below this is considered old cruft.
+##################################
 
 '''
 import vtk
@@ -39,16 +46,11 @@ import tinerator.boundary as boundary
 import tinerator.utilities as util
 import tinerator.plot as plot
 from tinerator.dem_class import DEM
-'''
 import tinerator.meshing as meshing
 
 from tinerator.plot import plot_triplane
 from tinerator.plot import plot_full_mesh
-
-_MAJOR = 0
-_MINOR = 4
-_PATCH = 0
-__version__ = '{0}.{1}.{2}'.format(_MAJOR,_MINOR,_PATCH)
+'''
 
 def reprojectShapefile(shapefile_in:str,shapefile_out:str,projection:str) -> None:
     '''
