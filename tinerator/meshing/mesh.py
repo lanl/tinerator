@@ -7,6 +7,8 @@ class ElementType(Enum):
     PRISM = auto()
     HEX = auto()
 
+# TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
+
 class Mesh:
     def __init__(self, name = 'mesh object', nodes = None, elements = None, etype = None):
         self.name = name
@@ -65,6 +67,18 @@ class Mesh:
         if self.nodes is not None:
             return self.nodes[:,0]
         return None
+    
+    # TODO: check if this works. Does it work with slicing too?
+    @x.setter
+    def x(self, x):
+        
+        x = np.array(x)
+
+        if self.nodes is not None:
+            self.nodes[:,0] = np.reshape(x, (self.n_nodes,1))
+        else:
+            self.nodes = np.zeros((len(x),3),dtype=float)
+            self.nodes[:,0] = x
 
     @property
     def y(self):
