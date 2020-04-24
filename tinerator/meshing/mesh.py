@@ -1,5 +1,6 @@
 import numpy as np
 from enum import Enum, auto
+from .io import write_avs
 
 class ElementType(Enum):
     TRIANGLE = auto()
@@ -32,13 +33,21 @@ class Mesh:
         except KeyError:
             raise KeyError('Attribute \'%s\' does not exist' % name)
     
-    def add_attribute(self,name:str,vector:np.ndarray,attrb_type:str='cell'):
+    def add_attribute(self,name:str,vector:np.ndarray,attrb_type:str=None):
+        # TODO: change 'cell' to 'elem' for consistency or vice versa
         # TODO: auto-add attribute as cell or node based on array length
         if name in self.attributes:
             raise KeyError('Attribute %s already exists' % name)
         
         if not isinstance(vector,np.ndarray):
             vector = np.array(vector)
+        
+        # Take a guess at the attribute type
+        if attrb_type is None:
+            if vector.shape[0] == self.n_elements:
+                attrb_type = 'cell'
+            elif vector.shape[0] == self.n_nodes:
+                attrb_type = 'node'
         
         attrb_type = attrb_type.lower().strip()
 
@@ -99,14 +108,14 @@ class Mesh:
         '''Number of nodes in mesh'''
         if self.nodes is not None:
             return self.nodes.shape[0]
-        return None
+        return 0
     
     @property
     def n_elements(self):
         '''Number of elements in mesh'''
         if self.elements is not None:
             return self.elements.shape[0]
-        return None
+        return 0
 
     @property
     def centroid(self):
@@ -131,3 +140,30 @@ class Mesh:
             ex.append((np.min(vector),np.max(vector)))
 
         return ex
+    
+    def save(self,outfile:str):
+
+        if self.element_type == ElementType.TRIANGLE:
+            cell_type = 'tri'
+        elif self.element_type == ElementType.PRISM:
+            cell_type = 'prism'
+        elif self.element_type is None:
+            cell_type = None
+        else:
+            raise ValueError('Unknown cell type')
+        
+        try:
+            mat_id = self.material_id
+        except KeyError:
+            mat_id = None
+        
+        node_attributes = {}
+        for attr in self.attributes:
+            if self.attributes[attr]['type'] == 'node':
+                node_attributes[attr] = { 'data': self.attributes[attr]['data'], 'type': 'integer' }
+
+        write_avs(outfile,self.nodes,self.elements,cname=cell_type,matid=mat_id,node_attributes=node_attributes)
+
+def mesh_from_matrix(matrix:np.ndarray,extent=None):
+    
+    if extent is None:
