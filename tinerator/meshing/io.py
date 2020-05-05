@@ -1,5 +1,16 @@
 import numpy as np
 
+def write_exodus(
+    outfile: str,
+):
+    """
+    Write a mesh to an Exodus file.
+    """
+    
+    # Option 1: https://salvushub.github.io/pyexodus/
+    # Option 2: https://github.com/nschloe/meshio
+
+    pass
 
 def write_avs(
     outfile: str,
@@ -74,3 +85,6 @@ def write_avs(
                     attribute_row.append(str(node_attributes[key]["data"][i]))
 
                 f.write("%d %s\n" % (i + 1, " ".join(attribute_row)))
+        
+        if n_cell_attrbs > 0:
+            print("Cell attributes aren\'t supported right now.")

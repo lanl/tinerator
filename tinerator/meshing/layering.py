@@ -28,6 +28,7 @@ class Layer:
         nlayers: int,
         matids: list = None,
         data=None,
+        relative_z=True,
     ):
 
         if matids is not None:
@@ -41,6 +42,7 @@ class Layer:
         self.matids = matids
         self.data = data
         self.layer = None
+        self.relative_z = relative_z
 
     def __repr__(self):
         return "Layer<{}, {}, {}>".format(
@@ -49,7 +51,7 @@ class Layer:
 
 
 def proportional_sublayering(
-    depth: float, sub_thick: list, matids: list = None
+    depth: float, sub_thick: list, matids: list = None, relative_z: bool = True
 ) -> Layer:
     return Layer(
         LayerType.PROPORTIONAL,
@@ -57,11 +59,12 @@ def proportional_sublayering(
         len(sub_thick),
         data=sub_thick,
         matids=matids,
+        relative_z=relative_z
     )
 
 
 def uniform_sublayering(
-    depth: float, nsublayers: int, matids: list = None
+    depth: float, nsublayers: int, matids: list = None, relative_z: bool = True
 ) -> Layer:
     return Layer(
         LayerType.UNIFORM,
@@ -69,10 +72,11 @@ def uniform_sublayering(
         nsublayers,
         data=[1] * nsublayers,
         matids=matids,
+        relative_z=relative_z
     )
 
 
-def stack(surfmesh, layers: list):
+def stack(surfmesh: Mesh, layers: list) -> Mesh:
     """
     Extrudes and layers a surface mesh into a volumetric mesh, given
     the contraints in the `layers` object.
@@ -104,7 +108,11 @@ def stack(surfmesh, layers: list):
     for (i, layer) in enumerate(layers):
         total_layers += layer.nlayers
         n_layer_planes = layer.nlayers + 1
-        z_abs = np.min(top_layer.z) - np.abs(layer.depth)
+
+        if layer.relative_z:
+            z_abs = np.min(top_layer.z) - np.abs(layer.depth)
+        else:
+            z_abs = layer.depth
 
         if layer.matids is None:
             mat_ids.extend([1] * layer.nlayers)
@@ -142,7 +150,7 @@ def stack(surfmesh, layers: list):
         for (j, l) in enumerate(all_layers):
 
             if DEBUG:
-                l.save("DEBUG_layer_%d,%d.inp" % (i, j))
+                l.save("DEBUG_layer_%d%d.inp" % (i, j))
 
             l.elements += vol_mesh.n_nodes
             vol_mesh.nodes = np.vstack((vol_mesh.nodes, l.nodes))

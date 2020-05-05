@@ -1,6 +1,7 @@
 import numpy as np
 from enum import Enum, auto
 from .io import write_avs
+from ..visualize import view_3d as v3d
 
 
 class ElementType(Enum):
@@ -148,6 +149,15 @@ class Mesh:
             ex.append((np.min(vector), np.max(vector)))
 
         return ex
+    
+    def view(self):
+        
+        if self.element_type == ElementType.TRIANGLE:
+            etype = 'tri'
+        else:
+            etype = None
+
+        v3d.plot_3d(self,etype)
 
     def save(self, outfile: str):
 
@@ -182,8 +192,9 @@ class Mesh:
             node_attributes=node_attributes,
         )
 
-
-def mesh_from_matrix(matrix: np.ndarray, extent=None):
-
-    if extent is None:
-        pass
+'''
+class StackedMesh(Mesh):
+    def __init__(self):
+        self.number_of_layers = None
+        self.
+'''
