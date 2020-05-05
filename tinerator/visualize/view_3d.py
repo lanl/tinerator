@@ -2,17 +2,18 @@ import vtk
 import numpy as np
 import pyvista as pv
 
-def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None):
+def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None, **kwargs):
     '''
     TODO: this shouldn't directly depend on the mesh class.
-    TODO: add prism support.
-    TODO: add attribute support.
     '''
 
 
     if element_type.lower() == 'tri':
         nodes_per_elem = 3
         vtk_cell_type = vtk.VTK_TRIANGLE
+    elif element_type.lower() == 'prism':
+        nodes_per_elem = 6
+        vtk_cell_type = vtk.VTK_WEDGE
     else:
         raise ValueError("Unsupported element type")
     
@@ -31,6 +32,7 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None):
     
     scalar = None
 
+    # TODO: approach this in a different way
     if cell_arrays:
         for key in cell_arrays:
             grid.cell_arrays[key] = cell_arrays[key]
@@ -42,4 +44,4 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None):
             scalar = key
 
     # plot the grid
-    grid.plot(scalars=scalar,show_edges=True,show_bounds=True)
+    grid.plot(scalars=scalar,show_edges=True,show_bounds=True, **kwargs)

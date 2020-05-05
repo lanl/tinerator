@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 from enum import Enum, auto
 from .io import write_avs
 from ..visualize import view_3d as v3d
@@ -30,9 +31,7 @@ class Mesh:
         self.attributes = {}
 
     def __repr__(self):
-        return 'Mesh<name: "{}", nodes: {}, elements<{}>: {}>'.format(
-            self.name, self.n_nodes, self.element_type, self.n_elements
-        )
+        return f"Mesh<name: \"{self.name}\", nodes: {self.n_nodes}, elements<{self.element_type}>: {self.n_elements}>"
 
     def get_attribute(self, name: str):
         try:
@@ -150,12 +149,26 @@ class Mesh:
 
         return ex
     
-    def view(self):
+    def view(self, attribute_name:str=None, **kwargs):
+        '''
+        Views the mesh object in an interactive VTK-rendered windowed environment.
+
+        `**kwargs` are passed through to pyvista.UnstructuredGrid.plot method. Some keyword args include:
+
+        * full_screen (bool, default: False)
+        * window_size (tuple)
+        * notebook (bool, default: False)
+        * text (str, default: '')
+
+        See `help(pyvista.UnstructuredGrid.plot)` for more information on possible keyword arguments.
+        '''
 
         if self.element_type == ElementType.TRIANGLE:
             etype = 'tri'
+        elif self.element_type == ElementType.PRISM:
+            etype = 'prism'
         else:
-            etype = None
+            raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
         
         try:
             matid = self.material_id
@@ -163,8 +176,8 @@ class Mesh:
         except KeyError:
             cell_arrays = None
 
-        v3d.plot_3d(self, etype, cell_arrays=cell_arrays)
-
+        v3d.plot_3d(self, etype, cell_arrays=cell_arrays, **kwargs)
+        
     def save(self, outfile: str):
 
         if self.element_type == ElementType.TRIANGLE:
