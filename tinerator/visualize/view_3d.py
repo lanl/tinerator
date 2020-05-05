@@ -2,7 +2,7 @@ import vtk
 import numpy as np
 import pyvista as pv
 
-def plot_3d(mesh,element_type:str,**kwargs):
+def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None):
     '''
     TODO: this shouldn't directly depend on the mesh class.
     TODO: add prism support.
@@ -27,5 +27,19 @@ def plot_3d(mesh,element_type:str,**kwargs):
     # create the unstructured grid directly from the numpy arrays
     grid = pv.UnstructuredGrid(offset, cells, cell_type, nodes, deep=True)
 
+    # https://github.com/pyvista/pyvista/blob/52c78d610c30f5f7e02dacecbb081211faae8073/docs/getting-started/what-is-a-mesh.rst
+    
+    scalar = None
+
+    if cell_arrays:
+        for key in cell_arrays:
+            grid.cell_arrays[key] = cell_arrays[key]
+            scalar = key
+
+    if node_arrays:
+        for key in node_arrays:
+            grid.node_arrays[key] = node_arrays[key]
+            scalar = key
+
     # plot the grid
-    grid.plot(show_edges=True,show_bounds=True,**kwargs)
+    grid.plot(scalars=scalar,show_edges=True,show_bounds=True)

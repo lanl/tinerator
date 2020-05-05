@@ -151,13 +151,19 @@ class Mesh:
         return ex
     
     def view(self):
-        
+
         if self.element_type == ElementType.TRIANGLE:
             etype = 'tri'
         else:
             etype = None
+        
+        try:
+            matid = self.material_id
+            cell_arrays = { 'materialID': matid }
+        except KeyError:
+            cell_arrays = None
 
-        v3d.plot_3d(self,etype)
+        v3d.plot_3d(self, etype, cell_arrays=cell_arrays)
 
     def save(self, outfile: str):
 
