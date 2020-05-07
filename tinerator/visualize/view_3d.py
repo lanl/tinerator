@@ -1,10 +1,24 @@
 import vtk
 import numpy as np
 import pyvista as pv
+from copy import deepcopy
 
-def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None, **kwargs):
+def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,scale:tuple=(1,1,1), **kwargs):
+    '''
+    See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)`
+    for more information on possible keyword arguments.
+    '''
+
     '''
     TODO: this shouldn't directly depend on the mesh class.
+    TODO: add texturing
+        texture : vtk.vtkTexture or np.ndarray or boolean, optional
+            A texture to apply if the input mesh has texture
+            coordinates.  This will not work with MultiBlock
+            datasets. If set to ``True``, the first available texture
+            on the object will be used. If a string name is given, it
+            will pull a texture with that name associated to the input
+            mesh.
     '''
 
 
@@ -23,7 +37,11 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None, *
     offset = np.array([(nodes_per_elem+1)*i for i in range(ncells)])
     cells = np.hstack((np.full((ncells,1),nodes_per_elem), mesh.elements - 1)).flatten()
     cell_type = np.repeat([vtk_cell_type],ncells)
-    nodes = mesh.nodes
+    nodes = deepcopy(mesh.nodes)
+
+    # Scale mesh coordinates
+    for i in range(3):
+        nodes[:,i] = scale[i]*nodes[:,i]
 
     # create the unstructured grid directly from the numpy arrays
     grid = pv.UnstructuredGrid(offset, cells, cell_type, nodes, deep=True)

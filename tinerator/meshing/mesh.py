@@ -149,7 +149,7 @@ class Mesh:
 
         return ex
     
-    def view(self, attribute_name:str=None, **kwargs):
+    def view(self, attribute_name:str=None, scale:tuple=(1,1,1), **kwargs):
         '''
         Views the mesh object in an interactive VTK-rendered windowed environment.
 
@@ -160,7 +160,8 @@ class Mesh:
         * notebook (bool, default: False)
         * text (str, default: '')
 
-        See `help(pyvista.UnstructuredGrid.plot)` for more information on possible keyword arguments.
+        See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)` for more 
+        information on possible keyword arguments.
         '''
 
         if self.element_type == ElementType.TRIANGLE:
@@ -176,7 +177,7 @@ class Mesh:
         except KeyError:
             cell_arrays = None
 
-        v3d.plot_3d(self, etype, cell_arrays=cell_arrays, **kwargs)
+        v3d.plot_3d(self, etype, cell_arrays=cell_arrays, scale=scale, **kwargs)
         
     def save(self, outfile: str):
 
