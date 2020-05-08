@@ -21,7 +21,7 @@ class Mesh:
         name: str = "mesh",
         nodes: np.ndarray = None,
         elements: np.ndarray = None,
-        etype: np.ndarray = None,
+        etype: ElementType = None,
     ):
         self.name = name
         self.nodes = nodes
@@ -38,6 +38,22 @@ class Mesh:
             return self.attributes[name]["data"]
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
+
+    def add_empty_attribute(self, name: str, attrb_type: str, fill_value: float = 0.0):
+        """
+        Creates an empty cell or node attribute with an optional given fill value.
+        """
+        
+        if attrb_type.lower().strip() == "cell":
+            sz = self.n_elements
+        elif attrb_type.lower().strip() == "node":
+            sz = self.n_nodes
+        else:
+            raise ValueError(f"Unknown attrb_type: {attrb_type}")
+        
+        vector = np.full((sz,),fill_value)
+
+        self.add_attribute(name, vector, attrb_type=attrb_type)
 
     def add_attribute(
         self, name: str, vector: np.ndarray, attrb_type: str = None
@@ -72,6 +88,17 @@ class Mesh:
             del self.attributes[name]
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
+
+    def get_cell_centers(self):
+        """Compute the centroids of every cell"""
+
+        # TODO: optimize function
+        centroids = np.zeros((self.n_elements,3), dtype=float)
+
+        for (i,elem) in enumerate(self.elements):
+            centroids[i] = np.mean(self.nodes[elem - 1], axis=0)
+
+        return centroids
 
     @property
     def material_id(self):
@@ -171,13 +198,26 @@ class Mesh:
         else:
             raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
         
-        try:
-            matid = self.material_id
-            cell_arrays = { 'materialID': matid }
-        except KeyError:
-            cell_arrays = None
+        cell_arrays = None
+        node_arrays = None
 
-        v3d.plot_3d(self, etype, cell_arrays=cell_arrays, scale=scale, **kwargs)
+        try:
+            if attribute_name:
+                attrb = self.get_attribute(attribute_name)
+            else:
+                attrb = self.material_id
+                attribute_name = "materialID"
+
+            if len(attrb) == self.n_nodes:
+                node_arrays = { attribute_name: attrb }
+            elif len(attrb) == self.n_elements:
+                cell_arrays = { attribute_name: attrb }
+            else:
+                raise ValueError("Malformed attribute vector")
+        except KeyError:
+            pass
+
+        v3d.plot_3d(self, etype, cell_arrays=cell_arrays, node_arrays=node_arrays, scale=scale, **kwargs)
         
     def save(self, outfile: str):
 
@@ -212,9 +252,11 @@ class Mesh:
             node_attributes=node_attributes,
         )
 
-'''
 class StackedMesh(Mesh):
-    def __init__(self):
-        self.number_of_layers = None
-        self.
-'''
+    def __init__(self, name:str="stacked_mesh", etype: ElementType = None):
+        super().__init__(name=name,etype=etype)
+
+        self._cell_layer_ids = None
+        self._num_layers = None
+        self._nodes_per_layer = None
+        self._elems_per_layer = None

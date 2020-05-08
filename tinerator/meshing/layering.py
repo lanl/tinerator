@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from enum import Enum, auto
-from .mesh import Mesh, ElementType
+from .mesh import Mesh, StackedMesh, ElementType
 
 DEBUG = True
 
@@ -95,12 +95,13 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
     top_layer = deepcopy(surfmesh)
 
     # Initialize the volumetric mesh
-    vol_mesh = Mesh(name="stacked mesh", etype=ElementType.PRISM)
+    vol_mesh = StackedMesh(name="stacked mesh", etype=ElementType.PRISM)
     vol_mesh.nodes = top_layer.nodes
     vol_mesh.elements = top_layer.elements
-    vol_mesh.metadata["layering"] = {}
-    vol_mesh.metadata["layering"]["nodes_per_layer"] = vol_mesh.n_nodes
-    vol_mesh.metadata["layering"]["elems_per_layer"] = vol_mesh.n_elements
+
+    # This replaces the above deprecation.
+    vol_mesh._nodes_per_layer = vol_mesh.n_nodes
+    vol_mesh._elems_per_layer = vol_mesh.n_elements
 
     mat_ids = []
     total_layers = 0
@@ -158,10 +159,10 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
 
         top_layer = deepcopy(bottom_layer)
 
-    vol_mesh.metadata["layering"]["num_layers"] = total_layers
+    vol_mesh._num_layers = total_layers
 
     # Join 'stacked' triangles into prisms
-    elems_per_layer = vol_mesh.metadata["layering"]["elems_per_layer"]
+    elems_per_layer = vol_mesh._elems_per_layer
     n_prisms = vol_mesh.n_elements - elems_per_layer
     prisms = np.zeros((n_prisms, 6), dtype=int)
 
@@ -179,5 +180,9 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
         np.repeat(np.array(mat_ids, dtype=int), elems_per_layer),
         attrb_type="cell",
     )
+
+    # Each element in a layer will get its own integer value
+    # This can then be used to 'mask' cells belonging to different layers
+    vol_mesh._cell_layer_ids = np.repeat(np.array(list(range(total_layers)), dtype=int), elems_per_layer)
 
     return vol_mesh
