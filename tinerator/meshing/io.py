@@ -13,8 +13,12 @@ def write_exodus(
     # triangle
     # wedge
 
+    ext = outfile.split('.')[-1]
+    if ext not in ["exo", "ex", "e"]:
+        outfile += ".exo"
+
     mesh = meshio.Mesh(nodes, cells)
-    meshio.write(outfile, mesh, filetype = "exodus")
+    meshio.write(outfile, mesh)
 
 def write_avs(
     outfile: str,
