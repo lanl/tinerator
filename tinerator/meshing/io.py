@@ -1,16 +1,20 @@
 import numpy as np
+import meshio
 
 def write_exodus(
     outfile: str,
+    nodes: np.ndarray,
+    cells: np.ndarray,
 ):
     """
     Write a mesh to an Exodus file.
     """
-    
-    # Option 1: https://salvushub.github.io/pyexodus/
-    # Option 2: https://github.com/nschloe/meshio
 
-    pass
+    # triangle
+    # wedge
+
+    mesh = meshio.Mesh(nodes, cells)
+    meshio.write(outfile, mesh, filetype = "exodus")
 
 def write_avs(
     outfile: str,

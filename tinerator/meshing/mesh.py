@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from enum import Enum, auto
-from .io import write_avs
+from .io import write_avs, write_exodus
 from ..visualize import view_3d as v3d
 
 
@@ -43,7 +43,7 @@ class Mesh:
         """
         Creates an empty cell or node attribute with an optional given fill value.
         """
-        
+
         if attrb_type.lower().strip() == "cell":
             sz = self.n_elements
         elif attrb_type.lower().strip() == "node":
@@ -89,7 +89,7 @@ class Mesh:
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
 
-    def get_cell_centers(self):
+    def get_cell_centroids(self):
         """Compute the centroids of every cell"""
 
         # TODO: optimize function
@@ -251,6 +251,22 @@ class Mesh:
             matid=mat_id,
             node_attributes=node_attributes,
         )
+    
+    def save_exo(self, outfile:str):
+
+        if self.element_type == ElementType.TRIANGLE:
+            cell_type = "triangle"
+        elif self.element_type == ElementType.PRISM:
+            cell_type = "wedge"
+        else:
+            raise ValueError("Unknown cell type")
+
+        cells = {
+            cell_type: self.elements - 1
+        }
+
+        write_exodus(outfile, self.nodes, cells)
+        
 
 class StackedMesh(Mesh):
     def __init__(self, name:str="stacked_mesh", etype: ElementType = None):
@@ -260,3 +276,7 @@ class StackedMesh(Mesh):
         self._num_layers = None
         self._nodes_per_layer = None
         self._elems_per_layer = None
+    
+    def get_cells_at_sublayer(sublayer: int) -> np.ndarray:
+        return self._cell_layer_ids == layer
+    
