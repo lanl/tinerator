@@ -1,24 +1,4 @@
 import numpy as np
-import meshio
-
-def write_exodus(
-    outfile: str,
-    nodes: np.ndarray,
-    cells: np.ndarray,
-):
-    """
-    Write a mesh to an Exodus file.
-    """
-
-    # triangle
-    # wedge
-
-    ext = outfile.split('.')[-1]
-    if ext not in ["exo", "ex", "e"]:
-        outfile += ".exo"
-
-    mesh = meshio.Mesh(nodes, cells)
-    meshio.write(outfile, mesh)
 
 def write_avs(
     outfile: str,

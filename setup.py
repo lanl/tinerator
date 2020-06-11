@@ -49,7 +49,7 @@ setup(
     url='https://github.com/tinerator/tinerator-core',
     keywords='gis tin geophysical subsurface 3d 2.5d meshing',
     python_requires='>=3.5.*',
-    install_requires=['numpy','pyvista'],
+    install_requires=['numpy','pyvista','meshio>=4'],
 )
 
 #from setuptools import setup

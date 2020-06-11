@@ -1,7 +1,8 @@
+import meshio
 import numpy as np
 from copy import deepcopy
 from enum import Enum, auto
-from .io import write_avs, write_exodus
+from .io import write_avs
 from ..visualize import view_3d as v3d
 
 
@@ -252,7 +253,8 @@ class Mesh:
             node_attributes=node_attributes,
         )
     
-    def save_exo(self, outfile:str):
+    def as_meshio(self,material_id_as_cell_blocks:bool = False) -> meshio.Mesh:
+        '''Converts a Mesh object into a meshio.Mesh object.'''
 
         if self.element_type == ElementType.TRIANGLE:
             cell_type = "triangle"
@@ -260,13 +262,41 @@ class Mesh:
             cell_type = "wedge"
         else:
             raise ValueError("Unknown cell type")
+        
+        # Each unique value of material ID becomes a seperate
+        # cell block - useful for Exodus exports
+        if material_id_as_cell_blocks:
+            elements = self.elements - 1
+            mat_id = self.material_id
+            cells = []
 
-        cells = {
-            cell_type: self.elements - 1
+            for value in np.unique(mat_id):
+                cells.append((cell_type, elements[mat_id == value]))
+
+        else:
+            cells = [
+                (cell_type, self.elements - 1)
+            ]
+
+        # TODO: this needs to support every attribute!
+        # TODO: this needs to take into account `material_id_as_cell_blocks`
+        cell_data = { 
+            "materialID": self.material_id
         }
 
-        write_exodus(outfile, self.nodes, cells)
-        
+        mesh = meshio.Mesh(
+            points=self.nodes, 
+            cells=cells, 
+            cell_data=cell_data,
+            point_data=None,
+        )
+
+        return mesh
+
+
+    def save_exo(self, outfile:str):
+        '''Uses the Meshio library as a driver for file output.'''
+        meshio.write(outfile, self.as_meshio(material_id_as_cell_blocks=True))        
 
 class StackedMesh(Mesh):
     def __init__(self, name:str="stacked_mesh", etype: ElementType = None):
