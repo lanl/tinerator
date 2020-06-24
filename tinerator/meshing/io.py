@@ -1,4 +1,42 @@
 import numpy as np
+from netCDF4 import Dataset
+
+def read_mpas(
+    filename: str,
+    load_dual_mesh: bool = True,
+):
+    """
+    Reads an MPAS mesh.
+    """
+    nc = Dataset(filename,'r')
+
+    try:
+        on_a_sphere = True if nc.on_a_sphere.strip().lower() == 'yes' else False
+    except:
+        on_a_sphere = None
+    
+    # Get some dimensions
+    nCells = nc.dimensions['nCells'].size
+    nEdges = nc.dimensions['nEdges'].size
+    nVertices = nc.dimensions['nVertices'].size
+
+    if load_dual_mesh:
+        vertices = np.zeros((nCells,3),dtype=float)
+        vertices[:,0] = nc.variables['xCell'][:].data
+        vertices[:,1] = nc.variables['yCell'][:].data
+        vertices[:,2] = nc.variables['zCell'][:].data
+        connectivity = nc.variables['cellsOnVertex'][:].data
+    else:
+        vertices = np.zeros((nVertices,3),dtype=float)
+        vertices[:,0] = nc.variables['xVertex'][:].data
+        vertices[:,1] = nc.variables['yVertex'][:].data
+        vertices[:,2] = nc.variables['zVertex'][:].data
+        connectivity = nc.variables['verticesOnCell'][:].data
+
+    nc.close()
+
+    return vertices, connectivity
+
 
 def write_avs(
     outfile: str,

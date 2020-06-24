@@ -2,15 +2,29 @@ import meshio
 import numpy as np
 from copy import deepcopy
 from enum import Enum, auto
-from .io import write_avs
+from .io import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
+def load(filename:str, load_dual_mesh:bool = True):
+    nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
+
+    m = Mesh()
+    m.nodes = nodes
+    m.elements = cells
+
+    if load_dual_mesh:
+        m.element_type = ElementType.TRIANGLE
+    else:
+        m.element_type = ElementType.POLYGON
+
+    return m
 
 class ElementType(Enum):
     TRIANGLE = auto()
     QUAD = auto()
     PRISM = auto()
     HEX = auto()
+    POLYGON = auto()
 
 
 # TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
@@ -196,6 +210,8 @@ class Mesh:
             etype = 'tri'
         elif self.element_type == ElementType.PRISM:
             etype = 'prism'
+        elif self.element_type == ElementType.POLYGON:
+            etype = 'polygon'
         else:
             raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
         

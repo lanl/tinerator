@@ -3,6 +3,9 @@ import numpy as np
 import pyvista as pv
 from copy import deepcopy
 
+from rich.console import Console
+console = Console()
+
 def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,scale:tuple=(1,1,1), **kwargs):
     '''
     See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)`
@@ -21,6 +24,11 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,sc
             mesh.
     '''
 
+    ncells = mesh.n_elements
+    nnodes = mesh.n_nodes
+
+    if not ncells:
+        raise ValueError('Cells must be defined to visualize')
 
     if element_type.lower() == 'tri':
         nodes_per_elem = 3
@@ -28,14 +36,22 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,sc
     elif element_type.lower() == 'prism':
         nodes_per_elem = 6
         vtk_cell_type = vtk.VTK_WEDGE
+    elif element_type.lower() == 'polygon':
+        nodes_per_elem = mesh.elements.shape[1]
+        vtk_cell_type = vtk.VTK_POLYGON
+        console.print("[bold red]Warning: polygons are not well supported[/bold red]")
     else:
         raise ValueError("Unsupported element type")
-    
-    ncells = mesh.n_elements
-    nnodes = mesh.n_nodes
 
-    offset = np.array([(nodes_per_elem+1)*i for i in range(ncells)])
-    cells = np.hstack((np.full((ncells,1),nodes_per_elem), mesh.elements - 1)).flatten()
+    if vtk_cell_type == False:#vtk.VTK_POLYGON:
+        # TODO: get working
+        delta = np.count_nonzero(mesh.elements, axis=1)
+        offset = np.array([np.sum(delta[:i]+1) for i in range(len(delta))])
+        cells = mesh.elements[mesh.elements > 0] - 1
+    else:
+        offset = np.array([(nodes_per_elem+1)*i for i in range(ncells)])
+        cells = np.hstack((np.full((ncells,1),nodes_per_elem), mesh.elements - 1)).flatten()
+
     cell_type = np.repeat([vtk_cell_type],ncells)
     nodes = deepcopy(mesh.nodes)
 

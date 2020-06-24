@@ -89,6 +89,12 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
             )
         )
 
+    layers = list(layers)
+    for (i, layer) in enumerate(layers):
+        # Allow for a naive version of layering: just pass in the layer depths
+        if isinstance(layer, (int, float)):
+            layers[i] = uniform_sublayering(layer, 1, matids=[i+1])
+
     if not all([isinstance(x, Layer) for x in layers]):
         raise ValueError("`layers` must be a list of Layers")
 
@@ -107,6 +113,7 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
     total_layers = 0
 
     for (i, layer) in enumerate(layers):
+
         total_layers += layer.nlayers
         n_layer_planes = layer.nlayers + 1
 
