@@ -37,17 +37,15 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,sc
         nodes_per_elem = 6
         vtk_cell_type = vtk.VTK_WEDGE
     elif element_type.lower() == 'polygon':
-        nodes_per_elem = mesh.elements.shape[1]
         vtk_cell_type = vtk.VTK_POLYGON
-        console.print("[bold red]Warning: polygons are not well supported[/bold red]")
     else:
         raise ValueError("Unsupported element type")
 
-    if vtk_cell_type == False:#vtk.VTK_POLYGON:
-        # TODO: get working
-        delta = np.count_nonzero(mesh.elements, axis=1)
+    if vtk_cell_type == vtk.VTK_POLYGON:
+        delta  = np.count_nonzero(mesh.elements, axis=1)
         offset = np.array([np.sum(delta[:i]+1) for i in range(len(delta))])
-        cells = mesh.elements[mesh.elements > 0] - 1
+        cells  = np.hstack((delta.reshape((delta.shape[0],1)) + 1, mesh.elements))
+        cells  = cells[cells > 0] - 1
     else:
         offset = np.array([(nodes_per_elem+1)*i for i in range(ncells)])
         cells = np.hstack((np.full((ncells,1),nodes_per_elem), mesh.elements - 1)).flatten()

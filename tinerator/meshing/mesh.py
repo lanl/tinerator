@@ -119,6 +119,10 @@ class Mesh:
     def material_id(self):
         """Material ID of mesh"""
         return self.get_attribute("material_id")
+    
+    @material_id.setter
+    def material_id(self, v):
+        self.add_attribute("material_id", v, attrb_type="cell")
 
     @property
     def x(self):
@@ -276,6 +280,8 @@ class Mesh:
             cell_type = "triangle"
         elif self.element_type == ElementType.PRISM:
             cell_type = "wedge"
+        elif self.element_type == ElementType.POLYGON:
+            cell_type = "polygon"
         else:
             raise ValueError("Unknown cell type")
         
@@ -288,6 +294,12 @@ class Mesh:
 
             for value in np.unique(mat_id):
                 cells.append((cell_type, elements[mat_id == value]))
+        elif cell_type == "polygon":
+            cells = []
+
+            for i in range(self.n_elements):
+                element = self.elements[i,:]
+                cells.append(("polygon", element[element > 0] - 1))
 
         else:
             cells = [
