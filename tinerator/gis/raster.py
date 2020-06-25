@@ -1,5 +1,6 @@
 import richdem as rd
 import numpy as np
+from copy import deepcopy
 from pyproj import CRS
 from pyproj.crs import CRSError
 
@@ -18,21 +19,31 @@ class Raster:
             self.crs = CRS.from_wkt(self.data.projection)
         except CRSError:
             self.crs = CRS.from_epsg(32601)
+    
+    def __getitem__(self, idx):
+        return self.data[idx]
+    
+    def __setitem__(self, idx, value):
+        self.data[idx] = value
 
     def __repr__(self):
+        arr = self.masked_data()
+
         # DEM information
         display = "CRS\t\t: %s\n" % self.crs.name
         display += "Extent\t\t: %s\n" % repr(self.extent)
         display += "Cell size\t: %s\n" % repr(self.cell_size)
         display += "Units\t\t: %s\n" % self.crs.axis_info[0].unit_name
         display += "Dimensions\t: %s\n" % repr((self.nrows, self.ncols))
-        display += "Value range\t: %s\n" % repr((-1,-1))
+        display += "NoDataValue\t: %s\n" % repr(self.no_data_value)
+        display += "Value range\t: %s\n" % repr((np.nanmin(arr),np.nanmax(arr)))
+        display += "\n%s\n" % repr(self.data)
 
         return display
 
     @property
     def mask(self):
-        return self.data[self.data == self.no_data_value]
+        return self.data == self.no_data_value
 
     @property
     def origin(self):
@@ -59,3 +70,8 @@ class Raster:
             self.ncols * self.cell_size + self.xll_corner,
             self.nrows * self.cell_size + self.yll_corner,
         )
+    
+    def masked_data(self):
+        masked = np.array(deepcopy(self.data))
+        masked[self.mask] = np.nan
+        return masked

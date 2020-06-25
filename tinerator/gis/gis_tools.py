@@ -72,7 +72,7 @@ def reproject_raster(raster_in: str, raster_out: str, dst_crs: str) -> None:
 
 
 def mask_raster(
-    raster_filename: str, shapefile_filename: str, raster_outfile: str
+    raster_filename: str, shapefile_filename: str, raster_outfile: str, no_data: float = -9999.
 ):
     """
     Reads a raster file and ESRI shapefile and writes out
@@ -94,7 +94,7 @@ def mask_raster(
     # Open the DEM && mask && update metadata with mask
     with rasterio.open(raster_filename, "r") as _dem:
         out_image, out_transform = rasterio.mask.mask(
-            _dem, _poly, crop=True, invert=False
+            _dem, _poly, crop=True, invert=False, nodata=no_data
         )
         out_meta = _dem.meta.copy()
 
