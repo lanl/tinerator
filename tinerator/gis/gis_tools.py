@@ -72,7 +72,10 @@ def reproject_raster(raster_in: str, raster_out: str, dst_crs: str) -> None:
 
 
 def mask_raster(
-    raster_filename: str, shapefile_filename: str, raster_outfile: str, no_data: float = -9999.
+    raster_filename: str,
+    shapefile_filename: str,
+    raster_outfile: str,
+    no_data: float = -9999.0,
 ):
     """
     Reads a raster file and ESRI shapefile and writes out
