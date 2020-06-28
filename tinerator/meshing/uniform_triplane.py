@@ -2,7 +2,10 @@ import triangle as tr
 import numpy as np
 from .mesh import Mesh, ElementType
 
-def uniform_mesh(dem, max_edge):
+def create_uniform_triplane(dem, max_edge: float) -> Mesh:
+    '''
+    Constructs a triangular mesh with roughly uniform edge lengths.
+    '''
     vertices, connectivity = dem.get_boundary(5., connect_ends=True)
 
     t = tr.triangulate(

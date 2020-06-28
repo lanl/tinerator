@@ -2,46 +2,10 @@ import numpy as np
 import triangle as tr
 from .mesh import Mesh, ElementType
 
-n_iterations = 5
-min_dist = 14.
-max_dist = 85.
-min_edge = 5.
-max_edge = 100.
-
-A = np.zeros(D.shape)
-
-for row in range(D.shape[0]):
-    for col in range(D.shape[1]):
-
-        x = D[row][col]
-
-        if x < min_dist:
-            y = min_edge
-        elif x > max_dist:
-            y = max_edge
-        else:
-            m = (max_edge - min_edge) / (max_dist - min_dist)
-            y = m * (x - min_dist) + min_edge
-        
-        A[row][col] = y
-
-
-
-boundary_len = max_edge * 0.2 # 5.
-vertices, connectivity = dem.get_boundary(boundary_len, connect_ends=True)
-
-t = tr.triangulate(
-    {
-        'vertices': list(vertices[:,:2]),
-        'segments': list(connectivity - 1),
-    }, 
-    # p enforces boundary connectivity, 
-    # q gives a quality mesh, 
-    # and aX is max edge length
-    'pqa%f' % (round(max_edge,2))
-)
-
-def get_edges(tris):
+def get_edges(tris: np.ndarray) -> np.ndarray:
+    '''
+    Gets the edges from a triangular connectivity array.
+    '''
     all_edges = np.vstack(
         (
             tris[:,:2],
@@ -58,44 +22,102 @@ def get_edges(tris):
     
     return np.unique(edges,axis=0)
 
-for _ in range(n_iterations):
+def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float, min_dist: float, max_dist: float, n_iterations: int) -> Mesh:
+    '''
+    Creates a triplane where 
 
-    new_points = []
+             |
+    maxEdge  |           /-------
+             |         /
+             |       /
+             |     /
+    minEdge  |----
+             |
+             |___________________
+                  ^      ^
+                  |      |
+            minDist      maxDist
 
-    edges = get_edges(t['triangles'])
-    vertices = t['vertices']
 
-    for edge in edges:
+    '''
 
-        verts = vertices[edge]
-        p0, p1 = verts
+    # CONVERT THE DISTANCE MAP TO AN EDGE LENGTHS MAP
+    # Each index of this matrix will contain what the
+    # triangle edge length should be at that point
 
-        midpoint = np.mean(verts,axis=0)
-        edge_length = np.sum((p1 - p0)**2)**0.5
+    # Later, we will split edges at their midpoints
+    # based on how their existing edges compare to the
+    # matrix `A`
+    A = np.zeros(distance_map.shape)
 
-        if edge_length > A[int(midpoint[1])][int(midpoint[0])]:
-            new_points.append(midpoint)
+    for row in range(distance_map.shape[0]):
+        for col in range(distance_map.shape[1]):
 
-    vertices = list(t['vertices'])
-    vertices.extend(list(new_points))
+            x = distance_map[row][col]
 
+            if x < min_dist:
+                y = min_edge
+            elif x > max_dist:
+                y = max_edge
+            else:
+                m = (max_edge - min_edge) / (max_dist - min_dist)
+                y = m * (x - min_dist) + min_edge
+
+            A[row][col] = y
+
+    boundary_len = max_edge * 0.2 # 5.
+    vertices, connectivity = dem.get_boundary(boundary_len, connect_ends=True)
+
+    # Create an initial 'uniform' triangular mesh
     t = tr.triangulate(
         {
-            'vertices': vertices,
+            'vertices': list(vertices[:,:2]),
             'segments': list(connectivity - 1),
         }, 
+        # p enforces boundary connectivity, 
+        # q gives a quality mesh, 
+        # and aX is max edge length
         'pqa%f' % (round(max_edge,2))
     )
 
+    for _ in range(n_iterations):
 
-m = Mesh()
-m.nodes = np.hstack(
-    (
-        t['vertices'],
-        np.zeros((t['vertices'].shape[0],1))
+        new_points = []
+
+        edges = get_edges(t['triangles'])
+        vertices = t['vertices']
+
+        for edge in edges:
+
+            verts = vertices[edge]
+            p0, p1 = verts
+
+            midpoint = np.mean(verts,axis=0)
+            edge_length = np.sum((p1 - p0)**2)**0.5
+
+            if edge_length > A[int(midpoint[1])][int(midpoint[0])]:
+                new_points.append(midpoint)
+
+        vertices = list(t['vertices'])
+        vertices.extend(list(new_points))
+
+        t = tr.triangulate(
+            {
+                'vertices': vertices,
+                'segments': list(connectivity - 1),
+            }, 
+            'pqa%f' % (round(max_edge,2))
+        )
+
+
+    m = Mesh()
+    m.nodes = np.hstack(
+        (
+            t['vertices'],
+            np.zeros((t['vertices'].shape[0],1))
+        )
     )
-)
-m.elements = t['triangles'] + 1
-m.element_type = ElementType.TRIANGLE
+    m.elements = t['triangles'] + 1
+    m.element_type = ElementType.TRIANGLE
 
-return m
+    return m

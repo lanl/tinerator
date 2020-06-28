@@ -2,7 +2,7 @@ import meshio
 import numpy as np
 from copy import deepcopy
 from enum import Enum, auto
-from .io import write_avs, read_mpas
+from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
 def load(filename:str, load_dual_mesh:bool = True):

@@ -27,7 +27,7 @@ print('version = ',__version__)
 
 setup(
     name=package_name,
-    packages=[package_name, 'tinerator.meshing', 'tinerator.gis'],
+    packages=[package_name, 'tinerator.meshing', 'tinerator.gis', 'tinerator.visualize'],
     version=__version__,
     description='Powerful geological modeling',
     author='Daniel Livingston',
@@ -50,6 +50,9 @@ setup(
     keywords='gis tin geophysical subsurface 3d 2.5d meshing',
     python_requires='>=3.5.*',
     install_requires=['numpy','pyvista','meshio>=4'],
+    package_data = {
+        'visualize': ['*.json']
+    },
 )
 
 #from setuptools import setup
