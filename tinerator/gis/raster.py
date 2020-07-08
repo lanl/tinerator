@@ -6,6 +6,7 @@ from copy import deepcopy
 from pyproj import CRS
 from pyproj.crs import CRSError
 from ..visualize import plot as pl
+from .utils import project_vector
 from .raster_boundary import square_trace_boundary as st_boundary
 
 class Raster:
@@ -157,8 +158,15 @@ class Raster:
         )
     
     def get_boundary(self, distance: float = None, connect_ends: bool = False):
+        '''
+        Get a line mesh with nodes seperated by distance `distance` that
+        describe the boundary of this raster object.
+        '''
 
         if distance is None:
             distance = 10.
+        
+        vertices, connectivity = st_boundary(self.data, self.no_data_value, dist=distance, connect_ends=connect_ends)
 
-        return st_boundary(self.data, self.no_data_value, dist=distance, connect_ends=connect_ends)
+        return project_vector(vertices, self), connectivity
+        #return vertices, connectivity

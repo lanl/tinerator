@@ -1,11 +1,13 @@
 import triangle as tr
 import numpy as np
 from .mesh import Mesh, ElementType
+from ..gis import map_elevation
 
-def create_uniform_triplane(dem, max_edge: float) -> Mesh:
+def get_uniform_triplane(dem, max_edge: float) -> Mesh:
     '''
     Constructs a triangular mesh with roughly uniform edge lengths.
     '''
+    max_area = max_edge
     vertices, connectivity = dem.get_boundary(5., connect_ends=True)
 
     t = tr.triangulate(
@@ -16,7 +18,7 @@ def create_uniform_triplane(dem, max_edge: float) -> Mesh:
         # p enforces boundary connectivity, 
         # q gives a quality mesh, 
         # and aX is max edge length
-        'pqa%f' % (round(max_edge,2))
+        'pqa%f' % (round(max_area,2))
     )
 
     m = Mesh()
@@ -29,13 +31,7 @@ def create_uniform_triplane(dem, max_edge: float) -> Mesh:
     m.elements = t['triangles'] + 1
     m.element_type = ElementType.TRIANGLE
 
-    return m
+    z_values = map_elevation(dem, m.nodes)
+    m.nodes[:,2] = z_values
 
-'''
-TODO:
-        self.boundary = util.xyVectorToProjection(self.boundary,
-                                                  self.cell_size,
-                                                  self.xll_corner,
-                                                  self.yll_corner,
-                                                  self.nrows)
-'''
+    return m

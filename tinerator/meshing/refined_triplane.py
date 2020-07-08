@@ -1,6 +1,7 @@
 import numpy as np
 import triangle as tr
 from .mesh import Mesh, ElementType
+from ..gis import unproject_vector
 
 def get_edges(tris: np.ndarray) -> np.ndarray:
     '''
@@ -22,7 +23,7 @@ def get_edges(tris: np.ndarray) -> np.ndarray:
     
     return np.unique(edges,axis=0)
 
-def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float, min_dist: float, max_dist: float, n_iterations: int) -> Mesh:
+def get_refined_triplane(dem, distance_map, min_edge: float, max_edge: float, min_dist: float, max_dist: float, n_iterations: int = 5) -> Mesh:
     '''
     Creates a triplane where 
 
@@ -40,6 +41,9 @@ def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float,
 
 
     '''
+
+    max_area = max_edge #0.5 * max_edge**2.
+    assert dem.data.shape == distance_map.shape, 'DEM and distance map must have the same shape'
 
     # CONVERT THE DISTANCE MAP TO AN EDGE LENGTHS MAP
     # Each index of this matrix will contain what the
@@ -67,6 +71,7 @@ def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float,
 
     boundary_len = max_edge * 0.2 # 5.
     vertices, connectivity = dem.get_boundary(boundary_len, connect_ends=True)
+    #vertices = unproject_vector(vertices, dem)
 
     # Create an initial 'uniform' triangular mesh
     t = tr.triangulate(
@@ -77,7 +82,7 @@ def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float,
         # p enforces boundary connectivity, 
         # q gives a quality mesh, 
         # and aX is max edge length
-        'pqa%f' % (round(max_edge,2))
+        'pqa%f' % (round(max_area,2))
     )
 
     for _ in range(n_iterations):
@@ -101,13 +106,17 @@ def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float,
         vertices = list(t['vertices'])
         vertices.extend(list(new_points))
 
+        print(1)
+
         t = tr.triangulate(
             {
-                'vertices': vertices,
+                'vertices': t['vertices'],
                 'segments': list(connectivity - 1),
             }, 
-            'pqa%f' % (round(max_edge,2))
+            'pqa%f' % (round(max_area,2))
         )
+
+        print(2)
 
 
     m = Mesh()
@@ -119,5 +128,8 @@ def create_refined_triplane(dem, distance_map, min_edge: float, max_edge: float,
     )
     m.elements = t['triangles'] + 1
     m.element_type = ElementType.TRIANGLE
+
+    #z_values = map_elevation(dem, m.nodes)
+    #m.nodes[:,2] = z_values
 
     return m
