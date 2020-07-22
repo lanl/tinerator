@@ -1,3 +1,6 @@
+import numpy as np
+import sys
+sys.path.insert(0,'/Users/livingston/playground/tinerator/tinerator-core')
 import tinerator as tin
 from tinerator.meshing import Mesh, ElementType
 

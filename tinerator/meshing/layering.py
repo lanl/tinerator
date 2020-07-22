@@ -1,5 +1,5 @@
 import numpy as np
-from copy import deepcopy
+from copy import copy, deepcopy
 from enum import Enum, auto
 from .mesh import Mesh, StackedMesh, ElementType
 
@@ -161,7 +161,8 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
                 l.save("DEBUG_layer_%d%d.inp" % (i, j))
 
             l.elements += vol_mesh.n_nodes
-            vol_mesh.nodes = np.vstack((vol_mesh.nodes, l.nodes))
+            #vol_mesh.nodes = np.vstack((vol_mesh.nodes, l.nodes))
+            vol_mesh.nodes = np.vstack((l.nodes, vol_mesh.nodes))
             vol_mesh.elements = np.vstack((vol_mesh.elements, l.elements))
 
         top_layer = deepcopy(bottom_layer)
@@ -176,15 +177,29 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
     # Generate prisms from pairwise triangles
     for i in range(n_prisms):
         prisms[i] = np.hstack(
-            (vol_mesh.elements[i], vol_mesh.elements[i + elems_per_layer])
+            (vol_mesh.elements[i + elems_per_layer], vol_mesh.elements[i])
         )
+
+    # Swap columns 1 and 2 - reversing triangle connectivity
+    swap_a = copy(prisms[:,1])
+    swap_b = copy(prisms[:,2])
+
+    prisms[:,1] = swap_b
+    prisms[:,2] = swap_a
+
+    # Swap columns 4 and 5 - reversing triangle connectivity
+    swap_a = copy(prisms[:,4])
+    swap_b = copy(prisms[:,5])
+
+    prisms[:,4] = swap_b
+    prisms[:,5] = swap_a
 
     vol_mesh.elements = prisms
 
     # This should probably be in its own method
     vol_mesh.add_attribute(
         "material_id",
-        np.repeat(np.array(mat_ids, dtype=int), elems_per_layer),
+        np.repeat(np.array(mat_ids[::-1], dtype=int), elems_per_layer),
         attrb_type="cell",
     )
 

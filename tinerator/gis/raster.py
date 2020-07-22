@@ -168,5 +168,5 @@ class Raster:
         
         vertices, connectivity = st_boundary(self.data, self.no_data_value, dist=distance, connect_ends=connect_ends)
 
-        return project_vector(vertices, self), connectivity
-        #return vertices, connectivity
+        #return project_vector(vertices, self), connectivity
+        return vertices, connectivity

@@ -73,6 +73,8 @@ def get_refined_triplane(dem, distance_map, min_edge: float, max_edge: float, mi
     vertices, connectivity = dem.get_boundary(boundary_len, connect_ends=True)
     #vertices = unproject_vector(vertices, dem)
 
+    plt.imshow(A); plt.cbar(); plt.show()
+
     # Create an initial 'uniform' triangular mesh
     t = tr.triangulate(
         {

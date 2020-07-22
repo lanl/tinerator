@@ -118,7 +118,12 @@ class Mesh:
     @property
     def material_id(self):
         """Material ID of mesh"""
-        return self.get_attribute("material_id")
+        try:
+            return self.get_attribute("material_id")
+        except KeyError:
+            v = np.ones((self.n_elements,),dtype=int)
+            self.material_id = v
+            return self.get_attribute("material_id")
     
     @material_id.setter
     def material_id(self, v):
