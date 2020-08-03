@@ -4,15 +4,24 @@ import pyvista as pv
 from copy import deepcopy
 
 from rich.console import Console
+
 console = Console()
 
-def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,scale:tuple=(1,1,1), **kwargs):
-    '''
+
+def plot_3d(
+    mesh,
+    element_type: str,
+    cell_arrays: dict = None,
+    node_arrays: dict = None,
+    scale: tuple = (1, 1, 1),
+    **kwargs,
+):
+    """
     See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)`
     for more information on possible keyword arguments.
-    '''
+    """
 
-    '''
+    """
     TODO: this shouldn't directly depend on the mesh class.
     TODO: add texturing
         texture : vtk.vtkTexture or np.ndarray or boolean, optional
@@ -22,46 +31,50 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,sc
             on the object will be used. If a string name is given, it
             will pull a texture with that name associated to the input
             mesh.
-    '''
+    """
 
     ncells = mesh.n_elements
     nnodes = mesh.n_nodes
 
     if not ncells:
-        raise ValueError('Cells must be defined to visualize')
+        raise ValueError("Cells must be defined to visualize")
 
-    if element_type.lower() == 'tri':
+    if element_type.lower() == "tri":
         nodes_per_elem = 3
         vtk_cell_type = vtk.VTK_TRIANGLE
-    elif element_type.lower() == 'prism':
+    elif element_type.lower() == "prism":
         nodes_per_elem = 6
         vtk_cell_type = vtk.VTK_WEDGE
-    elif element_type.lower() == 'polygon':
+    elif element_type.lower() == "polygon":
         vtk_cell_type = vtk.VTK_POLYGON
     else:
         raise ValueError("Unsupported element type")
 
     if vtk_cell_type == vtk.VTK_POLYGON:
-        delta  = np.count_nonzero(mesh.elements, axis=1)
-        offset = np.array([np.sum(delta[:i]+1) for i in range(len(delta))])
-        cells  = np.hstack((delta.reshape((delta.shape[0],1)) + 1, mesh.elements))
-        cells  = cells[cells > 0] - 1
+        delta = np.count_nonzero(mesh.elements, axis=1)
+        offset = np.array([np.sum(delta[:i] + 1) for i in range(len(delta))])
+        cells = np.hstack(
+            (delta.reshape((delta.shape[0], 1)) + 1, mesh.elements)
+        )
+        cells = cells[cells > 0] - 1
     else:
-        offset = np.array([(nodes_per_elem+1)*i for i in range(ncells)])
-        cells = np.hstack((np.full((ncells,1),nodes_per_elem), mesh.elements - 1)).flatten()
+        offset = np.array([(nodes_per_elem + 1) * i for i in range(ncells)])
+        cells = np.hstack(
+            (np.full((ncells, 1), nodes_per_elem), mesh.elements - 1)
+        ).flatten()
 
-    cell_type = np.repeat([vtk_cell_type],ncells)
+    cell_type = np.repeat([vtk_cell_type], ncells)
     nodes = deepcopy(mesh.nodes)
 
     # Scale mesh coordinates
     for i in range(3):
-        nodes[:,i] = scale[i]*nodes[:,i]
+        nodes[:, i] = scale[i] * nodes[:, i]
 
     # create the unstructured grid directly from the numpy arrays
     grid = pv.UnstructuredGrid(offset, cells, cell_type, nodes, deep=True)
 
     # https://github.com/pyvista/pyvista/blob/52c78d610c30f5f7e02dacecbb081211faae8073/docs/getting-started/what-is-a-mesh.rst
-    
+
     scalar = None
 
     # TODO: approach this in a different way
@@ -76,4 +89,4 @@ def plot_3d(mesh,element_type:str,cell_arrays:dict=None,node_arrays:dict=None,sc
             scalar = key
 
     # plot the grid
-    grid.plot(scalars=scalar,show_edges=True,show_bounds=True, **kwargs)
+    grid.plot(scalars=scalar, show_edges=True, show_bounds=True, **kwargs)

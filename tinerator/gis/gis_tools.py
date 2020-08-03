@@ -4,22 +4,66 @@ import rasterio
 import rasterio.mask
 import shutil
 import geopandas
+import numpy as np
+
+
+def get_geometry(shapefile_path: str) -> list:
+    """
+    Reads a shapefile and returns a list of dicts of
+    all geometric objects within the shapefile. Each dict
+    contains the type of geometrical object, its CRS, and
+    defining coordinates.
+
+    # Arguments
+    shapefile_path (str): path to shapefile
+
+    # Returns
+    list[dict]
+    """
+
+    elements = []
+    with fiona.open(shapefile_path, "r") as cc:
+        for f in cc:
+            geom = f["geometry"]
+            coords = geom["coordinates"]
+
+            if not isinstance(coords[0], tuple):
+                coords = coords[0]
+
+                if not isinstance(coords[0], tuple):
+                    print("warning: shapefile parsed incorrectly")
+
+            elements.append(
+                {
+                    "type": geom["type"],
+                    "crs": None,
+                    "coordinates": np.array(coords),
+                }
+            )
+
+    return elements
 
 
 def reproject_shapefile(
-    shapefile_in: str, shapefile_out: str, projection: str
+    shapefile_in: str, shapefile_out: str, crs: str = None, epsg: int = None
 ) -> None:
     """
-    Re-projects a shapefile and writes it to `shapefile_out`.
+    Transforms all geometries in a shapefile to a new CRS and writes 
+    to `shapefile_out`.
+
+    Either `crs` or `epsg` must be specified. `crs` can be either a string or
+    a dict.
+
+    See `help(geopandas.geodataframe.GeoDataFrame.to_crs)` for more information.
 
     # Arguments
     shapefile_in (str): filepath to the shapefile
     shapefile_out (str): file to write re-projected shapefile to
-    projection (str): Proj4 string with new projection; i.e. '+init=epsg:3413'
-
+    crs (str or dict): Proj4 string with new projection; i.e. '+init=epsg:3413'
+    epsg (int): EPSG code specifying output projection
     """
     shp = geopandas.read_file(shapefile_in)
-    shp = shp.to_crs(projection)
+    shp = shp.to_crs(crs=crs, epsg=epsg)
     shp.to_file(shapefile_out, driver="ESRI Shapefile")
 
 
@@ -92,10 +136,13 @@ def mask_raster(
 
     # Capture the shapefile geometry
     with fiona.open(shapefile_filename, "r") as _shapefile:
+        shp_crs = _shapefile.crs["init"]
+        is_closed = _shapefile.closed
         _poly = [feature["geometry"] for feature in _shapefile]
 
     # Open the DEM && mask && update metadata with mask
     with rasterio.open(raster_filename, "r") as _dem:
+        dem_crs = _dem.crs.data["init"]
         out_image, out_transform = rasterio.mask.mask(
             _dem, _poly, crop=True, invert=False, nodata=no_data
         )

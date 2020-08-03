@@ -1,26 +1,28 @@
-'''
+"""
 
 LaGriT infiles, used for special routines such as MASSAGE.
 Import these routines and write to file.
 
-'''
+"""
+
 
 class Infiles:
-
-    def _surf_mesh_backup(in_name,out_name,skip_sort=False):
-        # Driver for producing a surface mesh from 
+    def _surf_mesh_backup(in_name, out_name, skip_sort=False):
+        # Driver for producing a surface mesh from
         # a prism mesh
 
         if skip_sort:
-            infile = '''read/avs/{0}/mo1
+            infile = """read/avs/{0}/mo1
 resetpts/itp
 extract/surfmesh/1,0,0/mo2/mo1/external
 dump/avs/{1}/mo2
 
-finish'''.format(in_name,out_name)
+finish""".format(
+                in_name, out_name
+            )
             return infile
 
-        infile = '''read/avs/{0}/mo1
+        infile = """read/avs/{0}/mo1
 resetpts/itp
 
 
@@ -39,28 +41,30 @@ extract/surfmesh/1,0,0/mo2/mo1/external
 dump/avs/{1}/mo2
 
 finish
-'''.format(in_name,out_name)
+""".format(
+            in_name, out_name
+        )
         return infile
 
     # user_function
-    distance_field = '''cmo/DELATT/mo_pts/dfield
+    distance_field = """cmo/DELATT/mo_pts/dfield
 compute / distance_field / mo_pts / mo_line_work / dfield
 math/multiply/mo_pts/x_four/1,0,0/mo_pts/dfield/PARAM_A/
 math/add/mo_pts/x_four/1,0,0/mo_pts/x_four/PARAM_B/
 cmo/copyatt/mo_pts/mo_pts/fac_n/x_four
 finish
-'''
+"""
     # user_function2
-    distance_field_2 = '''cmo/DELATT/mo_pts/dfield
+    distance_field_2 = """cmo/DELATT/mo_pts/dfield
 compute / distance_field / mo_pts / mo_line_work / dfield
 math/multiply/mo_pts/x_four/1,0,0/mo_pts/dfield/PARAM_A2/
 math/add/mo_pts/x_four/1,0,0/mo_pts/x_four/PARAM_B2/
 cmo/copyatt/mo_pts/mo_pts/fac_n/x_four
 finish
-'''
-    
+"""
+
     # infile_get_facesets3
-    get_facesets3 = '''# get default facesets bottom, top, sides
+    get_facesets3 = """# get default facesets bottom, top, sides
 
 # FIX so MO has same numbering as exodus mesh
 # use sort to order element blocks as exodus will order
@@ -145,4 +149,4 @@ cmo/delete/mo_tmp1
 # fs1_bottom.avs fs2_top.avs fs3_sides_all.avs
 
 finish
-'''
+"""

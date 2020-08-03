@@ -1,11 +1,15 @@
 import meshio
+import os
+import shutil
 import numpy as np
+from pylagrit import PyLaGriT
 from copy import deepcopy
 from enum import Enum, auto
 from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
-def load(filename:str, load_dual_mesh:bool = True):
+
+def load(filename: str, load_dual_mesh: bool = True):
     nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
 
     m = Mesh()
@@ -18,6 +22,63 @@ def load(filename:str, load_dual_mesh:bool = True):
         m.element_type = ElementType.POLYGON
 
     return m
+
+
+def read_avs(
+    inp_filename: str,
+    keep_material_id: bool = True,
+    keep_node_attributes: bool = True,
+    keep_cell_attributes: bool = True,
+):
+    """
+    Reads an AVS-UCD mesh file (extension: `.inp`) and returns a Mesh object.
+    """
+
+    m = Mesh()
+
+    with open(inp_filename, "r") as f:
+        header = f.readline().strip().split()
+        npts, nelems, nnatt, neatt, _ = [int(x) for x in header]
+
+        nodes = np.zeros((npts, 3), dtype=float)
+
+        for i in range(npts):
+            pt = f.readline().strip().split()
+            _, x, y, z = [float(p) for p in pt]
+
+            nodes[i, :] = np.array([x, y, z], dtype=float)
+
+        m.nodes = nodes
+
+        if nelems:
+            elements = np.zeros((nelems, 3), dtype=int)
+            mat_id = np.ones((nelems,), dtype=int)
+
+        for i in range(nelems):
+            el = f.readline.strip().split()
+
+            if i == 0:
+                if el[2].lower() != "tri":
+                    raise ValueError("Only tri meshes are supported")
+
+            mat_id[i] = int(el[1])
+            elements[i, :] = np.array((el[3], el[4], el[5]), dtype=int)
+
+        if nelems:
+            m.elements = elements
+            m.element_type = ElementType.TRIANGLE
+
+            if keep_material_id:
+                m.material_id = mat_id
+
+        if keep_node_attributes:
+            pass
+
+        if keep_cell_attributes:
+            pass
+
+    return m
+
 
 class ElementType(Enum):
     TRIANGLE = auto()
@@ -46,7 +107,7 @@ class Mesh:
         self.attributes = {}
 
     def __repr__(self):
-        return f"Mesh<name: \"{self.name}\", nodes: {self.n_nodes}, elements<{self.element_type}>: {self.n_elements}>"
+        return f'Mesh<name: "{self.name}", nodes: {self.n_nodes}, elements<{self.element_type}>: {self.n_elements}>'
 
     def get_attribute(self, name: str):
         try:
@@ -54,7 +115,9 @@ class Mesh:
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
 
-    def add_empty_attribute(self, name: str, attrb_type: str, fill_value: float = 0.0):
+    def add_empty_attribute(
+        self, name: str, attrb_type: str, fill_value: float = 0.0
+    ):
         """
         Creates an empty cell or node attribute with an optional given fill value.
         """
@@ -65,8 +128,8 @@ class Mesh:
             sz = self.n_nodes
         else:
             raise ValueError(f"Unknown attrb_type: {attrb_type}")
-        
-        vector = np.full((sz,),fill_value)
+
+        vector = np.full((sz,), fill_value)
 
         self.add_attribute(name, vector, attrb_type=attrb_type)
 
@@ -108,9 +171,9 @@ class Mesh:
         """Compute the centroids of every cell"""
 
         # TODO: optimize function
-        centroids = np.zeros((self.n_elements,3), dtype=float)
+        centroids = np.zeros((self.n_elements, 3), dtype=float)
 
-        for (i,elem) in enumerate(self.elements):
+        for (i, elem) in enumerate(self.elements):
             centroids[i] = np.mean(self.nodes[elem - 1], axis=0)
 
         return centroids
@@ -121,10 +184,10 @@ class Mesh:
         try:
             return self.get_attribute("material_id")
         except KeyError:
-            v = np.ones((self.n_elements,),dtype=int)
+            v = np.ones((self.n_elements,), dtype=int)
             self.material_id = v
             return self.get_attribute("material_id")
-    
+
     @material_id.setter
     def material_id(self, v):
         self.add_attribute("material_id", v, attrb_type="cell")
@@ -199,9 +262,11 @@ class Mesh:
             ex.append((np.min(vector), np.max(vector)))
 
         return ex
-    
-    def view(self, attribute_name:str=None, scale:tuple=(1,1,1), **kwargs):
-        '''
+
+    def view(
+        self, attribute_name: str = None, scale: tuple = (1, 1, 1), **kwargs
+    ):
+        """
         Views the mesh object in an interactive VTK-rendered windowed environment.
 
         `**kwargs` are passed through to pyvista.UnstructuredGrid.plot method. Some keyword args include:
@@ -213,17 +278,19 @@ class Mesh:
 
         See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)` for more 
         information on possible keyword arguments.
-        '''
+        """
 
         if self.element_type == ElementType.TRIANGLE:
-            etype = 'tri'
+            etype = "tri"
         elif self.element_type == ElementType.PRISM:
-            etype = 'prism'
+            etype = "prism"
         elif self.element_type == ElementType.POLYGON:
-            etype = 'polygon'
+            etype = "polygon"
         else:
-            raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
-        
+            raise ValueError(
+                "Unknown `self.element_type`...is mesh object malformed?"
+            )
+
         cell_arrays = None
         node_arrays = None
 
@@ -235,16 +302,23 @@ class Mesh:
                 attribute_name = "materialID"
 
             if len(attrb) == self.n_nodes:
-                node_arrays = { attribute_name: attrb }
+                node_arrays = {attribute_name: attrb}
             elif len(attrb) == self.n_elements:
-                cell_arrays = { attribute_name: attrb }
+                cell_arrays = {attribute_name: attrb}
             else:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
             pass
 
-        v3d.plot_3d(self, etype, cell_arrays=cell_arrays, node_arrays=node_arrays, scale=scale, **kwargs)
-        
+        v3d.plot_3d(
+            self,
+            etype,
+            cell_arrays=cell_arrays,
+            node_arrays=node_arrays,
+            scale=scale,
+            **kwargs,
+        )
+
     def save(self, outfile: str):
 
         if self.element_type == ElementType.TRIANGLE:
@@ -277,9 +351,11 @@ class Mesh:
             matid=mat_id,
             node_attributes=node_attributes,
         )
-    
-    def as_meshio(self,material_id_as_cell_blocks:bool = False) -> meshio.Mesh:
-        '''Converts a Mesh object into a meshio.Mesh object.'''
+
+    def as_meshio(
+        self, material_id_as_cell_blocks: bool = False
+    ) -> meshio.Mesh:
+        """Converts a Mesh object into a meshio.Mesh object."""
 
         if self.element_type == ElementType.TRIANGLE:
             cell_type = "triangle"
@@ -289,7 +365,7 @@ class Mesh:
             cell_type = "polygon"
         else:
             raise ValueError("Unknown cell type")
-        
+
         # Each unique value of material ID becomes a seperate
         # cell block - useful for Exodus exports
         if material_id_as_cell_blocks:
@@ -303,43 +379,54 @@ class Mesh:
             cells = []
 
             for i in range(self.n_elements):
-                element = self.elements[i,:]
+                element = self.elements[i, :]
                 cells.append(("polygon", element[element > 0] - 1))
 
         else:
-            cells = [
-                (cell_type, self.elements - 1)
-            ]
+            cells = [(cell_type, self.elements - 1)]
 
         # TODO: this needs to support every attribute!
         # TODO: this needs to take into account `material_id_as_cell_blocks`
-        cell_data = { 
-            "materialID": self.material_id
-        }
+        cell_data = {"materialID": self.material_id}
 
         mesh = meshio.Mesh(
-            points=self.nodes, 
-            cells=cells, 
+            points=self.nodes,
+            cells=cells,
             cell_data=cell_data,
             point_data=None,
         )
 
         return mesh
 
+    def save_exo(self, outfile: str):
 
-    def save_exo(self, outfile:str):
-        '''Uses the Meshio library as a driver for file output.'''
-        meshio.write(outfile, self.as_meshio(material_id_as_cell_blocks=True))        
+        basename = os.path.basename(outfile)
+
+        # Save mesh as INP
+        tmp_file = "temp_stacked__00.inp"
+        self.save(tmp_file)
+
+        # Read into LaGriT
+        lg = PyLaGriT()
+        mo = lg.read(tmp_file)
+        os.remove(tmp_file)
+
+        # Dump into Exodus file
+        mo.dump_exo(basename)
+
+        # Move to actual path (LaGriT can only handle cur. dir)
+        if os.path.dirname(outfile).strip() != "":
+            shutil.move(basename, outfile)
+
 
 class StackedMesh(Mesh):
-    def __init__(self, name:str="stacked_mesh", etype: ElementType = None):
-        super().__init__(name=name,etype=etype)
+    def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
+        super().__init__(name=name, etype=etype)
 
         self._cell_layer_ids = None
         self._num_layers = None
         self._nodes_per_layer = None
         self._elems_per_layer = None
-    
+
     def get_cells_at_sublayer(sublayer: int) -> np.ndarray:
         return self._cell_layer_ids == layer
-    

@@ -1,5 +1,8 @@
 import pytest
 import helper
+import sys
+sys.path.insert(0,'/Users/livingston/playground/tinerator/tinerator-core')
+import tinerator as tin
 
 def func(x):
     return x + 1

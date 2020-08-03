@@ -1,24 +1,29 @@
 import numpy as np
 
-def __line_connectivity(nodes:np.ndarray, connect_ends:bool=False) -> np.ndarray:
-    '''
+
+def __line_connectivity(
+    nodes: np.ndarray, connect_ends: bool = False
+) -> np.ndarray:
+    """
     Simple function to define a closed or open polyline for a set of 
     nodes. Assumes adjacency in array == implicit connection.
     That is, requires a clockwise- or counter-clockwise set of nodes.
-    '''
+    """
 
     delta = 0 if connect_ends else -1
     size = np.shape(nodes)[0]
-    connectivity = np.empty((size+delta,2),dtype=np.int)
-    for i in range(size-1):
-        connectivity[i] = np.array((i+1,i+2))
+    connectivity = np.empty((size + delta, 2), dtype=np.int)
+    for i in range(size - 1):
+        connectivity[i] = np.array((i + 1, i + 2))
     if connect_ends:
-        connectivity[-1] = np.array((size,1))
+        connectivity[-1] = np.array((size, 1))
     return connectivity
 
 
 # TODO: reimplement in cython!!!!
-def square_trace_boundary(A: np.ndarray, NDV: float, dist: float=10.0, connect_ends: bool=False):
+def square_trace_boundary(
+    A: np.ndarray, NDV: float, dist: float = 10.0, connect_ends: bool = False
+):
     """
     Uses a square-tracing algorithm to quickly find a set of points
     composing the boundary at the interface of data and "empty" (noDataValue)

@@ -59,7 +59,7 @@ def proportional_sublayering(
         len(sub_thick),
         data=sub_thick,
         matids=matids,
-        relative_z=relative_z
+        relative_z=relative_z,
     )
 
 
@@ -72,7 +72,7 @@ def uniform_sublayering(
         nsublayers,
         data=[1] * nsublayers,
         matids=matids,
-        relative_z=relative_z
+        relative_z=relative_z,
     )
 
 
@@ -93,7 +93,7 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
     for (i, layer) in enumerate(layers):
         # Allow for a naive version of layering: just pass in the layer depths
         if isinstance(layer, (int, float)):
-            layers[i] = uniform_sublayering(layer, 1, matids=[i+1])
+            layers[i] = uniform_sublayering(layer, 1, matids=[i + 1])
 
     if not all([isinstance(x, Layer) for x in layers]):
         raise ValueError("`layers` must be a list of Layers")
@@ -161,7 +161,7 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
                 l.save("DEBUG_layer_%d%d.inp" % (i, j))
 
             l.elements += vol_mesh.n_nodes
-            #vol_mesh.nodes = np.vstack((vol_mesh.nodes, l.nodes))
+            # vol_mesh.nodes = np.vstack((vol_mesh.nodes, l.nodes))
             vol_mesh.nodes = np.vstack((l.nodes, vol_mesh.nodes))
             vol_mesh.elements = np.vstack((vol_mesh.elements, l.elements))
 
@@ -181,18 +181,18 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
         )
 
     # Swap columns 1 and 2 - reversing triangle connectivity
-    swap_a = copy(prisms[:,1])
-    swap_b = copy(prisms[:,2])
+    swap_a = copy(prisms[:, 1])
+    swap_b = copy(prisms[:, 2])
 
-    prisms[:,1] = swap_b
-    prisms[:,2] = swap_a
+    prisms[:, 1] = swap_b
+    prisms[:, 2] = swap_a
 
     # Swap columns 4 and 5 - reversing triangle connectivity
-    swap_a = copy(prisms[:,4])
-    swap_b = copy(prisms[:,5])
+    swap_a = copy(prisms[:, 4])
+    swap_b = copy(prisms[:, 5])
 
-    prisms[:,4] = swap_b
-    prisms[:,5] = swap_a
+    prisms[:, 4] = swap_b
+    prisms[:, 5] = swap_a
 
     vol_mesh.elements = prisms
 
@@ -205,6 +205,8 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
 
     # Each element in a layer will get its own integer value
     # This can then be used to 'mask' cells belonging to different layers
-    vol_mesh._cell_layer_ids = np.repeat(np.array(list(range(total_layers)), dtype=int), elems_per_layer)
+    vol_mesh._cell_layer_ids = np.repeat(
+        np.array(list(range(total_layers)), dtype=int), elems_per_layer
+    )
 
     return vol_mesh

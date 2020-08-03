@@ -9,6 +9,7 @@ from ..visualize import plot as pl
 from .utils import project_vector
 from .raster_boundary import square_trace_boundary as st_boundary
 
+
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):
         self.data = rd.LoadGDAL(raster_path, no_data=no_data)
@@ -18,6 +19,7 @@ class Raster:
         self.yll_corner = (
             self.data.geotransform[3] - self.nrows * self.cell_size
         )
+        self.filename = raster_path
 
         try:
             self.crs = CRS.from_wkt(self.data.projection)
@@ -70,6 +72,10 @@ class Raster:
         """
         self.xll_corner = v[0]
         self.yll_corner = v[1]
+
+    @property
+    def shape(self):
+        return self.data.shape
 
     @property
     def nrows(self):
@@ -134,15 +140,15 @@ class Raster:
                 rd.ResolveFlats(self.data, in_place=True)
 
     def plot(
-        self, outfile: str = None, title: str = None
+        self, outfile: str = None, title: str = None, geometry: list = None
     ):
         """
-        Plots the DEM corresponding to a tinerator.DEM object.
+        Plots the raster object.
 
         # Arguments
-        dem_object (tinerator.DEM): A DEM object to plot
-        hillshade (bool): use hillshading on plot
-        plot_out (str): filepath to save plot
+        outfile (str): path to save figure
+        title (str): figure title
+        geometry (list): a list of geometrical objects to overlay
         """
 
         extent = self.extent
@@ -153,20 +159,22 @@ class Raster:
             outfile=outfile,
             title=title,
             extent=extent,
-            xlabel="latitude (%s)" % self.units,
-            ylabel="longitude (%s)" % self.units,
+            geometry=geometry,
         )
-    
+
     def get_boundary(self, distance: float = None, connect_ends: bool = False):
-        '''
+        """
         Get a line mesh with nodes seperated by distance `distance` that
         describe the boundary of this raster object.
-        '''
+        """
 
         if distance is None:
-            distance = 10.
-        
-        vertices, connectivity = st_boundary(self.data, self.no_data_value, dist=distance, connect_ends=connect_ends)
+            distance = 10.0
 
-        #return project_vector(vertices, self), connectivity
-        return vertices, connectivity
+        vertices, connectivity = st_boundary(
+            self.data,
+            self.no_data_value,
+            dist=distance,
+            connect_ends=connect_ends,
+        )
+        return project_vector(vertices, self), connectivity

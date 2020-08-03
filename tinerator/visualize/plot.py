@@ -4,15 +4,17 @@ import numpy as np
 import os
 import json
 
-with open(os.path.join(
+with open(
+    os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        'schwarzwald_topographie.json'
-    ),'r') as f:
+        "schwarzwald_topographie.json",
+    ),
+    "r",
+) as f:
     cmap_data = json.loads(f.read())
 
 topocmap = mcolors.LinearSegmentedColormap(
-    name='schwarzwald_topographie',
-    segmentdata=cmap_data
+    name="schwarzwald_topographie", segmentdata=cmap_data
 )
 
 
@@ -28,6 +30,7 @@ def plot_raster(
     ylabel=None,
     extent=[],
     outfile=None,
+    geometry=None,
 ):
     """
     Plots a raster matrix.
@@ -44,16 +47,30 @@ def plot_raster(
     __apply_grid_to_axis(ax)
 
     cax = ax.imshow(
-        raster,
-        zorder=9,
-        extent=extent,
-        vmin=vmin,
-        vmax=vmax,
-        cmap=topocmap,
+        raster, zorder=9, extent=extent, vmin=vmin, vmax=vmax, cmap=topocmap
     )
 
     cbar = fig.colorbar(cax, ax=ax)
-    cbar.set_label("Elevation (m)", rotation=270)
+    # Raster does not necessarily display elevation
+    # cbar.set_label("Elevation (m)", rotation=270)
+
+    if geometry is not None:
+        for g in geometry:
+            gg = g["coordinates"]
+            geom_type = g["type"].lower().strip()
+            if geom_type == "polygon":
+                ax.fill(
+                    gg[:, 0],
+                    gg[:, 1],
+                    zorder=99,
+                    edgecolor="black",
+                    linewidth=1.2,
+                )
+            elif geom_type == "linestring" or geom_type == "line":
+                ax.plot(gg[:, 0], gg[:, 1], zorder=99, marker="o")
+            else:
+                print("Unknown geometry type")
+                ax.scatter(gg[:, 0], gg[:, 1], zorder=99)
 
     if title is not None:
         plt.title(title)

@@ -4,8 +4,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 from copy import deepcopy
 
-def getFeatureTrace(feature:np.ndarray,feature_threshold:float=750.):
-    '''
+
+def getFeatureTrace(feature: np.ndarray, feature_threshold: float = 750.0):
+    """
     Returns an array of (x,y) pairs corresponding to values over a given
     threshold in a feature array.
 
@@ -16,18 +17,20 @@ def getFeatureTrace(feature:np.ndarray,feature_threshold:float=750.):
     :param feature_threshold:
     :type feature_threshold:
     :returns: 
-    '''
+    """
 
-    threshold_matrix = (feature > feature_threshold)
-    captured_areas = np.zeros(np.shape(threshold_matrix),dtype=bool)
+    threshold_matrix = feature > feature_threshold
+    captured_areas = np.zeros(np.shape(threshold_matrix), dtype=bool)
     xy = np.transpose(np.where(threshold_matrix == True))
     xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
 
     return xy
 
 
-def calculateDistanceField(accum: np.ndarray,accumulation_threshold:float=750.):
-    '''
+def calculateDistanceField(
+    accum: np.ndarray, accumulation_threshold: float = 750.0
+):
+    """
     Given flow accumulation, creates a distance field.
 
     :param accum: flow accumulation matrix
@@ -39,18 +42,24 @@ def calculateDistanceField(accum: np.ndarray,accumulation_threshold:float=750.):
     Returns:
     :param distance_field: distance field of shape(accum)
     :type distance_field: np.ndarray
-    '''
+    """
 
     distance_field = np.ones(np.shape(accum))
     thres = accum > accumulation_threshold
     distance_field[thres] = -1
 
-    distance_field = skfmm.distance(distance_field,dx=0.25)
+    distance_field = skfmm.distance(distance_field, dx=0.25)
     return distance_field
 
 
-def watershedDelineation(dem,fill_depressions:bool=True,fill_flats:bool=True,method:str='D8',exponent=None):
-    '''
+def watershedDelineation(
+    dem,
+    fill_depressions: bool = True,
+    fill_flats: bool = True,
+    method: str = "D8",
+    exponent=None,
+):
+    """
     Performs watershed delination on a DEM.
     Optionally, fills DEM pits and flats.
 
@@ -66,15 +75,15 @@ def watershedDelineation(dem,fill_depressions:bool=True,fill_flats:bool=True,met
     Returns:
     :param accum: flow accumulation matrix
     :type accum: np.ndarray
-    '''
+    """
 
     dem = deepcopy(dem)
 
     if fill_depressions:
-        rd.FillDepressions(dem,epsilon=False,in_place=True)
+        rd.FillDepressions(dem, epsilon=False, in_place=True)
 
     if fill_flats:
-        rd.ResolveFlats(dem,in_place=True)
+        rd.ResolveFlats(dem, in_place=True)
 
-    accum_d8 = rd.FlowAccumulation(dem,method=method,exponent=exponent)
+    accum_d8 = rd.FlowAccumulation(dem, method=method, exponent=exponent)
     return accum_d8
