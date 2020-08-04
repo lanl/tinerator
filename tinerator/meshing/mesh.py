@@ -55,7 +55,7 @@ def read_avs(
             mat_id = np.ones((nelems,), dtype=int)
 
         for i in range(nelems):
-            el = f.readline.strip().split()
+            el = f.readline().strip().split()
 
             if i == 0:
                 if el[2].lower() != "tri":
@@ -428,5 +428,5 @@ class StackedMesh(Mesh):
         self._nodes_per_layer = None
         self._elems_per_layer = None
 
-    def get_cells_at_sublayer(sublayer: int) -> np.ndarray:
+    def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
         return self._cell_layer_ids == layer

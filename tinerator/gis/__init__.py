@@ -6,4 +6,4 @@ from .gis_tools import (
 )
 from .raster import Raster
 from .utils import map_elevation, project_vector, unproject_vector
-from .distance_maps import import_refinement_features
+from .distance_maps import DistanceMap, import_refinement_features

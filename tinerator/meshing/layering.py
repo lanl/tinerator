@@ -76,7 +76,7 @@ def uniform_sublayering(
     )
 
 
-def stack(surfmesh: Mesh, layers: list) -> Mesh:
+def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
     """
     Extrudes and layers a surface mesh into a volumetric mesh, given
     the contraints in the `layers` object.
@@ -93,7 +93,11 @@ def stack(surfmesh: Mesh, layers: list) -> Mesh:
     for (i, layer) in enumerate(layers):
         # Allow for a naive version of layering: just pass in the layer depths
         if isinstance(layer, (int, float)):
-            layers[i] = uniform_sublayering(layer, 1, matids=[i + 1])
+            if matids is None:
+                matid = i + 1
+            else:
+                matid = matids[i]
+            layers[i] = uniform_sublayering(layer, 1, matids=[matid])
 
     if not all([isinstance(x, Layer) for x in layers]):
         raise ValueError("`layers` must be a list of Layers")
