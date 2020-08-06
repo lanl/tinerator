@@ -47,11 +47,11 @@ def square_trace_boundary(
     Boundary nodes
     """
 
-    NDV = -3.4028234663852886e+38
+    NDV = -3.4028234663852886e38
 
-    np.savetxt('A.txt', A)
-    np.savetxt('NDV.txt', np.array([NDV]))
-    np.savetxt('dist.txt', np.array([dist]))
+    np.savetxt("A.txt", A)
+    np.savetxt("NDV.txt", np.array([NDV]))
+    np.savetxt("dist.txt", np.array([dist]))
 
     nRows = np.shape(A)[0] - 1
     nCols = np.shape(A)[1] - 1
@@ -194,6 +194,6 @@ def square_trace_boundary(
     print("p Generating array...")
     boundary = np.array(tmp_points, dtype=np.double) + 1.0
 
-    np.savetxt('boundary.txt', boundary)
+    np.savetxt("boundary.txt", boundary)
 
     return boundary, __line_connectivity(boundary, connect_ends=connect_ends)

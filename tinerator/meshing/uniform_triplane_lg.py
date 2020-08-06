@@ -6,7 +6,7 @@ from ..gis import map_elevation
 
 
 def build_uniform_triplane(
-    dem_raster: Raster, edge_length: float, verbose: bool = False,
+    dem_raster: Raster, edge_length: float, verbose: bool = False
 ):
     """
     Generate a uniform triplane mesh from a boundary polygon.
@@ -21,6 +21,7 @@ def build_uniform_triplane(
     """
 
     from pylagrit import PyLaGriT
+
     lg = PyLaGriT(verbose=verbose)
 
     boundary, _ = dem_raster.get_boundary(distance=edge_length)
@@ -100,6 +101,6 @@ def build_uniform_triplane(
     cleanup(["poly_1.inp", "surface_lg.inp", "lagrit.log", "lagrit.out"])
 
     z_values = map_elevation(dem_raster, mo.nodes)
-    mo.nodes[:,2] = z_values
+    mo.nodes[:, 2] = z_values
 
     return mo

@@ -4,6 +4,7 @@ from copy import deepcopy as dcopy
 import warnings
 from .lagrit_helper import *
 
+
 class Faceset:
     """
     Object that stores faceset formatting data
@@ -247,7 +248,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
     esides = mo_surf.eltset_attribute("itetclr", 50, boolstr="lt")
 
     if top:
-        #cfg.log.info("Generating top faceset")
+        # cfg.log.info("Generating top faceset")
         mo_tmp = mo_surf.copy()
         edel = mo_tmp.eltset_not([etop])
         mo_tmp.rmpoint_eltset(edel, resetpts_itp=False)
@@ -260,14 +261,14 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
                 "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
             )
 
-        #if cfg.DEBUG_MODE:
+        # if cfg.DEBUG_MODE:
         #    mo_tmp.dump("DEBUG_naive_top_fs.inp")
 
         faceset_fnames.append(fname)
         mo_tmp.delete()
 
     if bottom:
-        #cfg.log.info("Generating bottom faceset")
+        # cfg.log.info("Generating bottom faceset")
         mo_tmp = mo_surf.copy()
         edel = mo_tmp.eltset_not([ebot])
         mo_tmp.rmpoint_eltset(edel, resetpts_itp=False)
@@ -280,14 +281,14 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
                 "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
             )
 
-        #if cfg.DEBUG_MODE:
+        # if cfg.DEBUG_MODE:
         #    mo_tmp.dump("DEBUG_naive_bottom_fs.inp")
 
         faceset_fnames.append(fname)
         mo_tmp.delete()
 
     if sides:
-        #cfg.log.info("Generating sides faceset")
+        # cfg.log.info("Generating sides faceset")
         mo_tmp = mo_surf.copy()
         edel = mo_tmp.eltset_not([esides])
         mo_tmp.rmpoint_eltset(edel, resetpts_itp=False)
@@ -300,7 +301,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
                 "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
             )
 
-        #if cfg.DEBUG_MODE:
+        # if cfg.DEBUG_MODE:
         #    mo_tmp.dump("DEBUG_naive_sides_fs.inp")
 
         faceset_fnames.append(fname)
@@ -561,7 +562,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
 
     heights.sort()
 
-    #cfg.log.info("Preparing surface mesh")
+    # cfg.log.info("Preparing surface mesh")
 
     # --- GET OUTSIDE SURFACE MESH --------------------------- #
 
@@ -593,7 +594,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
 
     # -------------------------------------------------------- #
 
-    #cfg.log.info("Creating cut planes")
+    # cfg.log.info("Creating cut planes")
 
     planes = []
 
@@ -608,7 +609,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
     # Create regions covering all elevations,
     # with layers based on the 'heights' array
 
-    #cfg.log.info("Finding elements within cut planes")
+    # cfg.log.info("Finding elements within cut planes")
 
     count = len(planes)
     regions = []
@@ -643,7 +644,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
     fs_files = []
 
     for (i, iclr) in enumerate(itetclrs):
-        #cfg.log.info("Generating top faceset %d / %d" % (i + 1, len(itetclrs)))
+        # cfg.log.info("Generating top faceset %d / %d" % (i + 1, len(itetclrs)))
         fs_name = "fs_elevations_%d.avs" % (iclr)
 
         cut = mo.copy()
@@ -660,7 +661,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
         cut.rmpoint_eltset(edel, compress=True, resetpts_itp=False)
 
         # Write facesets in AVS-UCD format if in debug mode
-        #if cfg.DEBUG_MODE:
+        # if cfg.DEBUG_MODE:
         #    cut.dump(fs_name.replace("avs", "inp"))
 
         with warnings.catch_warnings():
@@ -669,7 +670,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
                 "dump / avs2 / " + fs_name + "/" + cut.name + "/ 0 0 0 2"
             )
 
-        #cfg.log.debug("Wrote faceset %s" % fs_name)
+        # cfg.log.debug("Wrote faceset %s" % fs_name)
 
         fs_files.append(fs_name)
         cut.delete()
@@ -704,7 +705,7 @@ def write_facesets(lg, dem_object, facesets):
         facesets = [facesets]
 
     # -- SIDESET PREPARATION -------------------------------------- #
-    #cfg.log.info("Preparing sidesets...")
+    # cfg.log.info("Preparing sidesets...")
     # Prepare the sideset objects - get full sides && top layer
     sidesets = {}
     for fs in facesets:
@@ -784,24 +785,12 @@ def write_facesets(lg, dem_object, facesets):
             dem_object._stacked_mesh.name
         )
     )
-    lg.sendline(
-        "reorder/{0}/ikey".format(dem_object._stacked_mesh.name)
-    )
-    lg.sendline(
-        "cmo/DELATT/{0}/ikey".format(dem_object._stacked_mesh.name)
-    )
-    lg.sendline(
-        "cmo/DELATT/{0}/xmed".format(dem_object._stacked_mesh.name)
-    )
-    lg.sendline(
-        "cmo/DELATT/{0}/ymed".format(dem_object._stacked_mesh.name)
-    )
-    lg.sendline(
-        "cmo/DELATT/{0}/zmed".format(dem_object._stacked_mesh.name)
-    )
-    lg.sendline(
-        "cmo/DELATT/{0}/ikey".format(dem_object._stacked_mesh.name)
-    )
+    lg.sendline("reorder/{0}/ikey".format(dem_object._stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/ikey".format(dem_object._stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/xmed".format(dem_object._stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/ymed".format(dem_object._stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/zmed".format(dem_object._stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/ikey".format(dem_object._stacked_mesh.name))
 
     cmo_in = dem_object._stacked_mesh.copy()
 
@@ -819,7 +808,7 @@ def write_facesets(lg, dem_object, facesets):
         # TODO: Bug fix help wanted!
         import subprocess
 
-        #cfg.log.debug("Caught surface mesh error - trying shell")
+        # cfg.log.debug("Caught surface mesh error - trying shell")
 
         tmp_infile = "_EOF_ERROR_SURFMESH.lgi"
         mesh_prism = "_TEMP_MESH_PRI.inp"
@@ -865,11 +854,7 @@ def write_facesets(lg, dem_object, facesets):
     # Generate basic top, side, and bottom sidesets
     if naive:
         new_fs = __driver_naive(
-            lg,
-            mo_surf,
-            naive["top"],
-            naive["bottom"],
-            naive["sides"],
+            lg, mo_surf, naive["top"], naive["bottom"], naive["sides"]
         )
 
         exported_fs.extend(new_fs)

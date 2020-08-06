@@ -9,6 +9,7 @@ from .facesets_lg import write_facesets
 from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
+
 def load(filename: str, load_dual_mesh: bool = True):
     nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
 
@@ -399,19 +400,21 @@ class Mesh:
         return mesh
 
     def save_exo(self, outfile: str, facesets: list = None):
-        '''
+        """
         Writes an Exodus file using PyLaGriT as the driver.
-        '''
+        """
 
         if facesets is not None and self.element_type == ElementType.TRIANGLE:
-            raise TypeError('Triangle meshes currently cannot support facesets')
+            raise TypeError(
+                "Triangle meshes currently cannot support facesets"
+            )
 
         if self.element_type == ElementType.TRIANGLE:
             dims = 2
         elif self.element_type == ElementType.PRISM:
             dims = 3
         else:
-            print('Warning: unsupported')
+            print("Warning: unsupported")
             dims = 3
 
         basename = os.path.basename(outfile)
@@ -443,11 +446,12 @@ class Mesh:
         # Move to actual path (LaGriT can only handle cur. dir)
         if os.path.dirname(outfile).strip() != "":
             shutil.move(basename, outfile)
-        
+
         # Remove faceset files used for mesh generation
         if facesets is not None:
             for fs in fs_list:
                 os.remove(fs)
+
 
 class StackedMesh(Mesh):
     def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
