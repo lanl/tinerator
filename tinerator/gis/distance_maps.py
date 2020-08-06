@@ -38,7 +38,9 @@ def import_refinement_features(
     parent_raster: Raster, shp_paths: str
 ) -> DistanceMap:
     """
-    Docstrings
+    Imports one or more shapefiles and creates a distance map, relative
+    to the DEM `parent_raster`. This distance map can then be used for
+    creating a refined surface mesh.
     """
 
     if isinstance(shp_paths, str):
@@ -60,7 +62,7 @@ def import_refinement_features(
             master_arr[arr == True] = True
 
     feature = project_vector(
-        get_feature_trace(arr, feature_threshold=0.5).astype(float),
+        get_feature_trace(master_arr, feature_threshold=0.5).astype(float),
         parent_raster,
     )
 

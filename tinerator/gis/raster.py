@@ -171,8 +171,10 @@ class Raster:
         if distance is None:
             distance = 10.0
 
+        distance /= self.cell_size
         vertices, connectivity = st_boundary(
-            self.data,
+            #self.data,
+            self.masked_data(),
             self.no_data_value,
             dist=distance,
             connect_ends=connect_ends,
