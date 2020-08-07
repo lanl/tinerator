@@ -1,5 +1,6 @@
+import copy
 import numpy as np
-from scipy import interpolate
+from scipy import ndimage as nd
 from osgeo import ogr, gdal, gdal_array
 
 
@@ -13,19 +14,10 @@ def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:
     # --- BEGIN INTERPOLATING DEM DATA ---- #
     # This is done to keep the z_value indexing from landing on
     # NaNs.
-    x = np.arange(0, array.shape[1])
-    y = np.arange(0, array.shape[0])
-
-    array = np.ma.masked_invalid(array)
-    xx, yy = np.meshgrid(x, y)
-
-    x1 = xx[~array.mask]
-    y1 = yy[~array.mask]
-    newarr = array[~array.mask]
-
-    data = interpolate.griddata(
-        (x1, y1), newarr.ravel(), (xx, yy), method="nearest"
-    )
+    data = copy.copy(array)
+    invalid = np.isnan(data)
+    ind = nd.distance_transform_edt(invalid, return_distances=False, return_indices=True)
+    data = data[tuple(ind)]
 
     # --- END INTERPOLATING DEM DATA ---- #
 
