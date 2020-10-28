@@ -1,24 +1,76 @@
-logo = true # Logo that appears in the site navigation bar.
-logoText = "ZDoc" # Logo text that appears in the site navigation bar.
+logo = true
+logoText = "TINerator"
 logoType = "short" # long, short
-description = "The ZDoc theme for Hugo example site." # for SEO
+description = "Meshing software"
 
-themeOptions = ["light", "dark"] # select options for site color theme
+themeOptions = ["light", "dark"]
+useFaviconGenerator = true
 
-useFaviconGenerator = true # https://www.favicon-generator.org/
-
+enableTocSwitch = true
+enableLandingBackground = true
 enableSearch = true
-enableLangChange = true
+enableSearchHighlight = true
+enableLangChange = false
 enableDarkMode = true
 enableBreadcrumb = true
+enableBlogBreadcrumb = true
+enableEditBtn = false
 enableToc = true
 enableMenu = true
 enableNavbar = true
 enableFooter = true
 showPoweredBy = true
 
-paginateWindow = 1 # setting it to 1 gives 7 buttons, 2 gives 9, etc. If set 1: [1 ... 4 5 6 ... 356] [1 2 3 4 5 ... 356] etc
-taxoPaginate = 13 # items per page
+tocLevels = ["h2", "h3", "h4"]
+paginateWindow = 1
+taxoPaginate = 13
 taxoGroupByDate = "2006" # "2006-01": group by month, "2006": group by year
 
 github = "https://github.com/zzossig/hugo-theme-zdoc"
+
+# comment
+enableComment = true
+disqus_shortname = ""
+commento = false
+
+[gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
+  owner = ""              # Your GitHub ID
+  repo = ""               # The repo to store comments
+  clientId = ""           # Your client ID
+  clientSecret = ""       # Your client secret
+
+[utterances]       # https://utteranc.es/
+  owner = ""              # Your GitHub ID
+  repo = ""               # The repo to store comments
+
+[gitalk]           # Gitalk is a comment system based on GitHub issues. see https://github.com/gitalk/gitalk
+  owner = ""              # Your GitHub ID
+  repo = ""               # The repo to store comments
+  clientId = ""           # Your client ID
+  clientSecret = ""       # Your client secret
+
+# Valine.
+# You can get your appid and appkey from https://leancloud.cn
+# more info please open https://valine.js.org
+[valine]
+  enable = false
+  appId = '你的appId'
+  appKey = '你的appKey'
+  notify = false  # mail notifier , https://github.com/xCss/Valine/wiki
+  verify = false # Verification code
+  avatar = 'mm' 
+  placeholder = '说点什么吧...'
+  visitor = false
+
+[changyan]
+  changyanAppid = ""        # Changyan app id             # 畅言
+  changyanAppkey = ""       # Changyan app key
+
+[livere]
+  livereUID = ""            # LiveRe UID                  # 来必力
+
+# Isso: https://posativ.org/isso/
+[isso]
+  enable = false
+  scriptSrc = "" # "https://isso.example.com/js/embed.min.js"
+  dataAttrs = "" # "data-isso='https://isso.example.com' data-isso-require-author='true'"

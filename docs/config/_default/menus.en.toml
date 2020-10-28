@@ -1,6 +1,17 @@
 [[main]]
-  identifier = "test"
-  name = "Tests"
-  url = "test"
+  identifier = "docs"
+  name = "Docs"
+  url = "docs"
   weight = 1
 
+[[main]]
+  identifier = "updates"
+  name = "Tutorial"
+  url = "updates"
+  weight = 2
+
+[[main]]
+  identifier = "blog"
+  name = "Blog"
+  url = "blog"
+  weight = 3

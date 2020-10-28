@@ -1,5 +1,5 @@
 [en]
-  title = "Hugo ZDoc Theme"
+  title = "TINerator"
   languageName = "English"
   weight = 1
-
+  contentdir = "content/en"

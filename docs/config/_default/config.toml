@@ -1,18 +1,20 @@
 baseURL = "http://example.org"
-title = "Hugo ZDoc Theme"
+title = "Hugo Zdoc Theme"
 theme = "zdoc"
 
 defaultContentLanguage = "en"
-defaultContentLanguageInSubdir = true
-hasCJKLanguage = true
+defaultContentLanguageInSubdir = false
+hasCJKLanguage = false
 
-copyright = "&copy;{year}, All Rights Reserved"
+copyright = "&copy;{year} Triad National Security, LLC. All rights reserved."
 timeout = 10000
 enableEmoji = true
 paginate = 13
 rssLimit = 100
 
 googleAnalytics = ""
+
+disableKinds = ["taxonomyTerm"]
 
 [markup]
   [markup.goldmark]
@@ -31,7 +33,14 @@ googleAnalytics = ""
     startLevel = 2
 
 [outputs]
-  home = ["HTML", "RSS", "JSON"]
+  home = ["HTML", "RSS", "SearchIndex"]
+
+[outputFormats]
+  [outputFormats.SearchIndex]
+    mediaType = "application/json"
+    baseName = "index"
+    isPlainText = true
+    notAlternative = true
 
 [taxonomies]
   tag = "tags"

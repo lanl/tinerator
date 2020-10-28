@@ -1,8 +1,9 @@
 ---
-title: "Getting started"
+title: "Getting Started"
 description: "test post index"
-date: 2020-01-28T00:36:39+09:00
+date: 2020-01-28T00:34:39+09:00
 draft: false
-weight: 2
+weight: 1
 collapsible: true
 ---
+
