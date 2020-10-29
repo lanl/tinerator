@@ -10,7 +10,22 @@ from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
 
-def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, driver: str = "None", name: str = None):
+def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, driver: str = None, name: str = None):
+
+    if driver is None:
+        ext = os.path.splitext(filename)[-1].replace('.', '').lower().strip()
+
+        if ext in ['inp', 'avs']:
+            driver = "avsucd"
+        elif ext in ['nc', 'mpas']:
+            driver = "mpas"
+        elif ext in ['exo', 'ex']:
+            driver = "exodus"
+        elif ext in ['vtk', 'vtu']:
+            driver = "vtk"
+        else:
+            driver = None
+
     if driver == "mpas":
         nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
 
@@ -19,7 +34,7 @@ def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, drive
         else:
             element_type = ElementType.POLYGON
     else:
-        mesh = meshio.read(filename)
+        mesh = meshio.read(filename, file_format=driver)
         nodes = mesh.points
 
         if block_id is None:

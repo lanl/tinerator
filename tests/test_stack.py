@@ -1,15 +1,12 @@
-import pytest
-import helper
-import sys
-sys.path.insert(0,'/Users/livingston/playground/tinerator/tinerator-core')
+import os
 import tinerator as tin
+from helper import MESH_DIR
 
-def func(x):
-    return x + 1
+def test_simple():
+    mesh = tin.meshing.load(os.path.join(MESH_DIR, 'avs', 'simple_surface.inp'))
 
-def test_answer():
-    assert func(3) == 5
+    mesh_stacked = tin.meshing.layering.stack(
+        mesh,
+        tin.meshing.layering.uniform_sublayering(20., 1, matids=[1], relative_z=False)
+    )
 
-def test_bob():
-    surf_mesh = helper.init_surf_mesh_tri()
-    assert func(4) == 5

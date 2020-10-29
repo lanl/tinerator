@@ -89,6 +89,9 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
             )
         )
 
+    if isinstance(layers, Layer):
+        layers = [layers]
+
     layers = list(layers)
     for (i, layer) in enumerate(layers):
         # Allow for a naive version of layering: just pass in the layer depths
