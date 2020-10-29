@@ -9,6 +9,8 @@ from ..visualize import plot as pl
 from .utils import project_vector
 from .raster_boundary import square_trace_boundary as st_boundary
 
+# Rendering a DEM in 3D:
+# https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
 
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):
