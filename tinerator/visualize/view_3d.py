@@ -14,12 +14,15 @@ def plot_3d(
     cell_arrays: dict = None,
     node_arrays: dict = None,
     scale: tuple = (1, 1, 1),
-    **kwargs,
+    window_size: tuple = (1024, 1080),
+    show_bounds: bool = True,
+    show_edges: bool =True,
+    title: str = "",
+    show_mesh_info: bool = True,
+    show_axes: bool = True,
+    cmap: str = "gist_earth_r",
+    savefig: str = None,
 ):
-    """
-    See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)`
-    for more information on possible keyword arguments.
-    """
 
     """
     TODO: this shouldn't directly depend on the mesh class.
@@ -70,14 +73,11 @@ def plot_3d(
     for i in range(3):
         nodes[:, i] = scale[i] * nodes[:, i]
 
-    # create the unstructured grid directly from the numpy arrays
+    # Create the unstructured grid directly from the numpy arrays
     grid = pv.UnstructuredGrid(offset, cells, cell_type, nodes, deep=True)
 
-    # https://github.com/pyvista/pyvista/blob/52c78d610c30f5f7e02dacecbb081211faae8073/docs/getting-started/what-is-a-mesh.rst
-
-    scalar = None
-
     # TODO: approach this in a different way
+    scalar = None
     if cell_arrays:
         for key in cell_arrays:
             grid.cell_arrays[key] = cell_arrays[key]
@@ -88,5 +88,29 @@ def plot_3d(
             grid.node_arrays[key] = node_arrays[key]
             scalar = key
 
-    # plot the grid
-    grid.plot(scalars=scalar, show_edges=True, show_bounds=True, **kwargs)
+    # Plot the grid
+    plotter = pv.Plotter()
+    plotter.add_mesh(grid, scalars=scalar, show_edges=show_edges, cmap=cmap)
+
+    if title is not None:
+        plotter.add_text(title, position="upper_right", shadow=True)
+
+    if show_mesh_info:
+        plotter.add_text(
+            f"Nodes: {nnodes}\nCells: {ncells}\nElement type: {element_type}", 
+            position="upper_left",
+            shadow=True, 
+            font_size=12
+        )
+
+    if show_axes:
+        plotter.add_axes(interactive=True, line_width=4)
+
+    if savefig is not None:
+        screenshot = savefig
+        interactive = False
+    else:
+        screenshot = False
+        interactive = True
+
+    plotter.show(title="TINerator", window_size=window_size, screenshot=screenshot, interactive=interactive)

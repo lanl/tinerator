@@ -4,6 +4,8 @@ sys.path.insert(0,'/Users/livingston/playground/tinerator/tinerator-core')
 import tinerator as tin
 from tinerator.meshing import Mesh, ElementType
 
+DATA_DIR = 'data'
+
 def init_surf_mesh_tri():
     '''Simple triangle surface mesh'''
 

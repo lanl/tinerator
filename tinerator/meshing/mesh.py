@@ -10,19 +10,28 @@ from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
 
-def load(filename: str, load_dual_mesh: bool = True):
-    nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
+def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, driver: str = "None", name: str = None):
+    if driver == "mpas":
+        nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
 
-    m = Mesh()
-    m.nodes = nodes
-    m.elements = cells
-
-    if load_dual_mesh:
-        m.element_type = ElementType.TRIANGLE
+        if load_dual_mesh:
+            element_type = ElementType.TRIANGLE
+        else:
+            element_type = ElementType.POLYGON
     else:
-        m.element_type = ElementType.POLYGON
+        mesh = meshio.read(filename)
+        nodes = mesh.points
 
-    return m
+        if block_id is None:
+            block_id = 0
+
+        cells = mesh.cells[block_id].data + 1
+        element_type = ElementType.TRIANGLE
+
+    if name is None:
+        name = os.path.basename(filename)
+
+    return Mesh(name=name, nodes=nodes, elements=cells, etype=element_type)
 
 
 def read_avs(
@@ -265,7 +274,7 @@ class Mesh:
         return ex
 
     def view(
-        self, attribute_name: str = None, scale: tuple = (1, 1, 1), **kwargs
+        self, attribute_name: str = None, scale: tuple = (1, 1, 1), savefig: str = None, **kwargs
     ):
         """
         Views the mesh object in an interactive VTK-rendered windowed environment.
@@ -317,6 +326,8 @@ class Mesh:
             cell_arrays=cell_arrays,
             node_arrays=node_arrays,
             scale=scale,
+            title=self.name,
+            savefig=savefig,
             **kwargs,
         )
 
