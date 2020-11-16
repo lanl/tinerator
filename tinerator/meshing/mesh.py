@@ -192,6 +192,9 @@ class Mesh:
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
 
+    def reset_attributes(self):
+        self.attributes = {}
+
     def get_cell_centroids(self):
         """Compute the centroids of every cell"""
 
