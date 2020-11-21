@@ -93,14 +93,6 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
         layers = [layers]
 
     layers = list(layers)
-    for (i, layer) in enumerate(layers):
-        # Allow for a naive version of layering: just pass in the layer depths
-        if isinstance(layer, (int, float)):
-            if matids is None:
-                matid = i + 1
-            else:
-                matid = matids[i]
-            layers[i] = uniform_sublayering(layer, 1, matids=[matid])
 
     if not all([isinstance(x, Layer) for x in layers]):
         raise ValueError("`layers` must be a list of Layers")
@@ -217,3 +209,27 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
     )
 
     return vol_mesh
+
+def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
+    '''
+    Simple multilayer extrusion.
+    '''
+
+    layer_objs = []
+
+    for (i, layer) in enumerate(layers):
+        # Allow for a naive version of layering: just pass in the layer depths
+        if isinstance(layer, (int, float)):
+            depth = layer
+            subdivisions = 1
+        elif isinstance(layer, list):
+            depth, subdivisions = layer
+
+        if matids is None:
+            matid_i = [i + 1] * subdivisions
+        else:
+            matid = matids[i]
+
+        layer_objs.append(uniform_sublayering(depth, subdivisions, matids = matid_i))
+
+    return stack(surfmesh, layer_objs)

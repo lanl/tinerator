@@ -132,7 +132,7 @@ class Mesh:
         self.attributes = {}
 
     def __repr__(self):
-        return f'Mesh<name: "{self.name}", nodes: {self.n_nodes}, elements<{self.element_type}>: {self.n_elements}>'
+        return f'Mesh<name: "{self.name}", nodes: {self.n_nodes}, elements({self.element_type}): {self.n_elements}>'
 
     def get_attribute(self, name: str):
         try:

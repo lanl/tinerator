@@ -5,6 +5,7 @@ from .layering import (
     proportional_sublayering,
     uniform_sublayering,
     stack,
+    extrude_surface
 )
 from .uniform_triplane import get_uniform_triplane
 from .refined_triplane import get_refined_triplane
