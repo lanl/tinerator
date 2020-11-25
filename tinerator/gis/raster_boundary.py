@@ -47,11 +47,10 @@ def square_trace_boundary(
     Boundary nodes
     """
 
-    NDV = -3.4028234663852886e38
-
-    np.savetxt("A.txt", A)
-    np.savetxt("NDV.txt", np.array([NDV]))
-    np.savetxt("dist.txt", np.array([dist]))
+    if np.isnan(NDV):
+        is_ndv = lambda x: np.isnan(x)
+    else:
+        is_ndv = lambda x: np.isclose(x, NDV)
 
     nRows = np.shape(A)[0] - 1
     nCols = np.shape(A)[1] - 1
@@ -137,7 +136,7 @@ def square_trace_boundary(
         if (x >= Xmax) or (y >= Ymax) or (x < 0) or (y < 0):
             return False
 
-        if A[y][x] != NDV:
+        if not is_ndv(A[y][x]):
             return True
         else:
             return False
@@ -148,7 +147,7 @@ def square_trace_boundary(
         s = None
         for y in range(nrows):
             for x in range(ncols):
-                if arr[y][x] != NDV:
+                if not is_ndv(arr[y][x]):
                     s = [x, y]
                     break
         if s is None:

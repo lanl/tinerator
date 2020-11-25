@@ -5,5 +5,6 @@ from .gis_tools import (
     get_geometry,
 )
 from .raster import Raster
+from .vector import Shape, watershed_delineation
 from .utils import map_elevation, project_vector, unproject_vector
 from .distance_maps import DistanceMap, import_refinement_features

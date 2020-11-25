@@ -175,9 +175,8 @@ class Raster:
 
         distance /= self.cell_size
         vertices, connectivity = st_boundary(
-            # self.data,
             self.masked_data(),
-            self.no_data_value,
+            np.nan,
             dist=distance,
             connect_ends=connect_ends,
         )

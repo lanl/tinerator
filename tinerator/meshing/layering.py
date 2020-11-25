@@ -3,7 +3,7 @@ from copy import copy, deepcopy
 from enum import Enum, auto
 from .mesh import Mesh, StackedMesh, ElementType
 
-DEBUG = True
+DEBUG = False
 
 # TODO: is this unnecessary?
 class LayerType(Enum):
