@@ -220,6 +220,20 @@ class Mesh:
     def material_id(self, v):
         self.add_attribute("material_id", v, attrb_type="cell")
 
+    def map_raster_to_attribute(self, raster, attribute_name: str = "material_id", attribute_type: str = "cell"):
+        '''
+        Maps a Raster object to a mesh attribute.
+        '''
+
+        # This *only* works for surfaces
+        if attribute_type == "cell":
+            points = self.get_cell_centroids()
+        elif attribute_type == "node":
+            points = self.nodes
+
+        vector = raster.values_at(points)
+        self.add_attribute(attribute_name, vector, attrb_type = attribute_type)
+
     @property
     def x(self):
         """X vector of mesh nodes"""
@@ -461,7 +475,7 @@ class Mesh:
 
         # Write out faceset files
         if facesets is not None:
-            fs_list = write_facesets(lg, dem_object, facesets)
+            fs_list = write_facesets(lg, self, facesets)
             cmd += "///facesets &\n"
             cmd += " &\n".join(fs_list)
 

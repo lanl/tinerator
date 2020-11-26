@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.colors import LightSource
 import numpy as np
 import os
 import json
@@ -31,6 +32,8 @@ def plot_raster(
     extent=[],
     outfile=None,
     geometry=None,
+    hillshade=False,
+    cell_size=(1, 1)
 ):
     """
     Plots a raster matrix.
@@ -46,9 +49,29 @@ def plot_raster(
 
     __apply_grid_to_axis(ax)
 
-    cax = ax.imshow(
-        raster, zorder=9, extent=extent, vmin=vmin, vmax=vmax, cmap=topocmap
-    )
+    if hillshade:
+        dx, dy = cell_size
+        vertical_exaggeration = 1.
+
+        ls = LightSource(azdeg=315, altdeg=45)
+
+        hillshade_raster = ls.hillshade(
+            raster, 
+            vert_exag=vertical_exaggeration, 
+            dx=dx, 
+            dy=dy
+        )
+
+        cax = ax.imshow(
+            hillshade_raster * vmax + vmin, 
+            cmap='gray', 
+            zorder=9, 
+            extent=extent
+        )
+    else:
+        cax = ax.imshow(
+            raster, zorder=9, extent=extent, vmin=vmin, vmax=vmax, cmap=topocmap
+        )
 
     cbar = fig.colorbar(cax, ax=ax)
     # Raster does not necessarily display elevation

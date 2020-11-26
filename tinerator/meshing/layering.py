@@ -230,6 +230,6 @@ def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
         else:
             matid = matids[i]
 
-        layer_objs.append(uniform_sublayering(depth, subdivisions, matids = matid_i))
+        layer_objs.append(uniform_sublayering(depth, subdivisions, matids = matid_i, relative_z = True))
 
     return stack(surfmesh, layer_objs)

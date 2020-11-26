@@ -775,24 +775,28 @@ def write_facesets(lg, dem_object, facesets):
 
     # -- MAIN PREPARATION -------------------------------------- #
 
+    dem_object.save('_stacked_mesh.inp')
+    _stacked_mesh = lg.read('_stacked_mesh.inp')
+
     _cleanup.append(boundary_file)
-    dem_object._stacked_mesh.resetpts_itp()
+    _cleanup.append('_stacked_mesh.inp')
+    _stacked_mesh.resetpts_itp()
 
     lg.sendline("resetpts/itp")
     lg.sendline("createpts/median")
     lg.sendline(
         "sort/{0}/index/ascending/ikey/itetclr zmed ymed xmed".format(
-            dem_object._stacked_mesh.name
+            _stacked_mesh.name
         )
     )
-    lg.sendline("reorder/{0}/ikey".format(dem_object._stacked_mesh.name))
-    lg.sendline("cmo/DELATT/{0}/ikey".format(dem_object._stacked_mesh.name))
-    lg.sendline("cmo/DELATT/{0}/xmed".format(dem_object._stacked_mesh.name))
-    lg.sendline("cmo/DELATT/{0}/ymed".format(dem_object._stacked_mesh.name))
-    lg.sendline("cmo/DELATT/{0}/zmed".format(dem_object._stacked_mesh.name))
-    lg.sendline("cmo/DELATT/{0}/ikey".format(dem_object._stacked_mesh.name))
+    lg.sendline("reorder/{0}/ikey".format(_stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/ikey".format(_stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/xmed".format(_stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/ymed".format(_stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/zmed".format(_stacked_mesh.name))
+    lg.sendline("cmo/DELATT/{0}/ikey".format(_stacked_mesh.name))
 
-    cmo_in = dem_object._stacked_mesh.copy()
+    cmo_in = _stacked_mesh.copy()
 
     # Extract surface w/ cell & face attributes to get the outside face
     # to element relationships

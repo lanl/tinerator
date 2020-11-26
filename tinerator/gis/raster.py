@@ -1,12 +1,13 @@
 import richdem as rd
 import numpy as np
 import io
+import os
 from contextlib import redirect_stdout
 from copy import deepcopy
 from pyproj import CRS
 from pyproj.crs import CRSError
 from ..visualize import plot as pl
-from .utils import project_vector
+from .utils import project_vector, unproject_vector
 from .raster_boundary import square_trace_boundary as st_boundary
 
 # Rendering a DEM in 3D:
@@ -103,6 +104,24 @@ class Raster:
     def units(self):
         return self.crs.axis_info[0].unit_name
 
+    def values_at(self, points: np.ndarray):
+        '''
+        Returns the raster values at `points`, where `points`
+        is a coordinate X-Y array in the same CRS as the raster.
+        '''
+        indices = unproject_vector(points, self)
+        indices = (indices[:,1], indices[:,0])
+
+        return self.masked_data()[indices]
+
+
+    def value_at(self, x: float, y: float):
+        '''
+        Returns the value of the raster at point (x, y) in the same CRS
+        as the raster.
+        '''
+        return self.values_at(np.array([[x, y]]))
+
     def masked_data(self):
         """
         Returns a copy of the raster data where all `no_data_value`
@@ -142,7 +161,7 @@ class Raster:
                 rd.ResolveFlats(self.data, in_place=True)
 
     def plot(
-        self, outfile: str = None, title: str = None, geometry: list = None
+        self, outfile: str = None, title: str = None, geometry: list = None, hillshade: bool = False
     ):
         """
         Plots the raster object.
@@ -156,12 +175,19 @@ class Raster:
         extent = self.extent
         extent = [extent[0], extent[2], extent[1], extent[3]]
 
+        if title is None:
+            title = f"Raster: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
+
         pl.plot_raster(
             self.masked_data(),
             outfile=outfile,
             title=title,
             extent=extent,
             geometry=geometry,
+            xlabel=f"Easting ({self.units})",
+            ylabel=f"Northing ({self.units})",
+            hillshade=hillshade,
+            cell_size=(self.cell_size, self.cell_size)
         )
 
     def get_boundary(self, distance: float = None, connect_ends: bool = False):
