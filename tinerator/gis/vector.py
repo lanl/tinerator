@@ -3,23 +3,128 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 import richdem as rd
 import numpy as np
+import shapefile
+import glob
+import os
+from enum import Enum, auto
+from pyproj import CRS
+from pyproj.crs import CRSError
 from .raster import Raster
 from .utils import project_vector
+from ..visualize import plot as pl
+
+class ShapeType(Enum):
+    POINT = auto()
+    POLYLINE = auto()
+    POLYGON = auto()
 
 # Should inherit from some kind of shapefile format
 class Shape:
-    def __init__(self, points, crs):
+    def __init__(self, points: np.ndarray, crs: str, shape_type: ShapeType, filename: str = None):
+        self.filename = filename
         self.points = points
-        self.crs = crs
+        self.shape_type = shape_type
+
+        try:
+            self.crs = CRS.from_wkt(crs)
+        except (CRSError, TypeError):
+            print("Could not parse CRS. Defaulting to EPSG: 32601.")
+            self.crs = CRS.from_epsg(32601)
+
+    def __repr__(self):
+        # DEM information
+        display  = "\ntinerator.gis.Shape object\n"
+        display += "="*30 + "\n"
+        display += "Source\t\t: file (%s)\n" % self.filename
+        display += "Shape type\t: %s\n" % repr(self.shape_type)
+        display += "Points\t\t: %s\n" % repr(len(self.points))
+        display += "CRS\t\t: %s\n" % self.crs.name
+        display += "Units\t\t: %s\n" % self.units
+        display += "\n%s\n" % repr(self.points)
+
+        return display
+
+    @property
+    def units(self):
+        return self.crs.axis_info[0].unit_name
+
+    @property
+    def centroid(self):
+        return (None, None)
+
+    @property
+    def bbox(self):
+        return (None, None, None, None)
 
     def plot(self):
+        '''
+        Plots the object.
+        '''
+        pl.plot_objects([self])
+
+    def save(self, filename: str):
+        '''
+        Saves shape object as an ESRI Shapefile.
+        '''
         pass
 
-    def save(self):
-        pass
+    def reproject(self, to_crs: str):
+        print(f'Projecting to {to_crs}...jk, this is not implemented yet.')
 
-    def reproject(self):
-        pass
+def load_shapefile(filename: str, to_crs: str = None) -> list:
+    '''
+    Given a path to a shapefile, reads and returns each object
+    in the shapefile as a tin.gis.Shape object.
+    '''
+    shapes = []
+
+    type_dict = {
+        shapefile.POLYGON: ShapeType.POLYGON,
+        shapefile.POINT: ShapeType.POINT,
+        shapefile.POLYLINE: ShapeType.POLYLINE
+    }
+
+    if to_crs is not None:
+        raise ValueError("Not supported.")
+
+    # The projection is stored in the *.prj file as WKT format.
+    # Attempt to read it.
+    crs = ''
+    for file in glob.glob(os.path.splitext(filename)[0] + '*'):
+        if 'prj' in file.lower():
+            with open(file, 'r') as f:
+                crs = f.read()
+            break
+
+    # Read each shape from the shapefile and store in a Shape object
+    with shapefile.Reader(filename) as shp:
+        for shape_record in shp:
+            shape = shape_record.shape
+
+            try:
+                shape_type = type_dict[shape.shapeType]
+            except KeyError:
+                print('WARNING: couldn\'t parse shape type. Skipping shape.')
+                continue
+
+            shapes.append(
+                Shape(
+                    points=np.array(shape.points),
+                    crs=crs,
+                    shape_type=shape_type,
+                    filename=filename
+                )
+            )
+
+    if to_crs is not None:
+        for shape in shapes:
+            shape.reproject(crs)
+
+    if len(shapes) == 1:
+        return shapes[0]
+
+    return shapes
+
 
 def watershed_delineation(
     raster: Raster,

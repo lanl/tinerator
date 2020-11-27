@@ -40,7 +40,10 @@ class Raster:
         arr = self.masked_data()
 
         # DEM information
-        display = "CRS\t\t: %s\n" % self.crs.name
+        display  = "\ntinerator.gis.Raster object\n"
+        display += "="*50 + "\n"
+        display += "Source\t\t: file (%s)\n" % self.filename
+        display += "CRS\t\t: %s\n" % self.crs.name
         display += "Extent\t\t: %s\n" % repr(self.extent)
         display += "Cell size\t: %s\n" % repr(self.cell_size)
         display += "Units\t\t: %s\n" % self.units
@@ -178,6 +181,7 @@ class Raster:
         if title is None:
             title = f"Raster: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
 
+        '''
         pl.plot_raster(
             self.masked_data(),
             outfile=outfile,
@@ -189,6 +193,17 @@ class Raster:
             hillshade=hillshade,
             cell_size=(self.cell_size, self.cell_size)
         )
+        '''
+        pl.plot_objects(
+                [self], 
+                outfile=outfile, 
+                title=title, 
+                extent=extent, 
+                xlabel=f"Easting ({self.units})",
+                ylabel=f"Northing ({self.units})", 
+                raster_hillshade=hillshade, 
+                raster_cellsize=(self.cell_size, self.cell_size)
+            )
 
     def get_boundary(self, distance: float = None, connect_ends: bool = False):
         """

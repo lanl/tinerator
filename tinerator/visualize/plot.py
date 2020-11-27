@@ -4,6 +4,7 @@ from matplotlib.colors import LightSource
 import numpy as np
 import os
 import json
+from ..gis import Raster, Shape
 
 with open(
     os.path.join(
@@ -23,31 +24,29 @@ def __apply_grid_to_axis(axis):
     axis.set_facecolor("#EAEAF1")
     axis.grid("on", zorder=0, color="white")
 
+def __init_figure(title=None, xlabel=None, ylabel=None, figsize=(12, 8), apply_grid=True):
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
 
-def plot_raster(
-    raster,
-    title=None,
-    xlabel=None,
-    ylabel=None,
-    extent=[],
-    outfile=None,
-    geometry=None,
-    hillshade=False,
-    cell_size=(1, 1)
-):
-    """
-    Plots a raster matrix.
-    """
+    if apply_grid:
+        __apply_grid_to_axis(ax)
+
+    if title is not None:
+        plt.title(title)
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+    if ylabel is not None:
+        plt.ylabel(ylabel)
+
+    return fig, ax
+
+
+def __add_raster_obj(fig, ax, raster, hillshade=False, cell_size=(1,1), extent=()):
 
     if not extent:
         extent = (0, np.shape(raster)[1], 0, np.shape(raster)[0])
 
     vmin, vmax = np.nanmin(raster), np.nanmax(raster)
-
-    fig = plt.figure(figsize=(12, 8))
-    ax = fig.add_subplot(111)
-
-    __apply_grid_to_axis(ax)
 
     if hillshade:
         dx, dy = cell_size
@@ -77,7 +76,11 @@ def plot_raster(
     # Raster does not necessarily display elevation
     # cbar.set_label("Elevation (m)", rotation=270)
 
-    if geometry is not None:
+def __add_vector_obj(fig, ax, points: np.ndarray):
+    ax.scatter(points[:,0], points[:,1], zorder=9, s=3.0, c="red")
+
+    '''
+        if geometry is not None:
         for g in geometry:
             gg = g["coordinates"]
             geom_type = g["type"].lower().strip()
@@ -94,13 +97,33 @@ def plot_raster(
             else:
                 print("Unknown geometry type")
                 ax.scatter(gg[:, 0], gg[:, 1], zorder=99)
+    '''
 
-    if title is not None:
-        plt.title(title)
-    if xlabel is not None:
-        plt.xlabel(xlabel)
-    if ylabel is not None:
-        plt.ylabel(ylabel)
+def plot_objects(
+        objects: list, 
+        zorder: list = None,
+        outfile: str = None,
+        title: str = None,
+        xlabel:str=None,
+        ylabel:str=None,
+        extent:tuple=(),
+        raster_hillshade:bool=False,
+        raster_cellsize:tuple=(1, 1)
+    ):
+
+    fig, ax = __init_figure(title=title, xlabel=xlabel, ylabel=ylabel)
+
+    if zorder is not None:
+        assert len(zorder) == len(objects), '`zorder` and `objects` differ in length'
+
+    for obj in objects:
+        if isinstance(obj, Shape):
+            __add_vector_obj(fig, ax, obj.points)
+        elif isinstance(obj, Raster):
+            __add_raster_obj(fig, ax, obj.masked_data(), hillshade=raster_hillshade, cell_size=raster_cellsize, extent=extent)
+        else:
+            print('WARNING: non-plottable object passed.')
+
     if outfile is not None:
         fig.savefig(outfile)
     else:
