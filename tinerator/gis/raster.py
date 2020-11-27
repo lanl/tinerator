@@ -13,6 +13,18 @@ from .raster_boundary import square_trace_boundary as st_boundary
 # Rendering a DEM in 3D:
 # https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
 
+def load_raster(filename: str, no_data: float = None, to_crs: str = None):
+    '''
+    Loads a raster from a given filename.
+    '''
+
+    r = Raster(filename, no_data = no_data)
+
+    if to_crs is not None:
+        r.reproject(to_crs)
+
+    return r
+
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):
         self.data = rd.LoadGDAL(raster_path, no_data=no_data)
@@ -107,6 +119,14 @@ class Raster:
     def units(self):
         return self.crs.axis_info[0].unit_name
 
+    @property
+    def centroid(self):
+        '''
+        Returns the raster centroid.
+        '''
+        xmin, ymin, xmax, ymax = self.extent
+        return (xmin + (xmax - xmin)/2., ymin + (ymax - ymin)/2.)
+
     def values_at(self, points: np.ndarray):
         '''
         Returns the raster values at `points`, where `points`
@@ -164,7 +184,7 @@ class Raster:
                 rd.ResolveFlats(self.data, in_place=True)
 
     def plot(
-        self, outfile: str = None, title: str = None, geometry: list = None, hillshade: bool = False
+        self, layers: list = None, outfile: str = None, title: str = None, geometry: list = None, hillshade: bool = False
     ):
         """
         Plots the raster object.
@@ -181,21 +201,15 @@ class Raster:
         if title is None:
             title = f"Raster: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
 
-        '''
-        pl.plot_raster(
-            self.masked_data(),
-            outfile=outfile,
-            title=title,
-            extent=extent,
-            geometry=geometry,
-            xlabel=f"Easting ({self.units})",
-            ylabel=f"Northing ({self.units})",
-            hillshade=hillshade,
-            cell_size=(self.cell_size, self.cell_size)
-        )
-        '''
+        objects = [self]
+
+        if layers is not None:
+            if not isinstance(layers, list):
+                layers = [layers]
+            objects += layers
+
         pl.plot_objects(
-                [self], 
+                objects, 
                 outfile=outfile, 
                 title=title, 
                 extent=extent, 

@@ -4,7 +4,7 @@ from matplotlib.colors import LightSource
 import numpy as np
 import os
 import json
-from ..gis import Raster, Shape
+from ..gis import Raster, Shape, ShapeType
 
 with open(
     os.path.join(
@@ -41,7 +41,7 @@ def __init_figure(title=None, xlabel=None, ylabel=None, figsize=(12, 8), apply_g
     return fig, ax
 
 
-def __add_raster_obj(fig, ax, raster, hillshade=False, cell_size=(1,1), extent=()):
+def __add_raster_obj(fig, ax, raster, hillshade=False, cell_size=(1,1), extent=(), zorder: int = 9):
 
     if not extent:
         extent = (0, np.shape(raster)[1], 0, np.shape(raster)[0])
@@ -64,40 +64,34 @@ def __add_raster_obj(fig, ax, raster, hillshade=False, cell_size=(1,1), extent=(
         cax = ax.imshow(
             hillshade_raster * vmax + vmin, 
             cmap='gray', 
-            zorder=9, 
+            zorder=zorder, 
             extent=extent
         )
     else:
         cax = ax.imshow(
-            raster, zorder=9, extent=extent, vmin=vmin, vmax=vmax, cmap=topocmap
+            raster, zorder=zorder, extent=extent, vmin=vmin, vmax=vmax, cmap=topocmap
         )
 
     cbar = fig.colorbar(cax, ax=ax)
     # Raster does not necessarily display elevation
     # cbar.set_label("Elevation (m)", rotation=270)
 
-def __add_vector_obj(fig, ax, points: np.ndarray):
-    ax.scatter(points[:,0], points[:,1], zorder=9, s=3.0, c="red")
+def __add_vector_obj(fig, ax, points: np.ndarray, shape_type: ShapeType, zorder: int=10):
 
-    '''
-        if geometry is not None:
-        for g in geometry:
-            gg = g["coordinates"]
-            geom_type = g["type"].lower().strip()
-            if geom_type == "polygon":
-                ax.fill(
-                    gg[:, 0],
-                    gg[:, 1],
-                    zorder=99,
-                    edgecolor="black",
-                    linewidth=1.2,
-                )
-            elif geom_type == "linestring" or geom_type == "line":
-                ax.plot(gg[:, 0], gg[:, 1], zorder=99, marker="o")
-            else:
-                print("Unknown geometry type")
-                ax.scatter(gg[:, 0], gg[:, 1], zorder=99)
-    '''
+    if shape_type == ShapeType.POINT:
+        ax.scatter(points[:,0], points[:,1], zorder=zorder, c="red")
+    elif shape_type == ShapeType.POLYLINE:
+        ax.plot(points[:, 0], points[:, 1], zorder=zorder, marker="o")
+    elif shape_type == ShapeType.POLYGON:
+        ax.fill(
+            points[:, 0],
+            points[:, 1],
+            zorder=zorder,
+            edgecolor="black",
+            linewidth=1.2,
+        )
+    else:
+        raise ValueError(f"Could not plot shape type: {shape_type}")
 
 def plot_objects(
         objects: list, 
@@ -118,7 +112,7 @@ def plot_objects(
 
     for obj in objects:
         if isinstance(obj, Shape):
-            __add_vector_obj(fig, ax, obj.points)
+            __add_vector_obj(fig, ax, obj.points, obj.shape_type)
         elif isinstance(obj, Raster):
             __add_raster_obj(fig, ax, obj.masked_data(), hillshade=raster_hillshade, cell_size=raster_cellsize, extent=extent)
         else:

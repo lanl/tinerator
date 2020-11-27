@@ -4,7 +4,8 @@ from .gis_tools import (
     mask_raster,
     get_geometry,
 )
-from .raster import Raster
-from .vector import Shape, watershed_delineation, load_shapefile, ShapeType
+from .raster import Raster, load_raster
+from .vector import Shape, load_shapefile, ShapeType
+from .vector import watershed_delineation
 from .utils import map_elevation, project_vector, unproject_vector
 from .distance_maps import DistanceMap, import_refinement_features

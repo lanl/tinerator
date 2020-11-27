@@ -50,17 +50,50 @@ class Shape:
 
     @property
     def centroid(self):
-        return (None, None)
+        '''
+        Returns the shape centroid.
+        '''
+        xmin, ymin, xmax, ymax = self.extent
+        return (xmin + (xmax - xmin)/2., ymin + (ymax - ymin)/2.)
 
     @property
-    def bbox(self):
-        return (None, None, None, None)
+    def extent(self):
+        """
+        Returns the spatial extent of the shape `(xmin, ymin, xmax, ymax)`.
+        """
 
-    def plot(self):
+        return (
+            np.nanmin(self.points[:,0]),
+            np.nanmin(self.points[:,1]),
+            np.nanmax(self.points[:,0]),
+            np.nanmax(self.points[:,1])
+        )
+
+    def plot(self, layers: list = None, outfile: str = None, title: str = None):
         '''
-        Plots the object.
+        Plots the Shape object.
         '''
-        pl.plot_objects([self])
+
+        extent = self.extent
+        extent = [extent[0], extent[2], extent[1], extent[3]]
+
+        if title is None:
+            title = f"Shape: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
+
+        objects = [self]
+
+        if layers is not None:
+            if not isinstance(layers, list):
+                layers = [layers]
+            objects += layers
+
+        pl.plot_objects(
+            objects, 
+            outfile=outfile, 
+            title=title, 
+            xlabel=f"Easting ({self.units})", 
+            ylabel=f"Northing ({self.units})"
+        )
 
     def save(self, filename: str):
         '''
