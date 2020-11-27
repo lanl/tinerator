@@ -195,9 +195,6 @@ class Raster:
         geometry (list): a list of geometrical objects to overlay
         """
 
-        extent = self.extent
-        extent = [extent[0], extent[2], extent[1], extent[3]]
-
         if title is None:
             title = f"Raster: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
 
@@ -212,11 +209,9 @@ class Raster:
                 objects, 
                 outfile=outfile, 
                 title=title, 
-                extent=extent, 
                 xlabel=f"Easting ({self.units})",
                 ylabel=f"Northing ({self.units})", 
                 raster_hillshade=hillshade, 
-                raster_cellsize=(self.cell_size, self.cell_size)
             )
 
     def get_boundary(self, distance: float = None, connect_ends: bool = False):

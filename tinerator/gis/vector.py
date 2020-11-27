@@ -40,6 +40,7 @@ class Shape:
         display += "Points\t\t: %s\n" % repr(len(self.points))
         display += "CRS\t\t: %s\n" % self.crs.name
         display += "Units\t\t: %s\n" % self.units
+        display += "Extent\t\t: %s\n" % repr(self.extent)
         display += "\n%s\n" % repr(self.points)
 
         return display
@@ -69,13 +70,10 @@ class Shape:
             np.nanmax(self.points[:,1])
         )
 
-    def plot(self, layers: list = None, outfile: str = None, title: str = None):
+    def plot(self, layers: list = None, outfile: str = None, title: str = None, raster_hillshade=False):
         '''
         Plots the Shape object.
         '''
-
-        extent = self.extent
-        extent = [extent[0], extent[2], extent[1], extent[3]]
 
         if title is None:
             title = f"Shape: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
@@ -92,7 +90,8 @@ class Shape:
             outfile=outfile, 
             title=title, 
             xlabel=f"Easting ({self.units})", 
-            ylabel=f"Northing ({self.units})"
+            ylabel=f"Northing ({self.units})",
+            raster_hillshade=raster_hillshade
         )
 
     def save(self, filename: str):

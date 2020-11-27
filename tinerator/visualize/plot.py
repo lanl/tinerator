@@ -100,9 +100,7 @@ def plot_objects(
         title: str = None,
         xlabel:str=None,
         ylabel:str=None,
-        extent:tuple=(),
         raster_hillshade:bool=False,
-        raster_cellsize:tuple=(1, 1)
     ):
 
     fig, ax = __init_figure(title=title, xlabel=xlabel, ylabel=ylabel)
@@ -114,7 +112,10 @@ def plot_objects(
         if isinstance(obj, Shape):
             __add_vector_obj(fig, ax, obj.points, obj.shape_type)
         elif isinstance(obj, Raster):
-            __add_raster_obj(fig, ax, obj.masked_data(), hillshade=raster_hillshade, cell_size=raster_cellsize, extent=extent)
+            extent = obj.extent
+            extent = [extent[0], extent[2], extent[1], extent[3]]
+            cs = (obj.cell_size, obj.cell_size)
+            __add_raster_obj(fig, ax, obj.masked_data(), hillshade=raster_hillshade, cell_size=cs, extent=extent)
         else:
             print('WARNING: non-plottable object passed.')
 
