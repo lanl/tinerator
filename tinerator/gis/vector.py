@@ -18,9 +18,9 @@ class ShapeType(Enum):
     POLYLINE = auto()
     POLYGON = auto()
 
-# Should inherit from some kind of shapefile format
+
 class Shape:
-    def __init__(self, points: np.ndarray, crs: str, shape_type: ShapeType, filename: str = None):
+    def __init__(self, points: np.ndarray, crs: str, shape_type: ShapeType, filename: str = ''):
         self.filename = filename
         self.points = points
         self.shape_type = shape_type
@@ -32,7 +32,6 @@ class Shape:
             self.crs = CRS.from_epsg(32601)
 
     def __repr__(self):
-        # DEM information
         display  = "\ntinerator.gis.Shape object\n"
         display += "="*30 + "\n"
         display += "Source\t\t: file (%s)\n" % self.filename
@@ -98,9 +97,51 @@ class Shape:
         '''
         Saves shape object as an ESRI Shapefile.
         '''
-        pass
+
+        # Convert points to list
+        points = self.points.tolist()
+
+        # Get CRS in WKT string format
+        crs = self.crs.coordinate_operation.to_wkt()#pretty=True)
+        crs_outfile = os.path.splitext(filename)[0] + '.prj'
+
+        with shapefile.Writer(filename) as w:
+
+            '''MULTIPOINT'''
+            if self.shape_type == ShapeType.POINT:
+                w.field('name', 'C')
+                w.multipoint(points)
+                w.record('multipoint1')
+                print('Saved')
+
+            '''LINESTRING'''
+            if self.shape_type == ShapeType.POLYLINE:
+                raise NotImplementedError("sorry!")
+                w.field('name', 'C')
+                w.line([
+                        [[1,5],[5,5],[5,1],[3,3],[1,1]], # line 1
+                        [[3,2],[2,6]] # line 2
+                        ])
+                w.record('linestring1')
+
+            '''POLYGON'''
+            if self.shape_type == ShapeType.POLYGON:
+                raise NotImplementedError("sorry!")
+                w.field('name', 'C')
+                # Polygon points must be ordered clockwise
+                w.poly([
+                        [[113,24], [112,32], [117,36], [122,37], [118,20]], # poly 1
+                        [[116,29],[116,26],[119,29],[119,32]], # hole 1
+                        [[15,2], [17,6], [22,7]]  # poly 2
+                       ])
+                w.record('polygon1')
+
+        # CRS info must be written out manually. See the reader.
+        with open(crs_outfile, 'w') as f:
+            f.write(crs)
 
     def reproject(self, to_crs: str):
+        # See tin.gis.reproject_shapefile
         print(f'Projecting to {to_crs}...jk, this is not implemented yet.')
 
 def load_shapefile(filename: str, to_crs: str = None) -> list:
@@ -190,7 +231,6 @@ def watershed_delineation(
         raise ValueError(f"Incorrect data type for `raster`: {type(raster)}")
 
     f = io.StringIO()
-
     with redirect_stdout(f):
         accum_matrix = rd.FlowAccumulation(
             elev_raster, 
@@ -206,11 +246,16 @@ def watershed_delineation(
     xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
     xy = xy.astype(float)
 
-    # 
+    # Was threshold too high? Or method/params wrong?
     if np.size(xy) == 0:
         raise ValueError("Could not generate feature. Threshold may be too high.")
 
-    xy = Shape(points = project_vector(xy, raster), crs = raster.crs)
+    # Put data into Shape object
+    xy = Shape(
+        points = project_vector(xy, raster), 
+        crs = raster.crs,
+        shape_type = ShapeType.POINT
+    )
 
     if return_matrix:
         return (xy, accum_matrix)
