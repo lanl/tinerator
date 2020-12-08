@@ -2,6 +2,7 @@ import os
 import numpy as np
 from copy import deepcopy as dcopy
 import warnings
+from ..logging import log, warn, debug, error
 from .lagrit_helper import *
 
 
@@ -20,7 +21,7 @@ class Faceset:
         self._metadata = metadata
 
 
-def faceset_from_elevations(heights: list, keep_body: bool = False) -> Faceset:
+def FacesetFromElevations(heights: list, keep_body: bool = False) -> Faceset:
     """
     Facesets are generated and return from the heights array:
     a faceset will be created in the layers defined by `heights`.
@@ -69,7 +70,7 @@ def faceset_from_elevations(heights: list, keep_body: bool = False) -> Faceset:
     )
 
 
-def faceset_from_sides(coords: np.ndarray, top_layer: bool = False) -> Faceset:
+def FacesetFromSides(coords: np.ndarray, top_layer: bool = False) -> Faceset:
     """
     Operates on side facesets *only*.
 
@@ -138,7 +139,7 @@ def faceset_from_sides(coords: np.ndarray, top_layer: bool = False) -> Faceset:
     return Faceset("__SIDESETS", coords, metadata={"layers": at_layers})
 
 
-def faceset_basic(
+def FacesetBasic(
     has_top: bool = True, has_sides: bool = True, has_bottom: bool = True
 ) -> Faceset:
     """
@@ -226,34 +227,24 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
 
     mo_surf = surface_mesh.copy()
 
-    print('1>>>')
-
     for att in ["itetclr0", "itetclr1", "facecol", "idface0", "idelem0"]:
         mo_surf.delatt(att)
-
-    print('2>>>')
 
     mo_surf.select()
     mo_surf.setatt("itetclr", 3)
 
-    print('3>>>')
+    mo_surf.dump('surface_mesh_test.inp')
 
     ptop = mo_surf.pset_attribute(
-        "layertyp", -2, comparison="eq", stride=[1, 0, 0], name="ptop11"
+        "layertyp", -2, comparison="eq", stride=[1, 0, 0]
     )
-
-    print('4>>>')
 
     pbot = mo_surf.pset_attribute(
-        "layertyp", -1, comparison="eq", stride=[1, 0, 0], name="pbot11"
+        "layertyp", -1, comparison="eq", stride=[1, 0, 0]
     )
-
-    print('5>>>')
 
     etop = ptop.eltset(membership="exclusive")
     ebot = pbot.eltset(membership="exclusive")
-
-    print('6>>>')
 
     mo_surf.setatt("itetclr", 100, stride=["eltset", "get", etop.name])
     mo_surf.setatt("itetclr", 200, stride=["eltset", "get", ebot.name])
@@ -261,7 +252,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
     esides = mo_surf.eltset_attribute("itetclr", 50, boolstr="lt")
 
     if top:
-        # cfg.log.info("Generating top faceset")
+        log("Generating top faceset")
         mo_tmp = mo_surf.copy()
         edel = mo_tmp.eltset_not([etop])
         mo_tmp.rmpoint_eltset(edel, resetpts_itp=False)
@@ -274,14 +265,11 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
                 "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
             )
 
-        # if cfg.DEBUG_MODE:
-        mo_tmp.dump("DEBUG_naive_top_fs.inp")
-
         faceset_fnames.append(fname)
         mo_tmp.delete()
 
     if bottom:
-        # cfg.log.info("Generating bottom faceset")
+        log("Generating bottom faceset")
         mo_tmp = mo_surf.copy()
         edel = mo_tmp.eltset_not([ebot])
         mo_tmp.rmpoint_eltset(edel, resetpts_itp=False)
@@ -301,7 +289,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
         mo_tmp.delete()
 
     if sides:
-        # cfg.log.info("Generating sides faceset")
+        log("Generating sides faceset")
         mo_tmp = mo_surf.copy()
         edel = mo_tmp.eltset_not([esides])
         mo_tmp.rmpoint_eltset(edel, resetpts_itp=False)
@@ -313,9 +301,6 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
             lg.sendline(
                 "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
             )
-
-        # if cfg.DEBUG_MODE:
-        #    mo_tmp.dump("DEBUG_naive_sides_fs.inp")
 
         faceset_fnames.append(fname)
         mo_tmp.delete()
@@ -714,6 +699,10 @@ def write_facesets(lg, dem_object, facesets):
     heights = None
     naive = False
 
+    dem_object.add_empty_attribute("layertyp", "node", fill_value=0.)
+    dem_object.set_attribute("layertyp", -2., at_layer=0)
+    dem_object.set_attribute("layertyp", -1., at_layer=-1)
+
     if not isinstance(facesets, list):
         facesets = [facesets]
 
@@ -790,17 +779,18 @@ def write_facesets(lg, dem_object, facesets):
 
     dem_object.save('_stacked_mesh.inp')
     _stacked_mesh = lg.read('_stacked_mesh.inp')
+    _stacked_mesh.dump('stacked_test_hmm.inp')
 
     _cleanup.append(boundary_file)
     _cleanup.append('_stacked_mesh.inp')
+
+    lg.sendline(f'cmo/select/{_stacked_mesh.name}')
     _stacked_mesh.resetpts_itp()
 
     lg.sendline("resetpts/itp")
     lg.sendline("createpts/median")
     lg.sendline(
-        "sort/{0}/index/ascending/ikey/itetclr zmed ymed xmed".format(
-            _stacked_mesh.name
-        )
+        f"sort/{_stacked_mesh.name}/index/ascending/ikey/itetclr zmed ymed xmed"            
     )
     lg.sendline("reorder/{0}/ikey".format(_stacked_mesh.name))
     lg.sendline("cmo/DELATT/{0}/ikey".format(_stacked_mesh.name))
@@ -875,5 +865,7 @@ def write_facesets(lg, dem_object, facesets):
         )
 
         exported_fs.extend(new_fs)
+
+    dem_object.rm_attribute("layertyp")
 
     return exported_fs

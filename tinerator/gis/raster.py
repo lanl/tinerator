@@ -2,6 +2,7 @@ import richdem as rd
 import numpy as np
 import io
 import os
+import rasterio
 from contextlib import redirect_stdout
 from copy import deepcopy
 from pyproj import CRS
@@ -14,6 +15,8 @@ from .vector import Shape, ShapeType
 
 # Rendering a DEM in 3D:
 # https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
+
+extension = lambda x: os.path.splitext(x)[-1].replace('.', '').lower().strip()
 
 def load_raster(filename: str, no_data: float = None, to_crs: str = None):
     '''
@@ -253,3 +256,91 @@ class Raster:
             connectivity = connectivity
         )
 
+    def save(self, outfile: str):
+        '''
+        Saves a raster object to disk in GeoTIFF format.
+        '''
+
+        if extension(outfile) not in ['tif', 'tiff']:
+            warn("Writing raster as a GeoTIFF.")
+
+        print(self.crs)
+
+        Z = np.array(self.data)
+
+        with rasterio.open(
+            outfile,
+            'w',
+            driver='GTiff',
+            height=Z.shape[0],
+            width=Z.shape[1],
+            count=1,
+            dtype=Z.dtype,
+            crs=self.crs.to_proj4(),
+            nodata=self.no_data_value,
+            #transform=transform,
+        ) as ds:
+            ds.write(Z, 1)
+
+
+'''
+def CreateGeoTiff(outRaster, data, geo_transform, projection):
+    driver = gdal.GetDriverByName('GTiff')
+    rows, cols, no_bands = data.shape
+    DataSet = driver.Create(outRaster, cols, rows, no_bands, gdal.GDT_Byte)
+    DataSet.SetGeoTransform(geo_transform)
+    DataSet.SetProjection(projection)
+
+    data = np.moveaxis(data, -1, 0)
+
+    for i, image in enumerate(data, 1):
+        DataSet.GetRasterBand(i).WriteArray(image)
+    DataSet = None
+'''
+
+def distance_map(raster, shape):
+
+    #try:
+    #    os.mkdir("tmp_output/")
+    #except:
+    #    pass
+
+    #raster.save("tmp_output/raster.tiff")
+    #shape.save("tmp_output/shape.shp")
+
+    #from .utils import rasterize_shapefile_like
+
+    #arr = rasterize_shapefile_like("tmp_output/shape.shp", "tmp_output/raster.tiff")
+
+    from matplotlib import pyplot as plt
+    #plt.imshow(arr)
+    #plt.show()
+
+    #return
+
+    #from copy import deepcopy
+
+    from scipy.spatial.distance import cdist
+
+    dm = deepcopy(raster)
+    print("in fnc")
+    unraveled = []
+
+    print("beginner iter")
+    for x in range(1, raster.ncols + 1):
+        for y in range(1, raster.nrows + 1):
+            unraveled.append([x, y])
+
+    print("projecting")
+    projected = project_vector(np.array(unraveled), raster)
+    print("running cdist")
+    distance_map = (
+        cdist(shape.points, projected)
+        .min(axis=0)
+        .reshape(raster.ncols, raster.nrows)
+    )
+    print("done")
+
+    data = np.flipud(np.rot90(distance_map))
+    plt.imshow(data)
+    plt.show()

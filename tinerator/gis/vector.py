@@ -105,10 +105,13 @@ class Shape:
         points = self.points.tolist()
 
         # Get CRS in WKT string format
-        crs = self.crs.coordinate_operation.to_wkt()#pretty=True)
+        crs = self.crs.to_wkt()#pretty=True)
         crs_outfile = os.path.splitext(filename)[0] + '.prj'
 
         with shapefile.Writer(filename) as w:
+
+            print(self.shape_type)
+            print(self.points)
 
             '''MULTIPOINT'''
             if self.shape_type == ShapeType.POINT:

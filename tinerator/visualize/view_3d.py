@@ -3,10 +3,6 @@ import numpy as np
 import pyvista as pv
 from copy import deepcopy
 
-from rich.console import Console
-
-console = Console()
-
 
 def plot_3d(
     mesh,

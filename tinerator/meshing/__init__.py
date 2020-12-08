@@ -8,9 +8,9 @@ from .layering import (
 )
 from .triangulation import triangulate
 from .facesets_lg import (
-    faceset_basic,
-    faceset_from_sides,
-    faceset_from_elevations,
+    FacesetBasic,
+    FacesetFromSides,
+    FacesetFromElevations,
 )
 from .util import estimate_edge_lengths
 

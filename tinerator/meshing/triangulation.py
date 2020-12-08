@@ -50,5 +50,9 @@ def triangulate(
             return build_refined_triplane(
                 raster, refinement_feature, min_edge, max_edge, **kwargs
             )
+        elif method == "jigsaw":
+            from .triangulation_jigsaw import triangulation_jigsaw_refined
+
+            return triangulation_jigsaw_refined(raster, min_edge, max_edge, refinement_feature, **kwargs)
         else:
             raise ValueError(f"Unknown refined triangulation method: \"{method}\"")

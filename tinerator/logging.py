@@ -64,7 +64,7 @@ def log(
     '''Writes a standard message to the logger.'''
 
     if _log_level_valid(log_level):
-        console.log(msg, emoji=emoji, markup=markup, log_locals=log_locals, highlight=highlight, justify=justify)
+        console.log(msg, _stack_offset=2, emoji=emoji, markup=markup, log_locals=log_locals, highlight=highlight, justify=justify)
 
 def debug(msg: str, **kwargs):
     '''Writes a debug message to the logger.'''
