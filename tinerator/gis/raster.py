@@ -6,9 +6,11 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 from pyproj import CRS
 from pyproj.crs import CRSError
+from ..logging import log, warn, debug, error
 from ..visualize import plot as pl
 from .utils import project_vector, unproject_vector
 from .raster_boundary import square_trace_boundary as st_boundary
+from .vector import Shape, ShapeType
 
 # Rendering a DEM in 3D:
 # https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
@@ -17,6 +19,8 @@ def load_raster(filename: str, no_data: float = None, to_crs: str = None):
     '''
     Loads a raster from a given filename.
     '''
+
+    log(f"Loading raster from {filename}")
 
     r = Raster(filename, no_data = no_data)
 
@@ -127,6 +131,17 @@ class Raster:
         xmin, ymin, xmax, ymax = self.extent
         return (xmin + (xmax - xmin)/2., ymin + (ymax - ymin)/2.)
 
+    @property
+    def area(self):
+        '''
+        Returns the surface area of the raster, ignoring `noDataValue` cells.
+        '''
+        # Count the non-NaN cells in the raster.
+        # Then, multiply by cell_size_x * cell_size_y to adjust for CRS.
+        valid_cells = np.sum(~np.isnan(self.masked_data()))
+        return (self.cell_size * self.cell_size) * valid_cells
+    
+
     def values_at(self, points: np.ndarray):
         '''
         Returns the raster values at `points`, where `points`
@@ -230,4 +245,11 @@ class Raster:
             dist=distance,
             connect_ends=connect_ends,
         )
-        return project_vector(vertices, self), connectivity
+        
+        return Shape(
+            points = project_vector(vertices, self),
+            crs = self.crs,
+            shape_type = ShapeType.POLYLINE,
+            connectivity = connectivity
+        )
+

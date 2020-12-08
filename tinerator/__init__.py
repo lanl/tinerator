@@ -15,6 +15,7 @@ perform publicly and display publicly, and to permit others to do so.
 """
 
 from tinerator._version import __version__
+from tinerator.logging import set_logging_verbosity, debug_mode, LogLevel
 import tinerator.meshing as meshing
 import tinerator.gis as gis
 import tinerator.visualize as visualize

@@ -4,17 +4,26 @@ from .mesh import Mesh, ElementType
 from ..gis import map_elevation
 
 
-def get_uniform_triplane(dem, max_edge: float) -> Mesh:
+def triangulation_triangle_uniform(raster, max_edge: float, quality: bool = True) -> Mesh:
     """
     Constructs a triangular mesh with roughly uniform edge lengths.
+    Uses the `triangle` Delaunay triangulation software to generate
+    mesh.
     """
+
     max_area = max_edge
-    vertices, connectivity = dem.get_boundary(5.0, connect_ends=True)
+    boundary = raster.get_boundary(distance=5., connect_ends=True)
+
+    opts = {
+        "q": quality,
+        "p": True,
+        "a": (round(max_area, 2)),
+    }
 
     t = tr.triangulate(
         {
-            "vertices": list(vertices[:, :2]),
-            "segments": list(connectivity - 1),
+            "vertices": list(boundary.points[:, :2]),
+            "segments": list(boundary.connectivity - 1),
         },
         # p enforces boundary connectivity,
         # q gives a quality mesh,
@@ -27,7 +36,7 @@ def get_uniform_triplane(dem, max_edge: float) -> Mesh:
     m.elements = t["triangles"] + 1
     m.element_type = ElementType.TRIANGLE
 
-    z_values = map_elevation(dem, m.nodes)
-    m.nodes[:, 2] = z_values
+    m.nodes[:, 2] = map_elevation(dem, m.nodes)
 
     return m
+    

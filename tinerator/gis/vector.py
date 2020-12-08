@@ -9,7 +9,6 @@ import os
 from enum import Enum, auto
 from pyproj import CRS
 from pyproj.crs import CRSError
-from .raster import Raster
 from .utils import project_vector
 from ..visualize import plot as pl
 
@@ -20,10 +19,14 @@ class ShapeType(Enum):
 
 
 class Shape:
-    def __init__(self, points: np.ndarray, crs: str, shape_type: ShapeType, filename: str = ''):
+    def __init__(self, points: np.ndarray, crs: str, shape_type: ShapeType, filename: str = '', connectivity: np.ndarray = None):
         self.filename = filename
         self.points = points
+        self.connectivity = connectivity
         self.shape_type = shape_type
+
+        if self.connectivity is not None and self.shape_type == ShapeType.POINT:
+            error("Shape of type `point` has meaningless connectivity.")
 
         try:
             self.crs = CRS.from_wkt(crs)
@@ -142,6 +145,8 @@ class Shape:
 
     def reproject(self, to_crs: str):
         # See tin.gis.reproject_shapefile
+        # Change self.crs
+        # https://pyproj4.github.io/pyproj/dev/api/crs/crs.html
         print(f'Projecting to {to_crs}...jk, this is not implemented yet.')
 
 def load_shapefile(filename: str, to_crs: str = None) -> list:
@@ -200,7 +205,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
 
 
 def watershed_delineation(
-    raster: Raster,
+    raster, #: Raster,
     threshold: float,
     method: str = "D8",
     exponent:float = None,
@@ -225,10 +230,11 @@ def watershed_delineation(
     :type accum: np.ndarray
     """
 
-    if isinstance(raster, Raster):
-        elev_raster = raster.data
-    else:
-        raise ValueError(f"Incorrect data type for `raster`: {type(raster)}")
+    #if isinstance(raster, Raster):
+    #    elev_raster = raster.data
+    #else:
+    #    raise ValueError(f"Incorrect data type for `raster`: {type(raster)}")
+    elev_raster = raster.data
 
     f = io.StringIO()
     with redirect_stdout(f):
