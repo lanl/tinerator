@@ -22,10 +22,11 @@ def plot_3d(
     show_axes: bool = True,
     cmap: str = "gist_earth_r",
     savefig: str = None,
+    edge_color: tuple = (0.6, 0.6, 0.6),
+    notebook: bool = False,
 ):
 
     """
-    TODO: this shouldn't directly depend on the mesh class.
     TODO: add texturing
         texture : vtk.vtkTexture or np.ndarray or boolean, optional
             A texture to apply if the input mesh has texture
@@ -85,12 +86,18 @@ def plot_3d(
 
     if node_arrays:
         for key in node_arrays:
-            grid.node_arrays[key] = node_arrays[key]
+            grid.point_arrays[key] = node_arrays[key]
             scalar = key
 
     # Plot the grid
-    plotter = pv.Plotter()
-    plotter.add_mesh(grid, scalars=scalar, show_edges=show_edges, cmap=cmap)
+    if notebook:
+        # Requires vtk==8.1.2 ?
+        import pyvistaqt as pvqt
+        plotter = pvqt.BackgroundPlotter()
+    else:
+        plotter = pv.Plotter()
+    
+    plotter.add_mesh(grid, scalars=scalar, show_edges=show_edges, cmap=cmap, edge_color=edge_color)
 
     if title is not None:
         plotter.add_text(title, position="upper_right", shadow=True)
@@ -104,6 +111,7 @@ def plot_3d(
         )
 
     if show_axes:
+        plotter.show_bounds(grid='back', location='outer', ticks='both')#, font_size=20)
         plotter.add_axes(interactive=True, line_width=4)
 
     if savefig is not None:
@@ -113,4 +121,5 @@ def plot_3d(
         screenshot = False
         interactive = True
 
-    plotter.show(title="TINerator", window_size=window_size, screenshot=screenshot, interactive=interactive)
+    if not notebook:
+        plotter.show(title="TINerator", window_size=window_size, screenshot=screenshot, interactive=interactive)

@@ -1,9 +1,8 @@
 from .mesh import Mesh, ElementType, load
 from .layering import (
-    LayerType,
-    Layer,
-    proportional_sublayering,
-    uniform_sublayering,
+    ProportionalSublayering,
+    UniformSublayering,
+    TranslatedSublayering,
     stack,
     extrude_surface
 )
@@ -14,3 +13,6 @@ from .facesets_lg import (
     faceset_from_elevations,
 )
 from .util import estimate_edge_lengths
+
+NODE = "node"
+CELL = "cell"

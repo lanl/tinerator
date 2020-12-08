@@ -9,22 +9,29 @@ from .facesets_lg import write_facesets
 from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
+def _get_driver(filename: str):
+    '''Helper function for parsing mesh driver from filename.'''
+    ext = os.path.splitext(filename)[-1].replace('.', '').lower().strip()
+
+    if ext in ['inp', 'avs']:
+        return "avsucd"
+    elif ext in ['nc', 'mpas']:
+        return "mpas"
+    elif ext in ['exo', 'ex']:
+        return "exodus"
+    elif ext in ['vtk', 'vtu']:
+        return "vtk"
+    else:
+        return None
+
 
 def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, driver: str = None, name: str = None):
+    '''
+    Loads a Mesh object from a mesh file on disk. Supports AVS-UCD, VTK, Exodus, and MPAS.
+    '''
 
     if driver is None:
-        ext = os.path.splitext(filename)[-1].replace('.', '').lower().strip()
-
-        if ext in ['inp', 'avs']:
-            driver = "avsucd"
-        elif ext in ['nc', 'mpas']:
-            driver = "mpas"
-        elif ext in ['exo', 'ex']:
-            driver = "exodus"
-        elif ext in ['vtk', 'vtu']:
-            driver = "vtk"
-        else:
-            driver = None
+        driver = _get_driver(filename)
 
     if driver == "mpas":
         nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
@@ -41,7 +48,13 @@ def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, drive
             block_id = 0
 
         cells = mesh.cells[block_id].data + 1
-        element_type = ElementType.TRIANGLE
+
+        if mesh.cells[block_id].type == 'triangle':
+            element_type = ElementType.TRIANGLE
+        elif mesh.cells[block_id].type == 'wedge':
+            element_type = ElementType.PRISM
+        else:
+            raise ValueError("Mesh type is currently not supported.")
 
     if name is None:
         name = os.path.basename(filename)
@@ -139,6 +152,42 @@ class Mesh:
             return self.attributes[name]["data"]
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
+
+    def set_attribute(self, name: str, vector: np.ndarray, at_layer:int = None):
+        if at_layer is not None:
+            if self.element_type != ElementType.PRISM:
+                raise ValueError(f"`at_layer` not supported for {self.element_type}.")
+
+            if at_layer < 0:
+                at_layer = self._num_layers + at_layer + 1
+
+            if self.attributes[name]["type"] == "cell":
+                ln = self._elems_per_layer
+                ln_full = self.n_elements
+            elif self.attributes[name]["type"] == "node":
+                ln = self._nodes_per_layer
+                ln_full = self.n_nodes
+            else:
+                raise ValueError("Unknown attribute type.")
+
+            if isinstance(vector, np.ndarray):
+                vector = vector.flatten()
+                
+                if vector.shape[0] != ln:
+                    raise ValueError(f"Requires a vector of length {ln}. Was given length {vector.shape[0]}.")
+            elif isinstance(vector, (int, float)):
+                vector = np.full((ln,), vector)
+
+            end = ln_full - at_layer * ln
+            start = ln_full - (at_layer + 1) * ln
+
+            assert end - start == ln
+        else:
+            start = 0
+            end = ln
+
+        self.attributes[name]["data"][start:end] = vector
+
 
     def add_empty_attribute(
         self, name: str, attrb_type: str, fill_value: float = 0.0
@@ -350,7 +399,7 @@ class Mesh:
             else:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
-            pass
+            error(f"Could not find attribute {attribute_name}")
 
         v3d.plot_3d(
             self,
@@ -363,38 +412,56 @@ class Mesh:
             **kwargs,
         )
 
-    def save(self, outfile: str):
+    def save(self, outfile: str, facesets: list = None):
+        '''
+        Writes out a Mesh object to file. Supports Exodus and AVS-UCD
+        natively. All other formats convert the mesh into a Meshio object
+        and uses its writer to handle saving.
 
-        if self.element_type == ElementType.TRIANGLE:
-            cell_type = "tri"
-        elif self.element_type == ElementType.PRISM:
-            cell_type = "prism"
-        elif self.element_type is None:
-            cell_type = None
+        # Arguments
+        outfile: Filepath to write mesh. Mesh filetype is assumed from the
+        extension.
+
+        facesets: List of Faceset objects. Only valid for Exodus meshes.
+        '''
+
+        driver = _get_driver(outfile)
+
+        if driver == "exodus":
+            self.save_exo(outfile, facesets=facesets)
+        elif driver == "avsucd":
+            if self.element_type == ElementType.TRIANGLE:
+                cell_type = "tri"
+            elif self.element_type == ElementType.PRISM:
+                cell_type = "prism"
+            elif self.element_type is None:
+                cell_type = None
+            else:
+                raise ValueError("Unknown cell type")
+
+            try:
+                mat_id = self.material_id
+            except KeyError:
+                mat_id = None
+
+            node_attributes = {}
+            for attr in self.attributes:
+                if self.attributes[attr]["type"] == "node":
+                    node_attributes[attr] = {
+                        "data": self.attributes[attr]["data"],
+                        "type": "integer",
+                    }
+
+            write_avs(
+                outfile,
+                self.nodes,
+                self.elements,
+                cname=cell_type,
+                matid=mat_id,
+                node_attributes=node_attributes,
+            )
         else:
-            raise ValueError("Unknown cell type")
-
-        try:
-            mat_id = self.material_id
-        except KeyError:
-            mat_id = None
-
-        node_attributes = {}
-        for attr in self.attributes:
-            if self.attributes[attr]["type"] == "node":
-                node_attributes[attr] = {
-                    "data": self.attributes[attr]["data"],
-                    "type": "integer",
-                }
-
-        write_avs(
-            outfile,
-            self.nodes,
-            self.elements,
-            cname=cell_type,
-            matid=mat_id,
-            node_attributes=node_attributes,
-        )
+            self.as_meshio().write(outfile)
 
     def as_meshio(
         self, material_id_as_cell_blocks: bool = False
@@ -431,7 +498,7 @@ class Mesh:
 
         # TODO: this needs to support every attribute!
         # TODO: this needs to take into account `material_id_as_cell_blocks`
-        cell_data = {"materialID": self.material_id}
+        cell_data = {"materialID": [self.material_id]}
 
         mesh = meshio.Mesh(
             points=self.nodes,
@@ -467,7 +534,7 @@ class Mesh:
         self.save(tmp_file)
 
         # Read into LaGriT
-        lg = PyLaGriT()
+        lg = PyLaGriT(verbose=False)
         mo = lg.read(tmp_file)
         os.remove(tmp_file)
 

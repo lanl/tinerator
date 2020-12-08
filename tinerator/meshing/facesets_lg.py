@@ -226,21 +226,34 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
 
     mo_surf = surface_mesh.copy()
 
+    print('1>>>')
+
     for att in ["itetclr0", "itetclr1", "facecol", "idface0", "idelem0"]:
         mo_surf.delatt(att)
+
+    print('2>>>')
 
     mo_surf.select()
     mo_surf.setatt("itetclr", 3)
 
+    print('3>>>')
+
     ptop = mo_surf.pset_attribute(
-        "layertyp", -2, comparison="eq", stride=[1, 0, 0]
+        "layertyp", -2, comparison="eq", stride=[1, 0, 0], name="ptop11"
     )
+
+    print('4>>>')
+
     pbot = mo_surf.pset_attribute(
-        "layertyp", -1, comparison="eq", stride=[1, 0, 0]
+        "layertyp", -1, comparison="eq", stride=[1, 0, 0], name="pbot11"
     )
+
+    print('5>>>')
 
     etop = ptop.eltset(membership="exclusive")
     ebot = pbot.eltset(membership="exclusive")
+
+    print('6>>>')
 
     mo_surf.setatt("itetclr", 100, stride=["eltset", "get", etop.name])
     mo_surf.setatt("itetclr", 200, stride=["eltset", "get", ebot.name])
@@ -262,7 +275,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
             )
 
         # if cfg.DEBUG_MODE:
-        #    mo_tmp.dump("DEBUG_naive_top_fs.inp")
+        mo_tmp.dump("DEBUG_naive_top_fs.inp")
 
         faceset_fnames.append(fname)
         mo_tmp.delete()

@@ -3,16 +3,16 @@ from copy import copy, deepcopy
 from enum import Enum, auto
 from .mesh import Mesh, StackedMesh, ElementType
 
-DEBUG = True
+DEBUG = False
 
-# TODO: is this unnecessary?
+# TODO: what happens when the nodes on surface layer intersects a
+# flat sublayer? I.e., the prisms generated would have 0 volume.
+# Nodes should be de-duped or prisms should have non-zero volume (bad).
+
 class LayerType(Enum):
     UNIFORM = auto()
     PROPORTIONAL = auto()
-
-
-# TRANSLATE
-# FLATTEN
+    TRANSLATED = auto()
 
 
 class Layer:
@@ -49,23 +49,110 @@ class Layer:
             self.sl_type, self.nlayers, self.data
         )
 
+def TranslatedSublayering(
+    depth: float, nsublayers: int, matids: list = None, relative_z: bool = True
+) -> Layer:
+    '''
+    Creates a layer where it is directly translated in the -Z direction.
+    In other words, the topography of the top layer is preserved among all
+    sublayers generated.
 
-def proportional_sublayering(
+    # Arguments
+    depth: Either the minimum Z value of the new layer (relative_z = False)
+    or the amount in the -Z direction the layer is translated (relative_z = True).
+
+    nsublayers: Divides the layer into `nsublayers` equal sublayers.
+
+    matids: list of integers equal in length to `nsublayers` with material ID
+    value for that sublayer.
+
+    relative_z: Determines how the `depth` keyword is interpreted.
+
+    # Returns
+    Layer
+    '''
+    return Layer(
+        LayerType.TRANSLATED,
+        depth,
+        nsublayers,
+        data=[1] * nsublayers,
+        matids = matids,
+        relative_z = not relative_z
+    )
+
+def ProportionalSublayering(
     depth: float, sub_thick: list, matids: list = None, relative_z: bool = True
 ) -> Layer:
+    '''
+    Creates a layer where the bottom is flat, and sublayers in between are a 
+    depth proportional to its value in the `sub_thick` list. The Z values of 
+    each sublayer are an interpolation between the sublayer above and the 
+    bottom sublayer.
+
+    For example, if `depth = 10`, `sub_thick = [1, 1, 0.5, 0.25]`, and 
+    `relative_z = True`, then four sublayers are created with depths:
+
+    - 3.63 = 10 * 1/(1+1+0.5+0.25)
+    - 3.63 = 10 * 1/(1+1+0.5+0.25)
+    - 1.81 = 10 * 0.5/(1+1+0.5+0.25)
+    - 0.91 = 10 * 0.25/(1+1+0.5+0.25)
+
+
+    # Arguments
+    depth: Either the minimum Z value of the new layer (relative_z = False)
+    or the amount in the -Z direction the layer is translated (relative_z = True).
+
+    sub_thick: Relative coefficients of depth for each sublayer. `len(sub_thick)`
+    sublayers are created.
+
+    matids: list of integers equal in length to `len(sub_thick)` with material ID
+    value for that sublayer.
+
+    relative_z: Determines how the `depth` keyword is interpreted.
+
+    # Returns
+    Layer
+    '''
     return Layer(
         LayerType.PROPORTIONAL,
         depth,
         len(sub_thick),
-        data=sub_thick,
+        data=sub_thick[::-1],
         matids=matids,
         relative_z=relative_z,
     )
 
 
-def uniform_sublayering(
+def UniformSublayering(
     depth: float, nsublayers: int, matids: list = None, relative_z: bool = True
 ) -> Layer:
+    '''
+    Creates a layer where the bottom is flat, and `nsublayers` sublayers 
+    are created in between. The Z values of each sublayer are an interpolation
+    between the sublayer above and the bottom sublayer.
+
+    The command:
+
+        UniformSublayering(10., 4)
+
+    is exactly equal to:
+
+        ProportionalSublayering(10., [1, 1, 1, 1])
+
+    # Arguments
+    depth: Either the minimum Z value of the new layer (relative_z = False)
+    or the amount in the -Z direction the layer is translated (relative_z = True).
+
+    nsublayers: Divides the layer into `nsublayers` equal sublayers.
+
+    matids: list of integers equal in length to `len(sub_thick)` with material ID
+    value for that sublayer.
+
+    relative_z: Determines how the `depth` keyword is interpreted.
+
+    # Returns
+    Layer
+    '''
     return Layer(
         LayerType.UNIFORM,
         depth,
@@ -128,9 +215,12 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
 
         bottom_layer = deepcopy(surfmesh)  # should this be top_layer?
 
-        # Below is where we set the bottom layer to be flat - this could (and should)
-        # have the option to be either a different topology or the same topology. Or flat!
-        bottom_layer.nodes[:, 2] = np.full((bottom_layer.n_nodes,), z_abs)
+        if layer.sl_type in [LayerType.UNIFORM, LayerType.PROPORTIONAL]:
+            bottom_layer.nodes[:, 2] = np.full((bottom_layer.n_nodes,), z_abs)
+        elif layer.sl_type in [LayerType.TRANSLATED]:
+            bottom_layer.nodes[:, 2] = bottom_layer.nodes[:, 2] - z_abs
+        else:
+            raise ValueError("An unknown or unsupported layer type was assigned")
 
         middle_layers = []
 
@@ -210,9 +300,13 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
 
     return vol_mesh
 
-def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
+def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None, layer_type = TranslatedSublayering) -> Mesh:
     '''
-    Simple multilayer extrusion.
+    Simple multilayer extrusion. `layers` can either be a list of depths, or
+    a list of [depth, n_sublayers].
+
+    `matids` is a list of integers with material ID values. Must be length equal to
+    `len(layers)` or the sum of all `n_sublayers`.
     '''
 
     layer_objs = []
@@ -230,6 +324,6 @@ def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
         else:
             matid = matids[i]
 
-        layer_objs.append(uniform_sublayering(depth, subdivisions, matids = matid_i, relative_z = True))
+        layer_objs.append(layer_type(depth, subdivisions, matids = matids, relative_z = True))
 
     return stack(surfmesh, layer_objs)
