@@ -2,6 +2,7 @@ import numpy as np
 from .mesh import Mesh
 from ..logging import warn
 
+
 def triangulate(
     raster,
     min_edge: float,
@@ -42,7 +43,9 @@ def triangulate(
 
             return triangulation_jigsaw(raster, min_edge, **kwargs)
         else:
-            raise ValueError(f"Unknown uniform triangulation method: \"{method}\"")
+            raise ValueError(
+                f'Unknown uniform triangulation method: "{method}"'
+            )
     else:
         if method == "lagrit":
             from .refined_triplane_lg import build_refined_triplane
@@ -53,6 +56,10 @@ def triangulate(
         elif method == "jigsaw":
             from .triangulation_jigsaw import triangulation_jigsaw_refined
 
-            return triangulation_jigsaw_refined(raster, min_edge, max_edge, refinement_feature, **kwargs)
+            return triangulation_jigsaw_refined(
+                raster, min_edge, max_edge, refinement_feature, **kwargs
+            )
         else:
-            raise ValueError(f"Unknown refined triangulation method: \"{method}\"")
+            raise ValueError(
+                f'Unknown refined triangulation method: "{method}"'
+            )

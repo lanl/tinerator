@@ -12,6 +12,7 @@ from pyproj.crs import CRSError
 from .utils import project_vector
 from ..visualize import plot as pl
 
+
 class ShapeType(Enum):
     POINT = auto()
     POLYLINE = auto()
@@ -19,13 +20,23 @@ class ShapeType(Enum):
 
 
 class Shape:
-    def __init__(self, points: np.ndarray, crs: str, shape_type: ShapeType, filename: str = '', connectivity: np.ndarray = None):
+    def __init__(
+        self,
+        points: np.ndarray,
+        crs: str,
+        shape_type: ShapeType,
+        filename: str = "",
+        connectivity: np.ndarray = None,
+    ):
         self.filename = filename
         self.points = points
         self.connectivity = connectivity
         self.shape_type = shape_type
 
-        if self.connectivity is not None and self.shape_type == ShapeType.POINT:
+        if (
+            self.connectivity is not None
+            and self.shape_type == ShapeType.POINT
+        ):
             error("Shape of type `point` has meaningless connectivity.")
 
         try:
@@ -35,8 +46,8 @@ class Shape:
             self.crs = CRS.from_epsg(32601)
 
     def __repr__(self):
-        display  = "\ntinerator.gis.Shape object\n"
-        display += "="*30 + "\n"
+        display = "\ntinerator.gis.Shape object\n"
+        display += "=" * 30 + "\n"
         display += "Source\t\t: file (%s)\n" % self.filename
         display += "Shape type\t: %s\n" % repr(self.shape_type)
         display += "Points\t\t: %s\n" % repr(len(self.points))
@@ -53,11 +64,11 @@ class Shape:
 
     @property
     def centroid(self):
-        '''
+        """
         Returns the shape centroid.
-        '''
+        """
         xmin, ymin, xmax, ymax = self.extent
-        return (xmin + (xmax - xmin)/2., ymin + (ymax - ymin)/2.)
+        return (xmin + (xmax - xmin) / 2.0, ymin + (ymax - ymin) / 2.0)
 
     @property
     def extent(self):
@@ -66,19 +77,25 @@ class Shape:
         """
 
         return (
-            np.nanmin(self.points[:,0]),
-            np.nanmin(self.points[:,1]),
-            np.nanmax(self.points[:,0]),
-            np.nanmax(self.points[:,1])
+            np.nanmin(self.points[:, 0]),
+            np.nanmin(self.points[:, 1]),
+            np.nanmax(self.points[:, 0]),
+            np.nanmax(self.points[:, 1]),
         )
 
-    def plot(self, layers: list = None, outfile: str = None, title: str = None, raster_hillshade=False):
-        '''
+    def plot(
+        self,
+        layers: list = None,
+        outfile: str = None,
+        title: str = None,
+        raster_hillshade=False,
+    ):
+        """
         Plots the Shape object.
-        '''
+        """
 
         if title is None:
-            title = f"Shape: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
+            title = f'Shape: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
 
         objects = [self]
 
@@ -88,81 +105,92 @@ class Shape:
             objects += layers
 
         pl.plot_objects(
-            objects, 
-            outfile=outfile, 
-            title=title, 
-            xlabel=f"Easting ({self.units})", 
+            objects,
+            outfile=outfile,
+            title=title,
+            xlabel=f"Easting ({self.units})",
             ylabel=f"Northing ({self.units})",
-            raster_hillshade=raster_hillshade
+            raster_hillshade=raster_hillshade,
         )
 
     def save(self, filename: str):
-        '''
+        """
         Saves shape object as an ESRI Shapefile.
-        '''
+        """
 
         # Convert points to list
         points = self.points.tolist()
 
         # Get CRS in WKT string format
-        crs = self.crs.to_wkt()#pretty=True)
-        crs_outfile = os.path.splitext(filename)[0] + '.prj'
+        crs = self.crs.to_wkt()  # pretty=True)
+        crs_outfile = os.path.splitext(filename)[0] + ".prj"
 
         with shapefile.Writer(filename) as w:
 
             print(self.shape_type)
             print(self.points)
 
-            '''MULTIPOINT'''
+            """MULTIPOINT"""
             if self.shape_type == ShapeType.POINT:
-                w.field('name', 'C')
+                w.field("name", "C")
                 w.multipoint(points)
-                w.record('multipoint1')
-                print('Saved')
+                w.record("multipoint1")
+                print("Saved")
 
-            '''LINESTRING'''
+            """LINESTRING"""
             if self.shape_type == ShapeType.POLYLINE:
                 raise NotImplementedError("sorry!")
-                w.field('name', 'C')
-                w.line([
-                        [[1,5],[5,5],[5,1],[3,3],[1,1]], # line 1
-                        [[3,2],[2,6]] # line 2
-                        ])
-                w.record('linestring1')
+                w.field("name", "C")
+                w.line(
+                    [
+                        [[1, 5], [5, 5], [5, 1], [3, 3], [1, 1]],  # line 1
+                        [[3, 2], [2, 6]],  # line 2
+                    ]
+                )
+                w.record("linestring1")
 
-            '''POLYGON'''
+            """POLYGON"""
             if self.shape_type == ShapeType.POLYGON:
                 raise NotImplementedError("sorry!")
-                w.field('name', 'C')
+                w.field("name", "C")
                 # Polygon points must be ordered clockwise
-                w.poly([
-                        [[113,24], [112,32], [117,36], [122,37], [118,20]], # poly 1
-                        [[116,29],[116,26],[119,29],[119,32]], # hole 1
-                        [[15,2], [17,6], [22,7]]  # poly 2
-                       ])
-                w.record('polygon1')
+                w.poly(
+                    [
+                        [
+                            [113, 24],
+                            [112, 32],
+                            [117, 36],
+                            [122, 37],
+                            [118, 20],
+                        ],  # poly 1
+                        [[116, 29], [116, 26], [119, 29], [119, 32]],  # hole 1
+                        [[15, 2], [17, 6], [22, 7]],  # poly 2
+                    ]
+                )
+                w.record("polygon1")
 
         # CRS info must be written out manually. See the reader.
-        with open(crs_outfile, 'w') as f:
+        with open(crs_outfile, "w") as f:
             f.write(crs)
 
     def reproject(self, to_crs: str):
         # See tin.gis.reproject_shapefile
         # Change self.crs
         # https://pyproj4.github.io/pyproj/dev/api/crs/crs.html
-        print(f'Projecting to {to_crs}...jk, this is not implemented yet.')
+        print(f"Projecting to {to_crs}...jk, this is not implemented yet.")
+
 
 def load_shapefile(filename: str, to_crs: str = None) -> list:
-    '''
+    """
     Given a path to a shapefile, reads and returns each object
     in the shapefile as a tin.gis.Shape object.
-    '''
+    """
     shapes = []
 
     type_dict = {
         shapefile.POLYGON: ShapeType.POLYGON,
         shapefile.POINT: ShapeType.POINT,
-        shapefile.POLYLINE: ShapeType.POLYLINE
+        shapefile.POLYLINE: ShapeType.POLYLINE,
     }
 
     if to_crs is not None:
@@ -170,10 +198,10 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
 
     # The projection is stored in the *.prj file as WKT format.
     # Attempt to read it.
-    crs = ''
-    for file in glob.glob(os.path.splitext(filename)[0] + '*'):
-        if 'prj' in file.lower():
-            with open(file, 'r') as f:
+    crs = ""
+    for file in glob.glob(os.path.splitext(filename)[0] + "*"):
+        if "prj" in file.lower():
+            with open(file, "r") as f:
                 crs = f.read()
             break
 
@@ -185,7 +213,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
             try:
                 shape_type = type_dict[shape.shapeType]
             except KeyError:
-                print('WARNING: couldn\'t parse shape type. Skipping shape.')
+                print("WARNING: couldn't parse shape type. Skipping shape.")
                 continue
 
             shapes.append(
@@ -193,7 +221,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
                     points=np.array(shape.points),
                     crs=crs,
                     shape_type=shape_type,
-                    filename=filename
+                    filename=filename,
                 )
             )
 
@@ -208,10 +236,10 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
 
 
 def watershed_delineation(
-    raster, #: Raster,
+    raster,  #: Raster,
     threshold: float,
     method: str = "D8",
-    exponent:float = None,
+    exponent: float = None,
     weights: rd.rdarray = None,
     return_matrix: bool = False,
 ) -> np.ndarray:
@@ -233,20 +261,20 @@ def watershed_delineation(
     :type accum: np.ndarray
     """
 
-    #if isinstance(raster, Raster):
+    # if isinstance(raster, Raster):
     #    elev_raster = raster.data
-    #else:
+    # else:
     #    raise ValueError(f"Incorrect data type for `raster`: {type(raster)}")
     elev_raster = raster.data
 
     f = io.StringIO()
     with redirect_stdout(f):
         accum_matrix = rd.FlowAccumulation(
-            elev_raster, 
-            method=method, 
-            exponent=exponent, 
-            weights=weights, 
-            in_place=False
+            elev_raster,
+            method=method,
+            exponent=exponent,
+            weights=weights,
+            in_place=False,
         )
 
     # Generate a polyline from data
@@ -257,13 +285,15 @@ def watershed_delineation(
 
     # Was threshold too high? Or method/params wrong?
     if np.size(xy) == 0:
-        raise ValueError("Could not generate feature. Threshold may be too high.")
+        raise ValueError(
+            "Could not generate feature. Threshold may be too high."
+        )
 
     # Put data into Shape object
     xy = Shape(
-        points = project_vector(xy, raster), 
-        crs = raster.crs,
-        shape_type = ShapeType.POINT
+        points=project_vector(xy, raster),
+        crs=raster.crs,
+        shape_type=ShapeType.POINT,
     )
 
     if return_matrix:

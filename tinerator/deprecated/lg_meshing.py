@@ -17,7 +17,7 @@ def _intrp_elevation_to_surface(
 ):
     """
 
-    Given a triplane mesh and a tinerator.DEM instance, this function will 
+    Given a triplane mesh and a tinerator.DEM instance, this function will
     map elevation data from the array to the triplane mesh.
 
     """
@@ -231,7 +231,7 @@ def _refined_surface_mesh(
     """
     Constructs a triplane mesh refined around a feature using LaGriT
     as a backend.
-    
+
     Requires an Nx2 np.ndarray as a boundary input, and an Nx2 np.ndarray
     as a feature input.
     """

@@ -27,7 +27,7 @@ def build_refined_triplane(
     """
     Constructs a triplane mesh refined around a feature using LaGriT
     as a backend.
-    
+
     Requires an Nx2 np.ndarray as a boundary input, and an Nx2 np.ndarray
     as a feature input.
     """
@@ -39,8 +39,10 @@ def build_refined_triplane(
     a = min_edge_length * 1.75
     h = min_edge_length * 1.75
 
-    boundary, connectivity = dem_raster.get_boundary(distance=boundary_distance)
-    #feature = filter_points(deepcopy(refinement_feature.points), a)
+    boundary, connectivity = dem_raster.get_boundary(
+        distance=boundary_distance
+    )
+    # feature = filter_points(deepcopy(refinement_feature.points), a)
     feature = deepcopy(refinement_feature.points)
 
     # Define initial parameters
@@ -180,7 +182,16 @@ def build_refined_triplane(
         keep_cell_attributes=False,
     )
 
-    cleanup(["poly_1.inp", "surface_lg.inp", "lagrit.log", "lagrit.out", "user_function.lgi", "user_function2.lgi"])
+    cleanup(
+        [
+            "poly_1.inp",
+            "surface_lg.inp",
+            "lagrit.log",
+            "lagrit.out",
+            "user_function.lgi",
+            "user_function2.lgi",
+        ]
+    )
 
     z_values = map_elevation(dem_raster, mo.nodes)
     mo.nodes[:, 2] = z_values

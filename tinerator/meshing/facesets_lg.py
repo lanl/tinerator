@@ -233,7 +233,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
     mo_surf.select()
     mo_surf.setatt("itetclr", 3)
 
-    mo_surf.dump('surface_mesh_test.inp')
+    mo_surf.dump("surface_mesh_test.inp")
 
     ptop = mo_surf.pset_attribute(
         "layertyp", -2, comparison="eq", stride=[1, 0, 0]
@@ -699,9 +699,9 @@ def write_facesets(lg, dem_object, facesets):
     heights = None
     naive = False
 
-    dem_object.add_empty_attribute("layertyp", "node", fill_value=0.)
-    dem_object.set_attribute("layertyp", -2., at_layer=0)
-    dem_object.set_attribute("layertyp", -1., at_layer=-1)
+    dem_object.add_empty_attribute("layertyp", "node", fill_value=0.0)
+    dem_object.set_attribute("layertyp", -2.0, at_layer=0)
+    dem_object.set_attribute("layertyp", -1.0, at_layer=-1)
 
     if not isinstance(facesets, list):
         facesets = [facesets]
@@ -777,20 +777,20 @@ def write_facesets(lg, dem_object, facesets):
 
     # -- MAIN PREPARATION -------------------------------------- #
 
-    dem_object.save('_stacked_mesh.inp')
-    _stacked_mesh = lg.read('_stacked_mesh.inp')
-    _stacked_mesh.dump('stacked_test_hmm.inp')
+    dem_object.save("_stacked_mesh.inp")
+    _stacked_mesh = lg.read("_stacked_mesh.inp")
+    _stacked_mesh.dump("stacked_test_hmm.inp")
 
     _cleanup.append(boundary_file)
-    _cleanup.append('_stacked_mesh.inp')
+    _cleanup.append("_stacked_mesh.inp")
 
-    lg.sendline(f'cmo/select/{_stacked_mesh.name}')
+    lg.sendline(f"cmo/select/{_stacked_mesh.name}")
     _stacked_mesh.resetpts_itp()
 
     lg.sendline("resetpts/itp")
     lg.sendline("createpts/median")
     lg.sendline(
-        f"sort/{_stacked_mesh.name}/index/ascending/ikey/itetclr zmed ymed xmed"            
+        f"sort/{_stacked_mesh.name}/index/ascending/ikey/itetclr zmed ymed xmed"
     )
     lg.sendline("reorder/{0}/ikey".format(_stacked_mesh.name))
     lg.sendline("cmo/DELATT/{0}/ikey".format(_stacked_mesh.name))

@@ -5,7 +5,7 @@ def __line_connectivity(
     nodes: np.ndarray, connect_ends: bool = False
 ) -> np.ndarray:
     """
-    Simple function to define a closed or open polyline for a set of 
+    Simple function to define a closed or open polyline for a set of
     nodes. Assumes adjacency in array == implicit connection.
     That is, requires a clockwise- or counter-clockwise set of nodes.
     """
@@ -35,7 +35,7 @@ def square_trace_boundary(
 
     References:
     1. A Square Tracing method of finding boundary in a psuedo-masked array.
-       C T. Pavlidis, Algorithms for Graphics and Image Processing, 
+       C T. Pavlidis, Algorithms for Graphics and Image Processing,
        Computer Science Press, Rockville, Maryland, 1982.
 
     # Arguments

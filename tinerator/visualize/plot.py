@@ -24,7 +24,10 @@ def __apply_grid_to_axis(axis):
     axis.set_facecolor("#EAEAF1")
     axis.grid("on", zorder=0, color="white")
 
-def __init_figure(title=None, xlabel=None, ylabel=None, figsize=(12, 8), apply_grid=True):
+
+def __init_figure(
+    title=None, xlabel=None, ylabel=None, figsize=(12, 8), apply_grid=True
+):
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
 
@@ -41,7 +44,15 @@ def __init_figure(title=None, xlabel=None, ylabel=None, figsize=(12, 8), apply_g
     return fig, ax
 
 
-def __add_raster_obj(fig, ax, raster, hillshade=False, cell_size=(1,1), extent=(), zorder: int = 9):
+def __add_raster_obj(
+    fig,
+    ax,
+    raster,
+    hillshade=False,
+    cell_size=(1, 1),
+    extent=(),
+    zorder: int = 9,
+):
 
     if not extent:
         extent = (0, np.shape(raster)[1], 0, np.shape(raster)[0])
@@ -50,36 +61,41 @@ def __add_raster_obj(fig, ax, raster, hillshade=False, cell_size=(1,1), extent=(
 
     if hillshade:
         dx, dy = cell_size
-        vertical_exaggeration = 1.
+        vertical_exaggeration = 1.0
 
         ls = LightSource(azdeg=315, altdeg=45)
 
         hillshade_raster = ls.hillshade(
-            raster, 
-            vert_exag=vertical_exaggeration, 
-            dx=dx, 
-            dy=dy
+            raster, vert_exag=vertical_exaggeration, dx=dx, dy=dy
         )
 
         cax = ax.imshow(
-            hillshade_raster * vmax + vmin, 
-            cmap='gray', 
-            zorder=zorder, 
-            extent=extent
+            hillshade_raster * vmax + vmin,
+            cmap="gray",
+            zorder=zorder,
+            extent=extent,
         )
     else:
         cax = ax.imshow(
-            raster, zorder=zorder, extent=extent, vmin=vmin, vmax=vmax, cmap=topocmap
+            raster,
+            zorder=zorder,
+            extent=extent,
+            vmin=vmin,
+            vmax=vmax,
+            cmap=topocmap,
         )
 
     cbar = fig.colorbar(cax, ax=ax)
     # Raster does not necessarily display elevation
     # cbar.set_label("Elevation (m)", rotation=270)
 
-def __add_vector_obj(fig, ax, points: np.ndarray, shape_type: ShapeType, zorder: int=10):
+
+def __add_vector_obj(
+    fig, ax, points: np.ndarray, shape_type: ShapeType, zorder: int = 10
+):
 
     if shape_type == ShapeType.POINT:
-        ax.scatter(points[:,0], points[:,1], zorder=zorder, c="red")
+        ax.scatter(points[:, 0], points[:, 1], zorder=zorder, c="red")
     elif shape_type == ShapeType.POLYLINE:
         ax.plot(points[:, 0], points[:, 1], zorder=zorder, marker="o")
     elif shape_type == ShapeType.POLYGON:
@@ -93,20 +109,23 @@ def __add_vector_obj(fig, ax, points: np.ndarray, shape_type: ShapeType, zorder:
     else:
         raise ValueError(f"Could not plot shape type: {shape_type}")
 
+
 def plot_objects(
-        objects: list, 
-        zorder: list = None,
-        outfile: str = None,
-        title: str = None,
-        xlabel:str=None,
-        ylabel:str=None,
-        raster_hillshade:bool=False,
-    ):
+    objects: list,
+    zorder: list = None,
+    outfile: str = None,
+    title: str = None,
+    xlabel: str = None,
+    ylabel: str = None,
+    raster_hillshade: bool = False,
+):
 
     fig, ax = __init_figure(title=title, xlabel=xlabel, ylabel=ylabel)
 
     if zorder is not None:
-        assert len(zorder) == len(objects), '`zorder` and `objects` differ in length'
+        assert len(zorder) == len(
+            objects
+        ), "`zorder` and `objects` differ in length"
 
     for obj in objects:
         if isinstance(obj, Shape):
@@ -115,9 +134,16 @@ def plot_objects(
             extent = obj.extent
             extent = [extent[0], extent[2], extent[1], extent[3]]
             cs = (obj.cell_size, obj.cell_size)
-            __add_raster_obj(fig, ax, obj.masked_data(), hillshade=raster_hillshade, cell_size=cs, extent=extent)
+            __add_raster_obj(
+                fig,
+                ax,
+                obj.masked_data(),
+                hillshade=raster_hillshade,
+                cell_size=cs,
+                extent=extent,
+            )
         else:
-            print('WARNING: non-plottable object passed.')
+            print("WARNING: non-plottable object passed.")
 
     if outfile is not None:
         fig.savefig(outfile)

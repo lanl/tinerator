@@ -16,21 +16,23 @@ from .vector import Shape, ShapeType
 # Rendering a DEM in 3D:
 # https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
 
-extension = lambda x: os.path.splitext(x)[-1].replace('.', '').lower().strip()
+extension = lambda x: os.path.splitext(x)[-1].replace(".", "").lower().strip()
+
 
 def load_raster(filename: str, no_data: float = None, to_crs: str = None):
-    '''
+    """
     Loads a raster from a given filename.
-    '''
+    """
 
     log(f"Loading raster from {filename}")
 
-    r = Raster(filename, no_data = no_data)
+    r = Raster(filename, no_data=no_data)
 
     if to_crs is not None:
         r.reproject(to_crs)
 
     return r
+
 
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):
@@ -59,8 +61,8 @@ class Raster:
         arr = self.masked_data()
 
         # DEM information
-        display  = "\ntinerator.gis.Raster object\n"
-        display += "="*50 + "\n"
+        display = "\ntinerator.gis.Raster object\n"
+        display += "=" * 50 + "\n"
         display += "Source\t\t: file (%s)\n" % self.filename
         display += "CRS\t\t: %s\n" % self.crs.name
         display += "Extent\t\t: %s\n" % repr(self.extent)
@@ -128,39 +130,37 @@ class Raster:
 
     @property
     def centroid(self):
-        '''
+        """
         Returns the raster centroid.
-        '''
+        """
         xmin, ymin, xmax, ymax = self.extent
-        return (xmin + (xmax - xmin)/2., ymin + (ymax - ymin)/2.)
+        return (xmin + (xmax - xmin) / 2.0, ymin + (ymax - ymin) / 2.0)
 
     @property
     def area(self):
-        '''
+        """
         Returns the surface area of the raster, ignoring `noDataValue` cells.
-        '''
+        """
         # Count the non-NaN cells in the raster.
         # Then, multiply by cell_size_x * cell_size_y to adjust for CRS.
         valid_cells = np.sum(~np.isnan(self.masked_data()))
         return (self.cell_size * self.cell_size) * valid_cells
-    
 
     def values_at(self, points: np.ndarray):
-        '''
+        """
         Returns the raster values at `points`, where `points`
         is a coordinate X-Y array in the same CRS as the raster.
-        '''
+        """
         indices = unproject_vector(points, self)
-        indices = (indices[:,1], indices[:,0])
+        indices = (indices[:, 1], indices[:, 0])
 
         return self.masked_data()[indices]
 
-
     def value_at(self, x: float, y: float):
-        '''
+        """
         Returns the value of the raster at point (x, y) in the same CRS
         as the raster.
-        '''
+        """
         return self.values_at(np.array([[x, y]]))
 
     def masked_data(self):
@@ -177,9 +177,9 @@ class Raster:
     ):
         """
         Fills flats and depressions in a DEM raster.
-        On meshes intended to be high-resolution, leaving flats and 
-        depressions untouched may cause solver issues. This method 
-        should be called before generating a triangle mesh from a 
+        On meshes intended to be high-resolution, leaving flats and
+        depressions untouched may cause solver issues. This method
+        should be called before generating a triangle mesh from a
         DEM raster.
 
         # Arguments
@@ -202,7 +202,12 @@ class Raster:
                 rd.ResolveFlats(self.data, in_place=True)
 
     def plot(
-        self, layers: list = None, outfile: str = None, title: str = None, geometry: list = None, hillshade: bool = False
+        self,
+        layers: list = None,
+        outfile: str = None,
+        title: str = None,
+        geometry: list = None,
+        hillshade: bool = False,
     ):
         """
         Plots the raster object.
@@ -214,7 +219,7 @@ class Raster:
         """
 
         if title is None:
-            title = f"Raster: \"{os.path.basename(self.filename)}\" | CRS: \"{self.crs.name}\""
+            title = f'Raster: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
 
         objects = [self]
 
@@ -224,13 +229,13 @@ class Raster:
             objects += layers
 
         pl.plot_objects(
-                objects, 
-                outfile=outfile, 
-                title=title, 
-                xlabel=f"Easting ({self.units})",
-                ylabel=f"Northing ({self.units})", 
-                raster_hillshade=hillshade, 
-            )
+            objects,
+            outfile=outfile,
+            title=title,
+            xlabel=f"Easting ({self.units})",
+            ylabel=f"Northing ({self.units})",
+            raster_hillshade=hillshade,
+        )
 
     def get_boundary(self, distance: float = None, connect_ends: bool = False):
         """
@@ -248,20 +253,20 @@ class Raster:
             dist=distance,
             connect_ends=connect_ends,
         )
-        
+
         return Shape(
-            points = project_vector(vertices, self),
-            crs = self.crs,
-            shape_type = ShapeType.POLYLINE,
-            connectivity = connectivity
+            points=project_vector(vertices, self),
+            crs=self.crs,
+            shape_type=ShapeType.POLYLINE,
+            connectivity=connectivity,
         )
 
     def save(self, outfile: str):
-        '''
+        """
         Saves a raster object to disk in GeoTIFF format.
-        '''
+        """
 
-        if extension(outfile) not in ['tif', 'tiff']:
+        if extension(outfile) not in ["tif", "tiff"]:
             warn("Writing raster as a GeoTIFF.")
 
         print(self.crs)
@@ -270,20 +275,20 @@ class Raster:
 
         with rasterio.open(
             outfile,
-            'w',
-            driver='GTiff',
+            "w",
+            driver="GTiff",
             height=Z.shape[0],
             width=Z.shape[1],
             count=1,
             dtype=Z.dtype,
             crs=self.crs.to_proj4(),
             nodata=self.no_data_value,
-            #transform=transform,
+            # transform=transform,
         ) as ds:
             ds.write(Z, 1)
 
 
-'''
+"""
 def CreateGeoTiff(outRaster, data, geo_transform, projection):
     driver = gdal.GetDriverByName('GTiff')
     rows, cols, no_bands = data.shape
@@ -296,29 +301,31 @@ def CreateGeoTiff(outRaster, data, geo_transform, projection):
     for i, image in enumerate(data, 1):
         DataSet.GetRasterBand(i).WriteArray(image)
     DataSet = None
-'''
+"""
+
 
 def distance_map(raster, shape):
 
-    #try:
+    # try:
     #    os.mkdir("tmp_output/")
-    #except:
+    # except:
     #    pass
 
-    #raster.save("tmp_output/raster.tiff")
-    #shape.save("tmp_output/shape.shp")
+    # raster.save("tmp_output/raster.tiff")
+    # shape.save("tmp_output/shape.shp")
 
-    #from .utils import rasterize_shapefile_like
+    # from .utils import rasterize_shapefile_like
 
-    #arr = rasterize_shapefile_like("tmp_output/shape.shp", "tmp_output/raster.tiff")
+    # arr = rasterize_shapefile_like("tmp_output/shape.shp", "tmp_output/raster.tiff")
 
     from matplotlib import pyplot as plt
-    #plt.imshow(arr)
-    #plt.show()
 
-    #return
+    # plt.imshow(arr)
+    # plt.show()
 
-    #from copy import deepcopy
+    # return
+
+    # from copy import deepcopy
 
     from scipy.spatial.distance import cdist
 

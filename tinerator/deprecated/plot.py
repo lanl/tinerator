@@ -260,7 +260,7 @@ def plot_feature(dem_object):
 def plot_boundary(dem_object):
     """
     Plots a tinerator.DEM boundary. Must have been created
-    through the `build_refined_triplane` or 
+    through the `build_refined_triplane` or
     `build_uniform_triplane` methods.
 
     # Arguments
@@ -472,7 +472,7 @@ def plot_triplane(dem_object):
     Plots the triangular surface mesh.
 
     !!! note
-        Note - due to underlying issues with the renderer, 
+        Note - due to underlying issues with the renderer,
         this must be called in `__main__` with the syntax:
 
     ```python
@@ -501,9 +501,9 @@ def plot_triplane(dem_object):
 def plot_full_mesh(dem_object, facesets: list = None):
     """
     Plots the triangular surface mesh.
-    
+
     !!! note
-        Note - due to underlying render issues, 
+        Note - due to underlying render issues,
         this must be called in `__main__` with the syntax:
 
     ```python

@@ -10,13 +10,13 @@ def getFeatureTrace(feature: np.ndarray, feature_threshold: float = 750.0):
     Returns an array of (x,y) pairs corresponding to values over a given
     threshold in a feature array.
 
-    :param feature: 
+    :param feature:
     :type feature:
     :param distance:
     :type distance:
     :param feature_threshold:
     :type feature_threshold:
-    :returns: 
+    :returns:
     """
 
     threshold_matrix = feature > feature_threshold

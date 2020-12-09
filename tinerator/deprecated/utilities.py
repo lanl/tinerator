@@ -188,7 +188,7 @@ MESHING RELATED UTILITIES
 
 def _line_connectivity(nodes: np.ndarray, connect_ends: bool = False):
     """
-    Simple function to define a closed or open polyline for a set of 
+    Simple function to define a closed or open polyline for a set of
     nodes. Assumes adjacency in array == implicit connection.
     That is, requires a clockwise- or counter-clockwise set of nodes.
     """

@@ -9,6 +9,7 @@ DEBUG = False
 # flat sublayer? I.e., the prisms generated would have 0 volume.
 # Nodes should be de-duped or prisms should have non-zero volume (bad).
 
+
 class LayerType(Enum):
     UNIFORM = auto()
     PROPORTIONAL = auto()
@@ -49,10 +50,11 @@ class Layer:
             self.sl_type, self.nlayers, self.data
         )
 
+
 def TranslatedSublayering(
     depth: float, nsublayers: int, matids: list = None, relative_z: bool = True
 ) -> Layer:
-    '''
+    """
     Creates a layer where it is directly translated in the -Z direction.
     In other words, the topography of the top layer is preserved among all
     sublayers generated.
@@ -70,26 +72,27 @@ def TranslatedSublayering(
 
     # Returns
     Layer
-    '''
+    """
     return Layer(
         LayerType.TRANSLATED,
         depth,
         nsublayers,
         data=[1] * nsublayers,
-        matids = matids,
-        relative_z = not relative_z
+        matids=matids,
+        relative_z=not relative_z,
     )
+
 
 def ProportionalSublayering(
     depth: float, sub_thick: list, matids: list = None, relative_z: bool = True
 ) -> Layer:
-    '''
-    Creates a layer where the bottom is flat, and sublayers in between are a 
-    depth proportional to its value in the `sub_thick` list. The Z values of 
-    each sublayer are an interpolation between the sublayer above and the 
+    """
+    Creates a layer where the bottom is flat, and sublayers in between are a
+    depth proportional to its value in the `sub_thick` list. The Z values of
+    each sublayer are an interpolation between the sublayer above and the
     bottom sublayer.
 
-    For example, if `depth = 10`, `sub_thick = [1, 1, 0.5, 0.25]`, and 
+    For example, if `depth = 10`, `sub_thick = [1, 1, 0.5, 0.25]`, and
     `relative_z = True`, then four sublayers are created with depths:
 
     - 3.63 = 10 * 1/(1+1+0.5+0.25)
@@ -112,7 +115,7 @@ def ProportionalSublayering(
 
     # Returns
     Layer
-    '''
+    """
     return Layer(
         LayerType.PROPORTIONAL,
         depth,
@@ -126,8 +129,8 @@ def ProportionalSublayering(
 def UniformSublayering(
     depth: float, nsublayers: int, matids: list = None, relative_z: bool = True
 ) -> Layer:
-    '''
-    Creates a layer where the bottom is flat, and `nsublayers` sublayers 
+    """
+    Creates a layer where the bottom is flat, and `nsublayers` sublayers
     are created in between. The Z values of each sublayer are an interpolation
     between the sublayer above and the bottom sublayer.
 
@@ -152,7 +155,7 @@ def UniformSublayering(
 
     # Returns
     Layer
-    '''
+    """
     return Layer(
         LayerType.UNIFORM,
         depth,
@@ -220,7 +223,9 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
         elif layer.sl_type in [LayerType.TRANSLATED]:
             bottom_layer.nodes[:, 2] = bottom_layer.nodes[:, 2] - z_abs
         else:
-            raise ValueError("An unknown or unsupported layer type was assigned")
+            raise ValueError(
+                "An unknown or unsupported layer type was assigned"
+            )
 
         middle_layers = []
 
@@ -300,14 +305,20 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
 
     return vol_mesh
 
-def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None, layer_type = TranslatedSublayering) -> Mesh:
-    '''
+
+def extrude_surface(
+    surfmesh: Mesh,
+    layers: list,
+    matids: list = None,
+    layer_type=TranslatedSublayering,
+) -> Mesh:
+    """
     Simple multilayer extrusion. `layers` can either be a list of depths, or
     a list of [depth, n_sublayers].
 
     `matids` is a list of integers with material ID values. Must be length equal to
     `len(layers)` or the sum of all `n_sublayers`.
-    '''
+    """
 
     layer_objs = []
 
@@ -324,6 +335,8 @@ def extrude_surface(surfmesh: Mesh, layers: list, matids: list = None, layer_typ
         else:
             matid = matids[i]
 
-        layer_objs.append(layer_type(depth, subdivisions, matids = matids, relative_z = True))
+        layer_objs.append(
+            layer_type(depth, subdivisions, matids=matids, relative_z=True)
+        )
 
     return stack(surfmesh, layer_objs)

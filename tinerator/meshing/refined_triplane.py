@@ -33,7 +33,7 @@ def get_refined_triplane(
     n_iterations: int = 5,
 ) -> Mesh:
     """
-    Creates a triplane where 
+    Creates a triplane where
 
              |
     maxEdge  |           /-------

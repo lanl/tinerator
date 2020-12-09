@@ -20,7 +20,7 @@ def isPointOutsidePolygon(vertices, pt1, pt2):
     Given a line segment from point1 to point2, detect if that line segment
     crosses a boundary.
 
-    Practically, what this means is that if you draw a line from the center 
+    Practically, what this means is that if you draw a line from the center
     of a TIN (which is inside the convex hull) to an arbitrary point, this function
     will return whether that point is inside or outside the convex hull.
 
@@ -63,12 +63,12 @@ def cullTrianglesToAlphaHull(
     points, triangles, boundary, ncols, cell_size, xll_corner
 ):
     """
-    This function performs a ray casting algorithm to determine if 
+    This function performs a ray casting algorithm to determine if
     each triangle is within the bounding polygon.
 
-    That is, given the centroids C of each triangle, compute a horizontal 
+    That is, given the centroids C of each triangle, compute a horizontal
     line to from c in C to infinity (approximated as the far right of the DEM + 10).
-    Count how many times the ray crosses a boundary segment. If even or zero, c 
+    Count how many times the ray crosses a boundary segment. If even or zero, c
     is outside of the bounding polygon and should be removed; if odd, c is inside.
 
     A more rigorous implementation of this algorithm can be found here:

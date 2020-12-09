@@ -30,7 +30,7 @@ def orderPointsClockwise(
         """
         Returns angle and length from origin.
         Used as a sorting function to order points by angle.
-        
+
         Author credit to MSeifert.
         """
 
@@ -173,7 +173,7 @@ def rectangularBoundary(bbox: list, spacing: float):
     Generates a rectangular boundary with evenly spaced points.
 
     bbox should be a list of values in the following format:
-        
+
         min(x), max(x), min(y), max(y)
 
     # Arguments

@@ -16,7 +16,9 @@ def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:
     # NaNs.
     data = copy.copy(array)
     invalid = np.isnan(data)
-    ind = nd.distance_transform_edt(invalid, return_distances=False, return_indices=True)
+    ind = nd.distance_transform_edt(
+        invalid, return_distances=False, return_indices=True
+    )
     data = data[tuple(ind)]
 
     # --- END INTERPOLATING DEM DATA ---- #
@@ -130,13 +132,13 @@ def get_feature_trace(
     """
     Returns an array of (x,y) pairs corresponding to values over a given
     threshold in a feature array.
-    :param feature: 
+    :param feature:
     :type feature:
     :param distance:
     :type distance:
     :param feature_threshold:
     :type feature_threshold:
-    :returns: 
+    :returns:
     """
 
     threshold_matrix = feature > feature_threshold

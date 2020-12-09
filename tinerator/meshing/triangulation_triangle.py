@@ -4,7 +4,9 @@ from .mesh import Mesh, ElementType
 from ..gis import map_elevation
 
 
-def triangulation_triangle_uniform(raster, max_edge: float, quality: bool = True) -> Mesh:
+def triangulation_triangle_uniform(
+    raster, max_edge: float, quality: bool = True
+) -> Mesh:
     """
     Constructs a triangular mesh with roughly uniform edge lengths.
     Uses the `triangle` Delaunay triangulation software to generate
@@ -12,7 +14,7 @@ def triangulation_triangle_uniform(raster, max_edge: float, quality: bool = True
     """
 
     max_area = max_edge
-    boundary = raster.get_boundary(distance=5., connect_ends=True)
+    boundary = raster.get_boundary(distance=5.0, connect_ends=True)
 
     opts = {
         "q": quality,
@@ -39,4 +41,3 @@ def triangulation_triangle_uniform(raster, max_edge: float, quality: bool = True
     m.nodes[:, 2] = map_elevation(dem, m.nodes)
 
     return m
-    

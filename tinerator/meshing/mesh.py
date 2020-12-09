@@ -9,26 +9,33 @@ from .facesets_lg import write_facesets
 from .readwrite import write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
-def _get_driver(filename: str):
-    '''Helper function for parsing mesh driver from filename.'''
-    ext = os.path.splitext(filename)[-1].replace('.', '').lower().strip()
 
-    if ext in ['inp', 'avs']:
+def _get_driver(filename: str):
+    """Helper function for parsing mesh driver from filename."""
+    ext = os.path.splitext(filename)[-1].replace(".", "").lower().strip()
+
+    if ext in ["inp", "avs"]:
         return "avsucd"
-    elif ext in ['nc', 'mpas']:
+    elif ext in ["nc", "mpas"]:
         return "mpas"
-    elif ext in ['exo', 'ex']:
+    elif ext in ["exo", "ex"]:
         return "exodus"
-    elif ext in ['vtk', 'vtu']:
+    elif ext in ["vtk", "vtu"]:
         return "vtk"
     else:
         return None
 
 
-def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, driver: str = None, name: str = None):
-    '''
+def load(
+    filename: str,
+    load_dual_mesh: bool = True,
+    block_id: int = None,
+    driver: str = None,
+    name: str = None,
+):
+    """
     Loads a Mesh object from a mesh file on disk. Supports AVS-UCD, VTK, Exodus, and MPAS.
-    '''
+    """
 
     if driver is None:
         driver = _get_driver(filename)
@@ -49,9 +56,9 @@ def load(filename: str, load_dual_mesh: bool = True, block_id: int = None, drive
 
         cells = mesh.cells[block_id].data + 1
 
-        if mesh.cells[block_id].type == 'triangle':
+        if mesh.cells[block_id].type == "triangle":
             element_type = ElementType.TRIANGLE
-        elif mesh.cells[block_id].type == 'wedge':
+        elif mesh.cells[block_id].type == "wedge":
             element_type = ElementType.PRISM
         else:
             raise ValueError("Mesh type is currently not supported.")
@@ -153,10 +160,14 @@ class Mesh:
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
 
-    def set_attribute(self, name: str, vector: np.ndarray, at_layer:int = None):
+    def set_attribute(
+        self, name: str, vector: np.ndarray, at_layer: int = None
+    ):
         if at_layer is not None:
             if self.element_type != ElementType.PRISM:
-                raise ValueError(f"`at_layer` not supported for {self.element_type}.")
+                raise ValueError(
+                    f"`at_layer` not supported for {self.element_type}."
+                )
 
             if at_layer < 0:
                 at_layer = self._num_layers + at_layer + 1
@@ -172,9 +183,11 @@ class Mesh:
 
             if isinstance(vector, np.ndarray):
                 vector = vector.flatten()
-                
+
                 if vector.shape[0] != ln:
-                    raise ValueError(f"Requires a vector of length {ln}. Was given length {vector.shape[0]}.")
+                    raise ValueError(
+                        f"Requires a vector of length {ln}. Was given length {vector.shape[0]}."
+                    )
             elif isinstance(vector, (int, float)):
                 vector = np.full((ln,), vector)
 
@@ -187,7 +200,6 @@ class Mesh:
             end = ln
 
         self.attributes[name]["data"][start:end] = vector
-
 
     def add_empty_attribute(
         self, name: str, attrb_type: str, fill_value: float = 0.0
@@ -269,10 +281,15 @@ class Mesh:
     def material_id(self, v):
         self.add_attribute("material_id", v, attrb_type="cell")
 
-    def map_raster_to_attribute(self, raster, attribute_name: str = "material_id", attribute_type: str = "cell"):
-        '''
+    def map_raster_to_attribute(
+        self,
+        raster,
+        attribute_name: str = "material_id",
+        attribute_type: str = "cell",
+    ):
+        """
         Maps a Raster object to a mesh attribute.
-        '''
+        """
 
         # This *only* works for surfaces
         if attribute_type == "cell":
@@ -281,7 +298,7 @@ class Mesh:
             points = self.nodes
 
         vector = raster.values_at(points)
-        self.add_attribute(attribute_name, vector, attrb_type = attribute_type)
+        self.add_attribute(attribute_name, vector, attrb_type=attribute_type)
 
     @property
     def x(self):
@@ -340,7 +357,7 @@ class Mesh:
     @property
     def extent(self):
         """
-        Returns the extent of the mesh: 
+        Returns the extent of the mesh:
             [ (x_min, x_max), (y_min, y_max), (z_min, z_max) ]
         """
 
@@ -355,7 +372,11 @@ class Mesh:
         return ex
 
     def view(
-        self, attribute_name: str = None, scale: tuple = (1, 1, 1), savefig: str = None, **kwargs
+        self,
+        attribute_name: str = None,
+        scale: tuple = (1, 1, 1),
+        savefig: str = None,
+        **kwargs,
     ):
         """
         Views the mesh object in an interactive VTK-rendered windowed environment.
@@ -367,7 +388,7 @@ class Mesh:
         * notebook (bool, default: False)
         * text (str, default: '')
 
-        See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)` for more 
+        See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)` for more
         information on possible keyword arguments.
         """
 
@@ -413,7 +434,7 @@ class Mesh:
         )
 
     def save(self, outfile: str, facesets: list = None):
-        '''
+        """
         Writes out a Mesh object to file. Supports Exodus and AVS-UCD
         natively. All other formats convert the mesh into a Meshio object
         and uses its writer to handle saving.
@@ -423,7 +444,7 @@ class Mesh:
         extension.
 
         facesets: List of Faceset objects. Only valid for Exodus meshes.
-        '''
+        """
 
         driver = _get_driver(outfile)
 

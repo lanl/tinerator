@@ -1032,7 +1032,7 @@ def __selectFacesetsFromBoundary(dem):
 
     def onpick(event):
         """
-        Called when a node is pressed. Stores the selected node 
+        Called when a node is pressed. Stores the selected node
         in current_points.
         """
 
@@ -1073,7 +1073,7 @@ def __selectFacesetsFromBoundary(dem):
     ax_status.set_title(ax_status_title)
 
     mask = np.ones((np.shape(dem.boundary)[0],), dtype=bool)
-    line, = ax.plot(dem.boundary[:, 0], dem.boundary[:, 1], "o", picker=5)
+    (line,) = ax.plot(dem.boundary[:, 0], dem.boundary[:, 1], "o", picker=5)
     scatter = ax_status.scatter([], [])
 
     # Prepare the DEM for rendering

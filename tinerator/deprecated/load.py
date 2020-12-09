@@ -16,9 +16,7 @@ def __download_dem(
     SRTM_30=True,
     crop=False,
 ):
-    """
-
-    """
+    """"""
 
     cmd = "eio "
     delete_raster = False
@@ -94,7 +92,7 @@ def __download_dem(
 
 def from_file(filepath: str, lagrit_exe=None):
     """
-    Loads a DEM raster from a local filepath and returns 
+    Loads a DEM raster from a local filepath and returns
     a `tinerator.DEM` instance.
 
     # Arguments
@@ -125,7 +123,7 @@ def from_matrix(
     * yllcorner (int,float): lower-left raster y-coordinate
     * cell_size (int,float): raster cell size
     * no_data_value (int,float): raster null value
-    
+
     **Note: no_data_value cannot be np.nan.**
 
     # Returns

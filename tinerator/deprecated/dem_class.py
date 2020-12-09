@@ -149,7 +149,7 @@ class DEM:
 
     def set_to_ndv(self, value: float):
         """
-        Changes all occurances of `value` in the DEM data 
+        Changes all occurances of `value` in the DEM data
         to `no_data_value`.
 
         # Example
@@ -182,7 +182,7 @@ class DEM:
         ```
 
         # Arguments
-        verb_level (int): verbosity level 
+        verb_level (int): verbosity level
         filename (str): file to write log output to
         """
 
@@ -267,7 +267,7 @@ class DEM:
         interactive (bool): if True and function is called within a
                             Jupyter notebook, then function params
                             can be controlled with sliders
-        
+
         # Returns
         Polyline of feature as ordered (x,y) pairs
         """
@@ -321,7 +321,7 @@ class DEM:
     ) -> None:
         """
         Sets the refinement feature from a polyline defined by the
-        `x` and `y` vectors. 
+        `x` and `y` vectors.
 
         # Arguments
         x (list): x-coord list of river network nodes
@@ -539,7 +539,7 @@ class DEM:
         interactive: bool = False,
     ):
         """
-        Generates a refined triangular mesh, with a minimum refinement length 
+        Generates a refined triangular mesh, with a minimum refinement length
         defined by h.
 
         # Attributes
@@ -727,7 +727,7 @@ class DEM:
               layer 1: [101,103,105,110,112...]
               layer 2: [201,203,205,210,212...]
               layer 3: [301,103,305,310,312...]
-              ... 
+              ...
 
         """
 

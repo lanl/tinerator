@@ -12,7 +12,7 @@ def plot_3d(
     scale: tuple = (1, 1, 1),
     window_size: tuple = (1024, 1080),
     show_bounds: bool = True,
-    show_edges: bool =True,
+    show_edges: bool = True,
     title: str = "",
     show_mesh_info: bool = True,
     show_axes: bool = True,
@@ -89,25 +89,34 @@ def plot_3d(
     if notebook:
         # Requires vtk==8.1.2 ?
         import pyvistaqt as pvqt
+
         plotter = pvqt.BackgroundPlotter()
     else:
         plotter = pv.Plotter()
-    
-    plotter.add_mesh(grid, scalars=scalar, show_edges=show_edges, cmap=cmap, edge_color=edge_color)
+
+    plotter.add_mesh(
+        grid,
+        scalars=scalar,
+        show_edges=show_edges,
+        cmap=cmap,
+        edge_color=edge_color,
+    )
 
     if title is not None:
         plotter.add_text(title, position="upper_right", shadow=True)
 
     if show_mesh_info:
         plotter.add_text(
-            f"Nodes: {nnodes}\nCells: {ncells}\nElement type: {element_type}", 
+            f"Nodes: {nnodes}\nCells: {ncells}\nElement type: {element_type}",
             position="upper_left",
-            shadow=True, 
-            font_size=12
+            shadow=True,
+            font_size=12,
         )
 
     if show_axes:
-        plotter.show_bounds(grid='back', location='outer', ticks='both')#, font_size=20)
+        plotter.show_bounds(
+            grid="back", location="outer", ticks="both"
+        )  # , font_size=20)
         plotter.add_axes(interactive=True, line_width=4)
 
     if savefig is not None:
@@ -118,4 +127,9 @@ def plot_3d(
         interactive = True
 
     if not notebook:
-        plotter.show(title="TINerator", window_size=window_size, screenshot=screenshot, interactive=interactive)
+        plotter.show(
+            title="TINerator",
+            window_size=window_size,
+            screenshot=screenshot,
+            interactive=interactive,
+        )

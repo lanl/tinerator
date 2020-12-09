@@ -4,7 +4,7 @@ from .layering import (
     UniformSublayering,
     TranslatedSublayering,
     stack,
-    extrude_surface
+    extrude_surface,
 )
 from .triangulation import triangulate
 from .facesets_lg import (

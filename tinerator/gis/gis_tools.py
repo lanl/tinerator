@@ -48,7 +48,7 @@ def reproject_shapefile(
     shapefile_in: str, shapefile_out: str, crs: str = None, epsg: int = None
 ) -> None:
     """
-    Transforms all geometries in a shapefile to a new CRS and writes 
+    Transforms all geometries in a shapefile to a new CRS and writes
     to `shapefile_out`.
 
     Either `crs` or `epsg` must be specified. `crs` can be either a string or
@@ -123,7 +123,7 @@ def mask_raster(
 ):
     """
     Reads a raster file and ESRI shapefile and writes out
-    a new raster cropped by the shapefile. 
+    a new raster cropped by the shapefile.
 
     Note: both the raster and shapefile must be in the same
     CRS.
