@@ -9,11 +9,11 @@ site_description: 'Mesh generation from GIS data'
 site_author: 'Daniel Livingston (EES-16, LANL)'
 
 # Repo
-repo_name: 'lanl/LaGriT'
-repo_url: 'https://github.com/lanl/LaGriT'
+repo_name: 'lanl/tinerator'
+repo_url: 'https://github.com/lanl/tinerator'
 
 # Copyright
-copyright: 'Copyright &copy; 2018 Los Alamos National Laboratory'
+copyright: 'Copyright &copy; 2020 Los Alamos National Laboratory'
 
 # Set build directory
 site_dir: html/

@@ -1,17 +1,19 @@
 #!/bin/bash
 
+# This script should be called before every commit
+# with the 'all' option.
+# Prepares and generates documentation using MkDocs
+# and formats Python code using Black.
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-echo ${DIR}
-
+# Generate documentation
 generate_docs() {
     echo "Doc generation: not implemented yet"
+    # https://pydoc-markdown.readthedocs.io/en/latest/docs/renderers/mkdocs/
 }
 
-# This script will format module code using the 
-# Black code formatter. 
-# Line length is 79 chars as outlined in PEP 8.
-# This script should be run before every commit.
+# Format code via Black
 format_code() {
     find ${DIR}/../tinerator -name "*.py" | xargs black -l 79 -t py38
 }
@@ -32,6 +34,6 @@ case $1 in
     ;;
 
   *)
-    echo "./format_code [format | docs | all]"
+    echo "./precommit.sh [format | docs | all]"
     ;;
 esac
