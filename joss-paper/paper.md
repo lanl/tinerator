@@ -42,12 +42,22 @@ least of a GIS software, for example QGIS or GRASS GIS, to preprocess
 the DEM and a mesh generator, for example Gmsh or LaGriT.  Depending
 on the interoperability of these programs, the workflow may require
 additional components that convert input and output data into formats
-that can be exchanged.
+that can be exchanged.  TINerator provides a fast and efficient
+workflow to generate unstructured meshes from DEM and GIS data in a
+unified framework.
+
+# Overview
 
 TINerator is a Python-based mesh generation tool for generating
-unstructured meshes for earth science simulations.  TINerator provides
-a complete set of tools for DEM and GIS data analysis and mesh
-generation in a unified framework.
+unstructured meshes for earth science simulations.  Users can perform
+watershed delineation to determine catchment boundaries and
+preferential flow paths through RichDEM, choose to refine around these
+preferential flow paths, and map spatial datasets to cells or nodes of
+the generated mesh.  The users can choose the mesh generator from
+JIGSAW, Triangle, and LaGriT (via PyLaGriT).  TINerator exposes all
+data to the user, which allows working on the data using the full
+Python ecosystem, for example to filter and interpolate for specific
+use cases.
 
 # Use cases
 
