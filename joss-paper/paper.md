@@ -51,13 +51,14 @@ unified framework.
 TINerator is a Python-based mesh generation tool for generating
 unstructured meshes for earth science simulations.  Users can perform
 watershed delineation to determine catchment boundaries and
-preferential flow paths through RichDEM, choose to refine around these
-preferential flow paths, and map spatial datasets to cells or nodes of
-the generated mesh.  The users can choose the mesh generator from
-JIGSAW [@Engwirda:2018], Triangle [@Shewchuk:1996], and LaGriT (via
-PyLaGriT) [@LosAlamos:2020].  TINerator exposes all data to the user,
-which allows working on the data using the full Python ecosystem, for
-example to filter and interpolate for specific use cases.
+preferential flow paths through RichDEM [@Barnes:2016], choose to
+refine around these preferential flow paths, and map spatial datasets
+to cells or nodes of the generated mesh.  The users can choose the
+mesh generator from JIGSAW [@Engwirda:2018], Triangle
+[@Shewchuk:1996], and LaGriT (via PyLaGriT) [@LosAlamos:2020].
+TINerator exposes all data to the user, which allows working on the
+data using the full Python ecosystem, for example to filter and
+interpolate for specific use cases.
 
 # Use cases
 
