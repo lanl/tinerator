@@ -54,10 +54,10 @@ watershed delineation to determine catchment boundaries and
 preferential flow paths through RichDEM, choose to refine around these
 preferential flow paths, and map spatial datasets to cells or nodes of
 the generated mesh.  The users can choose the mesh generator from
-JIGSAW, Triangle, and LaGriT (via PyLaGriT).  TINerator exposes all
-data to the user, which allows working on the data using the full
-Python ecosystem, for example to filter and interpolate for specific
-use cases.
+JIGSAW [@Engwirda:2018], Triangle [@Shewchuk:1996], and LaGriT (via
+PyLaGriT) [@LosAlamos:2020].  TINerator exposes all data to the user,
+which allows working on the data using the full Python ecosystem, for
+example to filter and interpolate for specific use cases.
 
 # Use cases
 
