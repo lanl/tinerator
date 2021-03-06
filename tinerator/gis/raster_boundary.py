@@ -1,5 +1,5 @@
 import numpy as np
-
+from ..logging import log, warn, debug, error
 
 def __line_connectivity(
     nodes: np.ndarray, connect_ends: bool = False
@@ -98,7 +98,7 @@ def square_trace_boundary(
             elif self.direction == self.west:
                 self.x = self.x - 1
             else:
-                print(
+                error(
                     "Cannot move. Value "
                     + str(self.direction)
                     + " is not recognized as one of the cardinal directions."
@@ -151,7 +151,7 @@ def square_trace_boundary(
                     s = [x, y]
                     break
         if s is None:
-            print("Could not find starting pixel")
+            warn("Could not find starting pixel")
 
         return s
 
@@ -161,7 +161,7 @@ def square_trace_boundary(
         x2, y2 = v2[:2]
         return ((x1 - x2) ** 2.0 + (y1 - y2) ** 2.0) ** 0.5
 
-    print("p Finding starting pixel...")
+    debug(f"Running boundary algorithm at distance {dist}")
 
     # Find starting pixel
     p = _Point()
@@ -173,15 +173,12 @@ def square_trace_boundary(
     p.moveLeft()
     c = [p.x, p.y]
 
-    print("p Iterating over array...")
-
     iters = 0
     while iters < maxiters:
-        iters += 1  # Break if no convergence
+        iters += 1 # Break if no convergence
 
         # Are we back at the origin?
         if [p.x, p.y] == s:
-            print("p Found origin...")
             break
 
         if _blackPixel(p.x, p.y, nCols, nRows):
@@ -190,9 +187,8 @@ def square_trace_boundary(
         else:
             p.moveRight()
 
-    print("p Generating array...")
-    boundary = np.array(tmp_points, dtype=np.double) + 1.0
+    debug(f"Finished generating boundary with {len(tmp_points)} points")
 
-    np.savetxt("boundary.txt", boundary)
+    boundary = np.array(tmp_points, dtype=np.double) + 1.0
 
     return boundary, __line_connectivity(boundary, connect_ends=connect_ends)

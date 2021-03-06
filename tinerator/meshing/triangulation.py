@@ -1,10 +1,10 @@
 import numpy as np
 from .mesh import Mesh
 from ..logging import warn
-
+from ..gis import Raster
 
 def triangulate(
-    raster,
+    raster: Raster,
     min_edge: float,
     max_edge: float = None,
     refinement_feature=None,
@@ -15,10 +15,7 @@ def triangulate(
     Generates a triangular surface mesh (triplane) from a Raster object.
     """
 
-    if max_edge is None:
-        uniform_edges = True
-    else:
-        uniform_edges = False
+    uniform_edges = True if max_edge is None else False
 
     method = method.lower().strip()
 

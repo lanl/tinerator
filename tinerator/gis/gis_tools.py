@@ -8,7 +8,8 @@ import geopandas
 import numpy as np
 import tempfile
 from ..logging import log, warn, debug, error
-from .raster import load_raster
+from .raster import Raster, load_raster
+from .vector import Shape, ShapeType
 
 def get_geometry(shapefile_path: str) -> list:
     """
@@ -117,8 +118,19 @@ def reproject_raster(raster_in: str, raster_out: str, dst_crs: str) -> None:
                     resampling=Resampling.nearest,
                 )
 
-def clip_raster(raster, shapefile):
+def clip_raster(raster: Raster, shape: Shape) -> Raster:
+    '''
+    Returns a new Raster object, clipped by a Shape polygon.
+
+    dem = tin.gis.load_raster("raster.tif")
+    boundary = tin.gis.load_shapefile("boundary.shp")
+    new_dem = tin.gis.clip_raster(dem, boundary)
+    '''
+
     log(f"Clipping raster with shapefile")
+
+    if shape.shape_type != ShapeType.POLYGON:
+        warn(f"Vector shape type must be polygon to clip raster, not {vector.shape_type}.")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         debug(f"Temp directory created at: {tmp_dir}")
@@ -128,7 +140,7 @@ def clip_raster(raster, shapefile):
         CLIPPED_RASTER_OUT = os.path.join(tmp_dir, "raster_clipped.tif")
 
         raster.save(RASTER_OUT)
-        shapefile.save(VECTOR_OUT)
+        shape.save(VECTOR_OUT)
 
         debug(f"Shapefile was saved from memory to disk")
 

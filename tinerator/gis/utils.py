@@ -4,7 +4,31 @@ import math
 from scipy.spatial.distance import euclidean, cdist
 from scipy import ndimage as nd
 from osgeo import ogr, gdal, gdal_array
+from pyproj import CRS
+from pyproj.crs import CRSError
+from ..logging import log, warn, debug, error
 
+def parse_crs(crs):#: Union[str, int, CRS]) -> CRS:
+    """Make a CRS from a string (WKT) or int (EPSG).
+
+    Parameters
+    ----------
+    crs : int or str or None
+        An EPSG code.
+
+    Returns
+    -------
+    CRS
+    """
+    if isinstance(crs, CRS):
+        return crs
+    elif isinstance(crs, str):
+        return CRS.from_wkt(crs)
+    elif isinstance(crs, int):
+        return CRS.from_epsg(crs)
+    else:
+        warn("Could not parse CRS. Defaulting to EPSG: 32601.")
+        return CRS.from_epsg(32601)
 
 def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:
     """

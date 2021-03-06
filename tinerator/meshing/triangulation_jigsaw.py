@@ -1,8 +1,10 @@
 import numpy as np
 import random
 import os
+import tempfile
 from .mesh import load
-from ..gis import map_elevation
+from ..gis import map_elevation, Raster
+from ..logging import log, warn, debug
 
 
 def triangulation_jigsaw_refined(
@@ -165,7 +167,7 @@ def triangulation_jigsaw_refined(
     jigsawpy.savevtk(os.path.join(dst_path, "case_5b.vtk"), mesh)
 
 
-def triangulation_jigsaw(raster, boundary_distance: float):
+def triangulation_jigsaw(raster: Raster, boundary_distance: float):
     """
     Triangulates using the Python wrapper for JIGSAW.
     Author: Darren Engwirda.
@@ -178,7 +180,11 @@ def triangulation_jigsaw(raster, boundary_distance: float):
         err += "  https://github.com/dengwirda/jigsaw-python"
         raise ModuleNotFoundError(err)
 
+    log(f"Creating uniform triplane with JIGSAW at edge length {boundary_distance}")
+
     boundary = raster.get_boundary(distance=boundary_distance)
+
+    debug("Setting JIGSAW parameters")
 
     verts = [((pt[0], pt[1]), 0) for pt in boundary.points]
     conn = [((i, i + 1), 0) for i in range(len(boundary.points) - 1)]
@@ -202,17 +208,17 @@ def triangulation_jigsaw(raster, boundary_distance: float):
 
     jigsawpy.lib.jigsaw(opts, geom, mesh)
 
+    debug("Starting triangulation")
+
     scr2 = jigsawpy.triscr2(mesh.point["coord"], mesh.tria3["index"])
 
-    outfile = f"tmp_mesh_{int(random.random() * 100000)}.vtk"
-    jigsawpy.savevtk(outfile, mesh)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        outfile = os.path.join(tmp_dir, "mesh.vtk")
+        
+        debug(f"Writing triangulation to disk: {outfile}")
 
-    mesh = load(outfile, driver="vtk", block_id=1, name="jigsaw-triplane")
-
-    try:
-        os.remove(outfile)
-    except:
-        print(f"Warning: could not delete temporary file {outfile}.")
+        jigsawpy.savevtk(outfile, mesh)
+        mesh = load(outfile, driver="vtk", block_id=1, name="jigsaw-triplane")
 
     mesh.nodes[:, 2] = map_elevation(raster, mesh.nodes)
 

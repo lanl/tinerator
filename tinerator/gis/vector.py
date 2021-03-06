@@ -10,7 +10,7 @@ from enum import Enum, auto
 import pyproj
 from pyproj import CRS
 from pyproj.crs import CRSError
-from .utils import project_vector
+from .utils import project_vector, parse_crs
 from ..visualize import plot as pl
 from ..logging import log, warn, debug, error
 
@@ -41,11 +41,7 @@ class Shape:
         ):
             error("Shape of type `point` has meaningless connectivity.")
 
-        try:
-            self.crs = CRS.from_wkt(crs)
-        except (CRSError, TypeError):
-            print("Could not parse CRS. Defaulting to EPSG: 32601.")
-            self.crs = CRS.from_epsg(32601)
+        self.crs = parse_crs(crs)
 
     def __repr__(self):
         display = "\ntinerator.gis.Shape object\n"

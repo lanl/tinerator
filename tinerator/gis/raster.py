@@ -9,7 +9,7 @@ from pyproj import CRS
 from pyproj.crs import CRSError
 from ..logging import log, warn, debug, error
 from ..visualize import plot as pl
-from .utils import project_vector, unproject_vector
+from .utils import project_vector, unproject_vector, parse_crs
 from .raster_boundary import square_trace_boundary as st_boundary
 from .vector import Shape, ShapeType
 
@@ -44,12 +44,7 @@ class Raster:
             self.data.geotransform[3] - self.nrows * self.cell_size
         )
         self.filename = raster_path
-
-        try:
-            self.crs = CRS.from_wkt(self.data.projection)
-        except CRSError:
-            print("Could not parse CRS. Defaulting to EPSG: 32601.")
-            self.crs = CRS.from_epsg(32601)
+        self.crs = parse_crs(self.data.projection)
 
     def __lt__(self, other):
         return self.data < other
@@ -243,7 +238,7 @@ class Raster:
             raster_hillshade=hillshade,
         )
 
-    def get_boundary(self, distance: float = None, connect_ends: bool = False):
+    def get_boundary(self, distance: float = None, connect_ends: bool = False) -> Shape:
         """
         Get a line mesh with nodes seperated by distance `distance` that
         describe the boundary of this raster object.
