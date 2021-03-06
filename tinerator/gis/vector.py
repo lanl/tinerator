@@ -7,10 +7,12 @@ import shapefile
 import glob
 import os
 from enum import Enum, auto
+import pyproj
 from pyproj import CRS
 from pyproj.crs import CRSError
 from .utils import project_vector
 from ..visualize import plot as pl
+from ..logging import log, warn, debug, error
 
 
 class ShapeType(Enum):
@@ -120,58 +122,40 @@ class Shape:
 
         # Convert points to list
         points = self.points.tolist()
-
-        # Get CRS in WKT string format
-        crs = self.crs.to_wkt()  # pretty=True)
         crs_outfile = os.path.splitext(filename)[0] + ".prj"
 
         with shapefile.Writer(filename) as w:
 
-            print(self.shape_type)
-            print(self.points)
+            debug(f"Attempting to save vector object to {filename}")
 
-            """MULTIPOINT"""
+            # MULTIPOINT
             if self.shape_type == ShapeType.POINT:
                 w.field("name", "C")
                 w.multipoint(points)
                 w.record("multipoint1")
-                print("Saved")
 
-            """LINESTRING"""
-            if self.shape_type == ShapeType.POLYLINE:
-                raise NotImplementedError("sorry!")
+            # LINESTRING
+            elif self.shape_type == ShapeType.POLYLINE:
                 w.field("name", "C")
-                w.line(
-                    [
-                        [[1, 5], [5, 5], [5, 1], [3, 3], [1, 1]],  # line 1
-                        [[3, 2], [2, 6]],  # line 2
-                    ]
-                )
+                w.line([points])
                 w.record("linestring1")
 
-            """POLYGON"""
-            if self.shape_type == ShapeType.POLYGON:
-                raise NotImplementedError("sorry!")
+            # POLYGON
+            elif self.shape_type == ShapeType.POLYGON:
                 w.field("name", "C")
-                # Polygon points must be ordered clockwise
-                w.poly(
-                    [
-                        [
-                            [113, 24],
-                            [112, 32],
-                            [117, 36],
-                            [122, 37],
-                            [118, 20],
-                        ],  # poly 1
-                        [[116, 29], [116, 26], [119, 29], [119, 32]],  # hole 1
-                        [[15, 2], [17, 6], [22, 7]],  # poly 2
-                    ]
-                )
+                w.poly([points])
                 w.record("polygon1")
+            
+            else:
+                raise ValueError(f"Unknown shape_type: {self.shape_type}")
+
+        log(f"Shapefile data written to {filename}")
 
         # CRS info must be written out manually. See the reader.
         with open(crs_outfile, "w") as f:
-            f.write(crs)
+            f.write(self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_ESRI))
+        
+        log(f"CRS information written to {crs_outfile}")
 
     def reproject(self, to_crs: str):
         # See tin.gis.reproject_shapefile

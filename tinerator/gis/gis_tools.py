@@ -1,3 +1,4 @@
+import gdal
 import os
 import fiona
 import rasterio
@@ -5,7 +6,9 @@ import rasterio.mask
 import shutil
 import geopandas
 import numpy as np
-
+import tempfile
+from ..logging import log, warn, debug, error
+from .raster import load_raster
 
 def get_geometry(shapefile_path: str) -> list:
     """
@@ -114,52 +117,28 @@ def reproject_raster(raster_in: str, raster_out: str, dst_crs: str) -> None:
                     resampling=Resampling.nearest,
                 )
 
+def clip_raster(raster, shapefile):
+    log(f"Clipping raster with shapefile")
 
-def mask_raster(
-    raster_filename: str,
-    shapefile_filename: str,
-    raster_outfile: str,
-    no_data: float = -9999.0,
-):
-    """
-    Reads a raster file and ESRI shapefile and writes out
-    a new raster cropped by the shapefile.
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        debug(f"Temp directory created at: {tmp_dir}")
 
-    Note: both the raster and shapefile must be in the same
-    CRS.
+        RASTER_OUT = os.path.join(tmp_dir, "raster.tif")
+        VECTOR_OUT = os.path.join(tmp_dir, "shape.shp")
+        CLIPPED_RASTER_OUT = os.path.join(tmp_dir, "raster_clipped.tif")
 
-    # Arguments
-    raster_filename (str): Raster file to be cropped
-    shapefile_filename (str): Shapefile to crop raster with
-    raster_outfile (str): Filepath to save cropped raster
-    """
+        raster.save(RASTER_OUT)
+        shapefile.save(VECTOR_OUT)
 
-    # Capture the shapefile geometry
-    with fiona.open(shapefile_filename, "r") as _shapefile:
-        shp_crs = _shapefile.crs["init"]
-        is_closed = _shapefile.closed
-        _poly = [feature["geometry"] for feature in _shapefile]
+        debug(f"Shapefile was saved from memory to disk")
 
-    # Open the DEM && mask && update metadata with mask
-    with rasterio.open(raster_filename, "r") as _dem:
-        dem_crs = _dem.crs.data["init"]
-        out_image, out_transform = rasterio.mask.mask(
-            _dem, _poly, crop=True, invert=False, nodata=no_data
+        gdal.Warp(
+            CLIPPED_RASTER_OUT, 
+            RASTER_OUT, 
+            format = 'GTiff',
+            outputType = gdal.GDT_Float64, 
+            cutlineDSName = VECTOR_OUT,
+            cropToCutline = True
         )
-        out_meta = _dem.meta.copy()
 
-    # Update raster metadata with new changes
-    out_meta.update(
-        {
-            "driver": "GTiff",
-            "height": out_image.shape[1],
-            "width": out_image.shape[2],
-            "transform": out_transform,
-        }
-    )
-
-    # TODO: add check that both are in same projection
-
-    # Write out masked raster
-    with rasterio.open(raster_outfile, "w", **out_meta) as dest:
-        dest.write(out_image)
+        return load_raster(CLIPPED_RASTER_OUT)

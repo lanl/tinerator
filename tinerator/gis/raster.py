@@ -51,6 +51,12 @@ class Raster:
             print("Could not parse CRS. Defaulting to EPSG: 32601.")
             self.crs = CRS.from_epsg(32601)
 
+    def __lt__(self, other):
+        return self.data < other
+
+    def __gt__(self, other):
+        return self.data > other
+
     def __getitem__(self, idx):
         return self.data[idx]
 
@@ -263,45 +269,27 @@ class Raster:
 
     def save(self, outfile: str):
         """
-        Saves a raster object to disk in GeoTIFF format.
+        Saves a raster object to disk in GeoTIFF format. Writes array as Float64.
         """
 
         if extension(outfile) not in ["tif", "tiff"]:
             warn("Writing raster as a GeoTIFF.")
 
-        print(self.crs)
+        debug(f"Attempting to save raster object to {outfile}")
 
-        Z = np.array(self.data)
+        import gdal
+        import pyproj
 
-        with rasterio.open(
-            outfile,
-            "w",
-            driver="GTiff",
-            height=Z.shape[0],
-            width=Z.shape[1],
-            count=1,
-            dtype=Z.dtype,
-            crs=self.crs.to_proj4(),
-            nodata=self.no_data_value,
-            # transform=transform,
-        ) as ds:
-            ds.write(Z, 1)
+        driver = gdal.GetDriverByName("GTiff")
 
-
-"""
-def CreateGeoTiff(outRaster, data, geo_transform, projection):
-    driver = gdal.GetDriverByName('GTiff')
-    rows, cols, no_bands = data.shape
-    DataSet = driver.Create(outRaster, cols, rows, no_bands, gdal.GDT_Byte)
-    DataSet.SetGeoTransform(geo_transform)
-    DataSet.SetProjection(projection)
-
-    data = np.moveaxis(data, -1, 0)
-
-    for i, image in enumerate(data, 1):
-        DataSet.GetRasterBand(i).WriteArray(image)
-    DataSet = None
-"""
+        outdata = driver.Create(outfile, self.ncols, self.nrows, 1, gdal.GDT_Float64)
+        outdata.SetGeoTransform(self.data.geotransform)
+        outdata.SetProjection(self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL))
+        outdata.GetRasterBand(1).WriteArray(np.array(self.data, dtype=np.float64))
+        outdata.GetRasterBand(1).SetNoDataValue(self.no_data_value)
+        outdata.FlushCache()
+        
+        log(f"Raster object saved to {outfile}")
 
 
 def distance_map(raster, shape):

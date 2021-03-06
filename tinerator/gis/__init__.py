@@ -1,8 +1,8 @@
 from .gis_tools import (
     reproject_shapefile,
     reproject_raster,
-    mask_raster,
     get_geometry,
+    clip_raster
 )
 from .raster import Raster, load_raster, distance_map
 from .vector import Shape, load_shapefile, ShapeType

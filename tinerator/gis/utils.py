@@ -1,5 +1,7 @@
 import copy
 import numpy as np
+import math
+from scipy.spatial.distance import euclidean, cdist
 from scipy import ndimage as nd
 from osgeo import ogr, gdal, gdal_array
 
@@ -146,3 +148,80 @@ def get_feature_trace(
     xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
 
     return xy
+
+def order_points(
+    points: np.ndarray, opt: str = "polar", clockwise: bool = True
+):
+    """
+    Given a 2D array of points, this function reorders points clockwise.
+    Available methods are: 'angle', to sort by angle, 'polar', to sort by
+    polar coordinates, and 'nearest_neighbor', to sort by nearest neighbor.
+
+    # Arguments
+    points (np.ndarray): Array of unsorted points
+    opt (str): Sorting method
+    clockwise (bool): order points clockwise or counterclockwise
+
+    # Returns
+    Sorted points
+    """
+
+    origin = np.mean(points, axis=0)
+    refvec = [0, 1]
+
+    def clockwise_angle_and_distance(point):
+        """
+        Returns angle and length from origin.
+        Used as a sorting function to order points by angle.
+
+        Author credit to MSeifert.
+        """
+
+        vector = [point[0] - origin[0], point[1] - origin[1]]
+        lenvector = math.hypot(vector[0], vector[1])
+
+        if lenvector == 0:
+            return -math.pi, 0.0
+
+        normalized = [vector[0] / lenvector, vector[1] / lenvector]
+        dotprod = normalized[0] * refvec[0] + normalized[1] * refvec[1]
+        diffprod = refvec[1] * normalized[0] - refvec[0] * normalized[1]
+
+        angle = math.atan2(diffprod, dotprod)
+
+        if angle < 0:
+            return 2 * math.pi + angle, lenvector
+
+        return angle, lenvector
+
+    def polar_sort(point):
+        return math.atan2(point[1] - origin[1], point[0] - origin[0])
+
+    def nearest_neighbor_sort(xy: np.ndarray):
+        dist_matrix = cdist(xy, xy, "euclidean")
+        nil_value = np.max(dist_matrix) + 1000
+        mapper = np.empty((np.shape(xy)[0],), dtype=int)
+
+        count = 0
+        indx = 0
+        while count < np.shape(mapper)[0]:
+            dist_matrix[indx, :] = nil_value
+            indx = np.argmin(dist_matrix[:, indx])
+            mapper[count] = indx
+            count += 1
+
+        return xy[mapper]
+
+    if opt.lower() == "polar":
+        pts = np.array(sorted(points, key=clockwise_angle_and_distance))
+    elif opt.lower() == "angle":
+        pts = np.array(sorted(points, key=polar_sort))
+    elif opt.lower() == "nearest_neighbor":
+        pts = nearest_neighbor_sort(points)
+    else:
+        raise ValueError("Unknown sorting method")
+    
+    if not clockwise:
+        pts = pts[::-1]
+
+    return pts
