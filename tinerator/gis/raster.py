@@ -3,6 +3,8 @@ import numpy as np
 import io
 import os
 import rasterio
+import gdal
+import pyproj
 from contextlib import redirect_stdout
 from copy import deepcopy
 from pyproj import CRS
@@ -33,6 +35,8 @@ def load_raster(filename: str, no_data: float = None, to_crs: str = None):
 
     return r
 
+def new_raster(data: np.ndarray, crs: CRS = None, xll_corner: float = None, yll_corner: float = None, no_data_value: float = None, cell_size: float = None):
+    raise NotImplementedError("sorry bout it")
 
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):
@@ -77,6 +81,15 @@ class Raster:
         display += "\n%s\n" % repr(self.data)
 
         return display
+
+    @property
+    def geotransform(self):
+        '''
+        Raster geotransform.
+        In the form of:
+        (x_min, pixel_width, 0, y_min, 0, pixel_width)
+        '''
+        return self.data.geotransform
 
     @property
     def mask(self):
@@ -272,13 +285,10 @@ class Raster:
 
         debug(f"Attempting to save raster object to {outfile}")
 
-        import gdal
-        import pyproj
-
         driver = gdal.GetDriverByName("GTiff")
 
         outdata = driver.Create(outfile, self.ncols, self.nrows, 1, gdal.GDT_Float64)
-        outdata.SetGeoTransform(self.data.geotransform)
+        outdata.SetGeoTransform(self.geotransform)
         outdata.SetProjection(self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL))
         outdata.GetRasterBand(1).WriteArray(np.array(self.data, dtype=np.float64))
         outdata.GetRasterBand(1).SetNoDataValue(self.no_data_value)
@@ -286,51 +296,3 @@ class Raster:
         
         log(f"Raster object saved to {outfile}")
 
-
-def distance_map(raster, shape):
-
-    # try:
-    #    os.mkdir("tmp_output/")
-    # except:
-    #    pass
-
-    # raster.save("tmp_output/raster.tiff")
-    # shape.save("tmp_output/shape.shp")
-
-    # from .utils import rasterize_shapefile_like
-
-    # arr = rasterize_shapefile_like("tmp_output/shape.shp", "tmp_output/raster.tiff")
-
-    from matplotlib import pyplot as plt
-
-    # plt.imshow(arr)
-    # plt.show()
-
-    # return
-
-    # from copy import deepcopy
-
-    from scipy.spatial.distance import cdist
-
-    dm = deepcopy(raster)
-    print("in fnc")
-    unraveled = []
-
-    print("beginner iter")
-    for x in range(1, raster.ncols + 1):
-        for y in range(1, raster.nrows + 1):
-            unraveled.append([x, y])
-
-    print("projecting")
-    projected = project_vector(np.array(unraveled), raster)
-    print("running cdist")
-    distance_map = (
-        cdist(shape.points, projected)
-        .min(axis=0)
-        .reshape(raster.ncols, raster.nrows)
-    )
-    print("done")
-
-    data = np.flipud(np.rot90(distance_map))
-    plt.imshow(data)
-    plt.show()

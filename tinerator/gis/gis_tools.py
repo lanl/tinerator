@@ -1,4 +1,6 @@
 import gdal
+from osgeo import ogr
+import pyproj
 import os
 import fiona
 import rasterio
@@ -8,7 +10,7 @@ import geopandas
 import numpy as np
 import tempfile
 from ..logging import log, warn, debug, error
-from .raster import Raster, load_raster
+from .raster import Raster, load_raster, new_raster
 from .vector import Shape, ShapeType
 
 def get_geometry(shapefile_path: str) -> list:
@@ -118,6 +120,84 @@ def reproject_raster(raster_in: str, raster_out: str, dst_crs: str) -> None:
                     resampling=Resampling.nearest,
                 )
 
+def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
+    '''
+    Rasterizes a shape.
+    '''
+
+    log(f"Rasterizing {shape} to {raster}")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tinerator-test-cases/tmp/huh"
+        debug(f"Temp directory created at: {tmp_dir}")
+
+        RASTER_OUT = os.path.join(tmp_dir, "raster.tif")
+        VECTOR_OUT = os.path.join(tmp_dir, "shape.shp")
+        RASTERIZE_OUT = os.path.join(tmp_dir, "rasterized_shape.tif")
+
+        raster.save(RASTER_OUT)
+        shape.save(VECTOR_OUT)
+
+        VECTOR_OUT = "/Users/livingston/Downloads/tmp/test.shp"
+
+        # Read the shapefile with OGR
+        shp_fh = ogr.Open(VECTOR_OUT)
+        shp_layer = shp_fh.GetLayer()
+
+        driver = gdal.GetDriverByName("GTiff")
+        outdata = driver.Create(RASTERIZE_OUT, raster.ncols, raster.nrows, 1, gdal.GDT_Float64)
+        outdata.SetGeoTransform(raster.geotransform)
+        outdata.SetProjection(raster.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL))
+        outdata.GetRasterBand(1).SetNoDataValue(raster.no_data_value)
+        outdata.GetRasterBand(1).FlushCache()
+        gdal.RasterizeLayer(outdata, [1], shp_layer, burn_values=[255])#, options=["ATTRIBUTE=hedgerow"])
+        outdata.FlushCache()
+
+        # Deleting this forces GDAL to flush to disk
+        del outdata
+
+        return load_raster(RASTERIZE_OUT)
+
+def distance_map(raster: Raster, shape: Shape) -> Raster:
+    '''
+    Creates a distance map.
+    '''
+
+    # Refernces: 
+    # Marching Parabolas algorithm
+    # https://prideout.net/blog/distance_fields/
+    # http://cs.brown.edu/people/pfelzens/dt/
+
+    log("Creating distance map")
+
+    shape_raster = rasterize_shape(raster, shape)
+
+    nrows, ncols = shape_raster.shape
+
+    #x = np.repeat(list(range(ncols)), nrows)
+    #y = np.repeat(list(range(nrows)), ncols)
+
+    print(nrows, ncols)
+
+    x, y = np.meshgrid(np.linspace(1,ncols,80), np.linspace(1,nrows,40)) 
+    dst = np.sqrt(x*x+y*y) 
+    
+    # Intializing sigma and muu 
+    sigma = 100
+    muu = +300.000
+    
+    # Calculating Gaussian array 
+    gauss = np.exp(-( (dst-muu)**2 / ( 2.0 * sigma**2 ) ) ) 
+
+    #all_nodes = np.array([x,y]).T
+    #shape_nodes = np.argwhere(shape_raster.data == 255)
+
+    #debug(f"Attempting distance map between {shape_nodes.shape} and {all_nodes.shape} nodes")
+
+    #distance_map = new_raster(gauss)
+    return gauss
+
+
 def clip_raster(raster: Raster, shape: Shape) -> Raster:
     '''
     Returns a new Raster object, clipped by a Shape polygon.
@@ -130,7 +210,7 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
     log(f"Clipping raster with shapefile")
 
     if shape.shape_type != ShapeType.POLYGON:
-        warn(f"Vector shape type must be polygon to clip raster, not {vector.shape_type}.")
+        warn(f"Vector shape type must be polygon to clip raster, not {shape.shape_type}.")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         debug(f"Temp directory created at: {tmp_dir}")

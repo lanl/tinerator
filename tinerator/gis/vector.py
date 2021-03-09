@@ -132,12 +132,14 @@ class Shape:
 
             # LINESTRING
             elif self.shape_type == ShapeType.POLYLINE:
+                warn("Saving shapefile as polyline: does not take connectivity vector into account")
                 w.field("name", "C")
                 w.line([points])
                 w.record("linestring1")
 
             # POLYGON
             elif self.shape_type == ShapeType.POLYGON:
+                warn("Saving shapefile as polygon: does not take connectivity vector into account")
                 w.field("name", "C")
                 w.poly([points])
                 w.record("polygon1")
@@ -213,70 +215,3 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
         return shapes[0]
 
     return shapes
-
-
-def watershed_delineation(
-    raster,  #: Raster,
-    threshold: float,
-    method: str = "D8",
-    exponent: float = None,
-    weights: rd.rdarray = None,
-    return_matrix: bool = False,
-) -> np.ndarray:
-    """
-    Performs watershed delination on a DEM.
-    Optionally, fills DEM pits and flats.
-
-    :param dem: richdem array
-    :type dem: richdem.rdarray
-    :param fill_depressions: flag to fill DEM pits / holes
-    :type fill_depressions: bool
-    :param fill_flats: flag to fill DEM flats
-    :type fill_flats: bool
-    :param method: flow direction algorithm
-    :type method: string
-
-    Returns:
-    :param accum: flow accumulation matrix
-    :type accum: np.ndarray
-    """
-
-    # if isinstance(raster, Raster):
-    #    elev_raster = raster.data
-    # else:
-    #    raise ValueError(f"Incorrect data type for `raster`: {type(raster)}")
-    elev_raster = raster.data
-
-    f = io.StringIO()
-    with redirect_stdout(f):
-        accum_matrix = rd.FlowAccumulation(
-            elev_raster,
-            method=method,
-            exponent=exponent,
-            weights=weights,
-            in_place=False,
-        )
-
-    # Generate a polyline from data
-    threshold_matrix = accum_matrix > threshold
-    xy = np.transpose(np.where(threshold_matrix == True))
-    xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
-    xy = xy.astype(float)
-
-    # Was threshold too high? Or method/params wrong?
-    if np.size(xy) == 0:
-        raise ValueError(
-            "Could not generate feature. Threshold may be too high."
-        )
-
-    # Put data into Shape object
-    xy = Shape(
-        points=project_vector(xy, raster),
-        crs=raster.crs,
-        shape_type=ShapeType.POINT,
-    )
-
-    if return_matrix:
-        return (xy, accum_matrix)
-
-    return xy

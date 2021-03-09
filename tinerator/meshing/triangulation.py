@@ -44,6 +44,10 @@ def triangulate(
                 f'Unknown uniform triangulation method: "{method}"'
             )
     else:
+
+        if refinement_feature is None:
+            raise ValueError("For refined triangulation, `refinement_feature` is required")
+
         if method == "lagrit":
             from .refined_triplane_lg import build_refined_triplane
 
