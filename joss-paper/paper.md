@@ -60,7 +60,9 @@ output data into formats that can be exchanged.
 
 TINerator addresses the technical challenge by providing a fast and
 efficient workflow to generate multiresolution unstructured meshes
-from DEM and GIS data in a unified framework.
+from DEM and GIS data in a unified framework.  The extendible nature
+of TINerator further provides opportunities to work on the
+methodological challenges of multiresolution mesh generation.
 
 # Overview
 
