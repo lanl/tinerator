@@ -73,7 +73,7 @@ def reproject_shapefile(
     shp.to_file(shapefile_out, driver="ESRI Shapefile")
 
 
-def reproject_raster(raster_in: str, raster_out: str, dst_crs: str) -> None:
+def reproject_raster_2(raster_in: str, raster_out: str, dst_crs: str) -> None:
     """
     Re-projects a raster and writes it to `raster_out`.
 
@@ -234,3 +234,30 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
         )
 
         return load_raster(CLIPPED_RASTER_OUT)
+
+def reproject_raster(raster: Raster, dst_crs) -> Raster:
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        debug(f"Temp directory created at: {tmp_dir}")
+
+        RASTER_OUT = os.path.join(tmp_dir, "raster.tif")
+        REPROJ_RASTER_OUT = os.path.join(tmp_dir, "raster_reprojected.tif")
+
+        raster.save(RASTER_OUT)
+
+        #if isinstance(dst_crs, CRS):
+        #    self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
+
+        #gdalsrsinfo -o wkt other.tif > target.wkt
+        #gdalwarp -t_srs target.wkt source.tif output.tif
+
+        debug(f"Shapefile was saved from memory to disk")
+
+        gdal.Warp(
+            REPROJ_RASTER_OUT,
+            RASTER_OUT,
+            dstSRS = dst_crs,
+            format = 'GTiff',
+        )
+
+        return load_raster(REPROJ_RASTER_OUT)

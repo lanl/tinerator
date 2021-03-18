@@ -24,12 +24,12 @@ def build_uniform_triplane(
 
     lg = PyLaGriT(verbose=verbose)
 
-    boundary, _ = dem_raster.get_boundary(distance=edge_length)
+    boundary = dem_raster.get_boundary(distance=edge_length)
+    #import ipdb; ipdb.set_trace()
     counterclockwise = False
 
     # Generate the boundary polygon
-    connectivity = line_connectivity(boundary)
-    write_line(boundary, "poly_1.inp", connections=connectivity)
+    write_line(boundary.points, "poly_1.inp", connections=boundary.connectivity)
 
     # Compute length scales to break triangles down into
     # See below for a more in-depth explanation

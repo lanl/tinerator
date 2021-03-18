@@ -5,10 +5,11 @@ import richdem as rd
 from .utils import project_vector
 from .vector import Shape, ShapeType
 from .raster import Raster
+from ..logging import log, warn, debug
 
 def watershed_delineation(
     raster: Raster,
-    threshold: float,
+    threshold: float = None,
     method: str = "D8",
     exponent: float = None,
     weights: np.ndarray = None,
@@ -61,6 +62,11 @@ def watershed_delineation(
             weights=weights,
             in_place=False,
         )
+
+    if threshold is None:
+        M = np.asarray(accum_matrix)
+        threshold = np.mean(M) + np.std(M)
+        log(f"Threshold was not set by user; set automatically to: {round(threshold, 5)}. Adjust this value to adjust the river network.")
 
     # Generate a polyline from data
     threshold_matrix = accum_matrix > threshold
