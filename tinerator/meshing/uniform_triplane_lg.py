@@ -8,24 +8,20 @@ from ..gis import map_elevation
 def build_uniform_triplane(
     dem_raster: Raster, edge_length: float, verbose: bool = False
 ):
-    """
-    Generate a uniform triplane mesh from a boundary polygon.
-    This function should, in the standard workflow, be called
-    exclusively from `tinerator.DEM.build_uniform_triplane`.
-    The algorithm works by triangulating only the boundary, and
-    then iterating through each triangle, breaking edges in half
-    where they exceed the given edge length.
-    Consequently, this means that the final length scale will have
-    a minimum edge length of `edge_length / 2`, and a maximum edge
-    length of `edge_length`.
-    """
+    # The algorithm works by triangulating only the boundary, and
+    # then iterating through each triangle, breaking edges in half
+    # where they exceed the given edge length.
+    # Consequently, this means that the final length scale will have
+    # a minimum edge length of `edge_length / 2`, and a maximum edge
+    # length of `edge_length`.
+
+    edge_length = edge_length * 2.
 
     from pylagrit import PyLaGriT
 
     lg = PyLaGriT(verbose=verbose)
 
     boundary = dem_raster.get_boundary(distance=edge_length)
-    #import ipdb; ipdb.set_trace()
     counterclockwise = False
 
     # Generate the boundary polygon

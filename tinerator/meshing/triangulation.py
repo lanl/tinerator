@@ -3,6 +3,11 @@ from .mesh import Mesh
 from ..logging import warn
 from ..gis import Raster
 
+TriangulationMethodsUniformCallbacks = {
+    "lagrit": "build_uniform_triplane",
+}
+
+
 def triangulate(
     raster: Raster,
     min_edge: float,

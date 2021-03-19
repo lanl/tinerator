@@ -296,11 +296,55 @@ def triangulation_jigsaw_refined__backup(
     jigsawpy.savevtk(os.path.join(dst_path, "case_5b.vtk"), mesh)
 
 
-def triangulation_jigsaw(raster: Raster, boundary_distance: float):
+def triangulation_jigsaw(
+        raster: Raster, 
+        boundary_distance: float,
+    ):
     """
     Triangulates using the Python wrapper for JIGSAW.
     Author: Darren Engwirda.
     """
+
+    #init_near = 1.e-6
+    #geom_seed = 16
+    #geom_feat = True
+    #geom_eta1 = 60
+    #geom_eta2 = 60
+    ## hfun_file = *.msh
+    
+    #hfun_scal = "relative"; ["relative", "absolute"]
+    #hfun_max = 0.02
+    #hfun_min = 0.00
+
+    ## mesh_dims = 2
+    #mesh_kern = "delaunay"; ["delaunay", "delfront"]
+    #mesh_iter = 1e6
+    #mesh_top1 = False
+    #mesh_top2 = True
+    #mesh_rad2 = 1.05
+    #mesh_rad3 = 2.05
+    #mesh_off2 = 0.90
+    #mesh_off3 = 1.10
+    #mesh_snk2 = 0.25
+    #mesh_snk3 = 0.33
+    #mesh_eps1 = 0.33
+    #mesh_eps2 = 0.33
+    #mesh_vol3 = 0.10
+
+    #optm_kern = "odt+dqdx"; ["odt+dqdx", "cvt+dqdx"]
+    #optm_iter = 16
+    #optm_qtol = 1.e-4
+    #optm_qlim = 0.9250
+    #optm_zip_ = True
+    #optm_dv_ = True
+    #optm_tria = True
+    #optm_dual = True
+
+    #verbosity = 0
+
+
+    # https://github.com/dengwirda/jigsaw/blob/master/example.jig
+
     try:
         import jigsawpy
     except ModuleNotFoundError:
@@ -328,11 +372,25 @@ def triangulation_jigsaw(raster: Raster, boundary_distance: float):
     geom.vert2 = np.array(verts, dtype=geom.VERT2_t)
     geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
 
-    opts.hfun_hmax = 0.05
+    # max. mesh-size function value. Interpreted based on SCAL setting.
+    opts.hfun_scal = "absolute" # relative
+    opts.hfun_hmax = 100. #0.05
+
+    # --> max edge = 
+    # xmin, ymin, xmax, ymax = dem.extent
+    # hfun_hmax * np.mean(((ymax - ymin), (xmax - xmin)))
+
+    # number of "topological" dimensions to mesh.
     opts.mesh_dims = +2
+
+    # threshold on mesh cost function above which 
+    # gradient-based optimisation is attempted.
     opts.optm_qlim = +0.95
 
+    # enforce 1-dim. topological constraints.
     opts.mesh_top1 = True
+
+    # attempt to auto-detect "sharp-features" in the input geometry.
     opts.geom_feat = True
 
     jigsawpy.lib.jigsaw(opts, geom, mesh)
