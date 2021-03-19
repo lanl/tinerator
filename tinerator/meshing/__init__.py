@@ -13,6 +13,7 @@ from .facesets_lg import (
     FacesetFromElevations,
 )
 from .util import estimate_edge_lengths
+from .metrics import *
 
 NODE = "node"
 CELL = "cell"

@@ -371,6 +371,21 @@ class Mesh:
 
         return ex
 
+    @property
+    def edges(self):
+        '''
+        Returns all unique edges in the mesh.
+        '''
+        
+        # TODO: this is probably not the most efficient algorithm
+
+        v_edges = [np.vstack([self.elements[:,-1],self.elements[:,0]]).T]
+
+        for i in range(self.elements.shape[-1] - 1):
+            v_edges.append(self.elements[:,i:i+2])
+
+        return np.unique(np.sort(np.vstack(v_edges), axis=1), axis=0)
+
     def view(
         self,
         attribute_name: str = None,
