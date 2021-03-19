@@ -14,8 +14,18 @@ reproduce, prepare derivative works, distribute copies to the public,
 perform publicly and display publicly, and to permit others to do so.
 """
 
+import os
 from tinerator._version import __version__
 from tinerator.logging import set_logging_verbosity, debug_mode, LogLevel
 import tinerator.meshing as meshing
 import tinerator.gis as gis
 import tinerator.visualize as visualize
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "example-data")
+
+class ExampleData:
+    class NewMexico:
+        root_dir = os.path.join(DATA_DIR, "GIS", "NewMexico-HU8-14080103")
+        dem = os.path.join(DATA_DIR, "GIS", "NewMexico-HU8-14080103", "rasters", "USGS_NED_13_n37w108_Clipped.tif")
+        watershed_boundary = os.path.join(DATA_DIR, "GIS", "NewMexico-HU8-14080103", "shapefiles", "WBDHU12", "WBDHU12.shp")
+        flowline = os.path.join(DATA_DIR, "GIS", "NewMexico-HU8-14080103", "shapefiles", "NHDFlowline", "NHDFlowline.shp")
