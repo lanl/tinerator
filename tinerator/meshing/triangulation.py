@@ -1,11 +1,12 @@
 import numpy as np
 from .mesh import Mesh
-from .triangulation_jigsaw import triangulation_jigsaw
+from .triangulation_jigsaw import triangulation_jigsaw, triangulation_jigsaw_refined
 from ..logging import warn, debug, log
 from ..gis import Raster
 
 TRIANGULATION_METHODS = {
     "jigsaw": triangulation_jigsaw,
+    "jigsaw2": triangulation_jigsaw_refined,
 }
 
 

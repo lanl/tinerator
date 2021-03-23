@@ -128,7 +128,6 @@ def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
     log(f"Rasterizing {shape} to {raster}")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tinerator-test-cases/tmp/huh"
         debug(f"Temp directory created at: {tmp_dir}")
 
         RASTER_OUT = os.path.join(tmp_dir, "raster.tif")
@@ -137,8 +136,6 @@ def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
 
         raster.save(RASTER_OUT)
         shape.save(VECTOR_OUT)
-
-        VECTOR_OUT = "/Users/livingston/Downloads/tmp/test.shp"
 
         # Read the shapefile with OGR
         shp_fh = ogr.Open(VECTOR_OUT)
@@ -158,10 +155,14 @@ def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
 
         return load_raster(RASTERIZE_OUT)
 
-def distance_map(raster: Raster, shape: Shape) -> Raster:
+def distance_map(raster: Raster, shape: Shape, min_dist: float = 0., max_dist: float = 1.) -> Raster:
     '''
     Creates a distance map.
     '''
+
+    # ======================= #
+    # ASSERT - NORMALIZED 0 TO 1
+    # ======================= #
 
     # Refernces: 
     # Marching Parabolas algorithm
@@ -170,12 +171,15 @@ def distance_map(raster: Raster, shape: Shape) -> Raster:
 
     log("Creating distance map")
 
+    log("ALKSJDKLASJDALDSA")
     shape_raster = rasterize_shape(raster, shape)
-
+    log("2>>> ALKSJDKLASJDALDSA")
     nrows, ncols = shape_raster.shape
 
     #x = np.repeat(list(range(ncols)), nrows)
     #y = np.repeat(list(range(nrows)), ncols)
+
+    # 
 
     print(nrows, ncols)
 
@@ -195,6 +199,7 @@ def distance_map(raster: Raster, shape: Shape) -> Raster:
     #debug(f"Attempting distance map between {shape_nodes.shape} and {all_nodes.shape} nodes")
 
     #distance_map = new_raster(gauss)
+    gauss = gauss * (max_dist-min_dist) + min_dist
     return gauss
 
 

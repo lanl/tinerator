@@ -6,10 +6,82 @@ from .mesh import load
 from ..gis import map_elevation, Raster, Shape, distance_map
 from ..logging import log, warn, debug
 
+def construct_opts():
+    pass
+
+def construct_geom():
+    pass
+
+def construct_hmat(hfun, extent):
+    import jigsawpy
+    DD = "/Users/livingston/playground/tinerator/tmp/jigsawtmp/"
+
+    xmin, ymin, xmax, ymax = extent
+
+    hmat = jigsawpy.jigsaw_msh_t()
+    hmat.mshID = "euclidean-grid"
+    hmat.ndims = +2
+
+    dY, dX = hfun.shape
+    xpos = np.linspace(xmin, xmax, dX)
+    ypos = np.linspace(ymin, ymax, dY)
+
+    hmat.xgrid = np.array(xpos, dtype=hmat.REALS_t)
+    hmat.ygrid = np.array(ypos, dtype=hmat.REALS_t)
+    hmat.value = np.array(hfun, dtype=hmat.REALS_t)
+
+    #jigsawpy.savevtk(os.path.join(DD, "hmat_test.vtk"), hmat)
+
+    return hmat
+
+    #init_near = 1.e-6
+    #geom_seed = 16
+    #geom_feat = True
+    #geom_eta1 = 60
+    #geom_eta2 = 60
+    ## hfun_file = *.msh
+    
+    #hfun_scal = "relative"; ["relative", "absolute"]
+    #hfun_max = 0.02
+    #hfun_min = 0.00
+
+    ## mesh_dims = 2
+    #mesh_kern = "delaunay"; ["delaunay", "delfront"]
+    #mesh_iter = 1e6
+    #mesh_top1 = False
+    #mesh_top2 = True
+    #mesh_rad2 = 1.05
+    #mesh_rad3 = 2.05
+    #mesh_off2 = 0.90
+    #mesh_off3 = 1.10
+    #mesh_snk2 = 0.25
+    #mesh_snk3 = 0.33
+    #mesh_eps1 = 0.33
+    #mesh_eps2 = 0.33
+    #mesh_vol3 = 0.10
+
+    #optm_kern = "odt+dqdx"; ["odt+dqdx", "cvt+dqdx"]
+    #optm_iter = 16
+    #optm_qtol = 1.e-4
+    #optm_qlim = 0.9250
+    #optm_zip_ = True
+    #optm_dv_ = True
+    #optm_tria = True
+    #optm_dual = True
+
+    #verbosity = 0
+    # https://github.com/dengwirda/jigsaw/blob/master/example.jig
+
 
 def triangulation_jigsaw_refined(
-    raster, min_edge: float, max_edge: float, refinement_feature
-):
+        raster: Raster, 
+        raster_boundary: Shape = None,
+        min_edge_length: float = None,
+        max_edge_length: float = None,
+        refinement_feature: Shape = None,
+        scaling_type: str = "relative",
+        verbosity: int = 1,
+    ):
     """
     Triangulates using the Python wrapper for JIGSAW.
     Author: Darren Engwirda.
@@ -22,8 +94,8 @@ def triangulation_jigsaw_refined(
         err += "  https://github.com/dengwirda/jigsaw-python"
         raise ModuleNotFoundError(err)
 
-    src_path = "/Users/livingston/playground/lanl/tinerator/tinerator-core/tpl/jigsaw-python/files"
-    dst_path = "/Users/livingston/playground/lanl/tinerator/tinerator-test-cases/tmp"
+    src_path = "/Users/livingston/playground/tinerator/tpl/jigsaw-python/files"
+    dst_path = "/Users/livingston/playground/tinerator/tmp"
 
     opts = jigsawpy.jigsaw_jig_t()
 
@@ -32,16 +104,13 @@ def triangulation_jigsaw_refined(
     hmat = jigsawpy.jigsaw_msh_t()
 
     # ===================== #
-
-    log(f"Creating refined triplane with JIGSAW with edge lengths {min_edge} -> {max_edge}")
-
-    boundary = raster.get_boundary(distance=min_edge)
-
     debug("Setting JIGSAW parameters")
 
-    verts = [((pt[0], pt[1]), 0) for pt in boundary.points]
-    conn = [((i, i + 1), 0) for i in range(len(boundary.points) - 1)]
-    conn += [((len(boundary.points) - 1, 0), 0)]
+    # TODO: does this respect nodes that aren't already ordered
+    # clockwise?
+    verts = [((pt[0], pt[1]), 0) for pt in raster_boundary.points]
+    conn = [((i, i + 1), 0) for i in range(len(raster_boundary.points) - 1)]
+    conn += [((len(raster_boundary.points) - 1, 0), 0)]
 
     #geom = jigsawpy.jigsaw_msh_t()
 
@@ -50,7 +119,7 @@ def triangulation_jigsaw_refined(
     #geom.vert2 = np.array(verts, dtype=geom.VERT2_t)
     #geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
 
-    ttttt = "/Users/livingston/playground/lanl/tinerator/tinerator-test-cases/tmp/testgeom.msh"
+    ttttt = dst_path + "/testgeom.msh"
 
     with open(ttttt, "w") as f:
         f.write("mshid=1\n")
@@ -93,6 +162,8 @@ def triangulation_jigsaw_refined(
     #hfun = 0.4 * np.maximum(np.minimum(hfun, hmax), hmin)
 
     dmap = distance_map(raster, refinement_feature)
+    
+    import ipdb; ipdb.set_trace()
 
     hmat.mshID = "euclidean-grid"
     hmat.ndims = +2
@@ -116,7 +187,10 @@ def triangulation_jigsaw_refined(
     opts.geom_feat = True
     opts.mesh_top1 = True
 
+    debug("i am here")
+    exit(0)
     jigsawpy.cmd.jigsaw(opts, mesh)
+    debug("i am not here")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "mesh.vtk")
@@ -216,10 +290,10 @@ def triangulation_jigsaw_refined__backup(
     opts.hfun_hmin = float(+0.00)
 
     opts.mesh_kern = "delfront"  # DELFRONT kernel
-    opts.mesh_dims = +2
+    opts.mesh_dims = +2 # same
 
-    opts.geom_feat = True
-    opts.mesh_top1 = True
+    opts.geom_feat = True # same
+    opts.mesh_top1 = True # same
 
     jigsawpy.cmd.jigsaw(opts, mesh)
 
@@ -303,6 +377,7 @@ def triangulation_jigsaw(
         max_edge_length: float = None,
         refinement_feature: Shape = None,
         scaling_type: str = "relative",
+        meshing_kernel: str = "delfront",
         verbosity: int = 1,
     ):
     """
@@ -330,51 +405,8 @@ def triangulation_jigsaw(
     A TINerator Mesh object.
     """
 
-    if scaling_type not in ["absolute", "relative"]:
-        raise ValueError(f"Invalid value for scal: {scaling_type}")
-
-    print(refinement_feature)
-    exit(0)
-
-    #init_near = 1.e-6
-    #geom_seed = 16
-    #geom_feat = True
-    #geom_eta1 = 60
-    #geom_eta2 = 60
-    ## hfun_file = *.msh
-    
-    #hfun_scal = "relative"; ["relative", "absolute"]
-    #hfun_max = 0.02
-    #hfun_min = 0.00
-
-    ## mesh_dims = 2
-    #mesh_kern = "delaunay"; ["delaunay", "delfront"]
-    #mesh_iter = 1e6
-    #mesh_top1 = False
-    #mesh_top2 = True
-    #mesh_rad2 = 1.05
-    #mesh_rad3 = 2.05
-    #mesh_off2 = 0.90
-    #mesh_off3 = 1.10
-    #mesh_snk2 = 0.25
-    #mesh_snk3 = 0.33
-    #mesh_eps1 = 0.33
-    #mesh_eps2 = 0.33
-    #mesh_vol3 = 0.10
-
-    #optm_kern = "odt+dqdx"; ["odt+dqdx", "cvt+dqdx"]
-    #optm_iter = 16
-    #optm_qtol = 1.e-4
-    #optm_qlim = 0.9250
-    #optm_zip_ = True
-    #optm_dv_ = True
-    #optm_tria = True
-    #optm_dual = True
-
-    #verbosity = 0
-
-
-    # https://github.com/dengwirda/jigsaw/blob/master/example.jig
+    assert scaling_type in ["absolute", "relative"]
+    assert meshing_kernel in ["delfront", "delaunay"]
 
     try:
         import jigsawpy
@@ -403,34 +435,56 @@ def triangulation_jigsaw(
     geom.vert2 = np.array(verts, dtype=geom.VERT2_t)
     geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
 
-    # max. mesh-size function value. Interpreted based on SCAL setting.
-    opts.hfun_scal = scaling_type
+    opts.verbosity = verbosity
 
-    # --> max edge = 
-    # xmin, ymin, xmax, ymax = dem.extent
-    # hfun_hmax * np.mean(((ymax - ymin), (xmax - xmin)))
+    # Set SCAL setting and max and min scaling values.
+    opts.hfun_scal = scaling_type
     opts.hfun_hmin = min_edge_length
     opts.hfun_hmax = max_edge_length
 
+    # opts.hfun_scal = "absolute"
+    # opts.hfun_hmax = float("inf")  # null HFUN limits
+    # opts.hfun_hmin = float(+0.00)
+
     # number of "topological" dimensions to mesh.
+    opts.mesh_kern = meshing_kernel
     opts.mesh_dims = +2
 
-    # threshold on mesh cost function above which 
+    # Threshold on mesh cost function above which 
     # gradient-based optimisation is attempted.
-    opts.optm_qlim = +0.95
+    opts.optm_qlim = +0.95 # ???????
+    # opts.optm_iter = +0 # ????????
 
     # enforce 1-dim. topological constraints.
     opts.mesh_top1 = True
 
-    # attempt to auto-detect "sharp-features" in the input geometry.
+    # attempt to auto-detect "sharp-features" in the 
+    # input geometry.
     opts.geom_feat = True
-
-    opts.verbosity = verbosity
-
     #mesh.mesh_iter = 1e5
 
+    if refinement_feature is not None:
+        dmap = distance_map(
+            raster, 
+            refinement_feature, 
+            min_dist=min_edge_length, 
+            max_dist=max_edge_length
+        )
+        hmat = construct_hmat(dmap, raster.extent)
+        opts.hfun_file = os.path.join("/Users/livingston/playground/tinerator/tmp/jigsawtmp", "spacing.msh")
+        jigsawpy.savemsh(opts.hfun_file, hmat)
+
+        # HMIN and HMAX are contained within 
+        # the HMAT raster now
+        opts.hfun_hmin = float(+0.00)
+        opts.hfun_hmax = float("inf")
+
     debug("Starting triangulation")
-    log(opts.__dict__)
+    debug("opts = ")
+    debug(opts.__dict__)
+
+    debug("mesh = ")
+    debug(mesh.__dict__)
     #exit(0)
     jigsawpy.lib.jigsaw(opts, geom, mesh)
     debug("Finished triangulation")
