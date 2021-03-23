@@ -3,7 +3,7 @@ import random
 import os
 import tempfile
 from .mesh import load
-from ..gis import map_elevation, Raster, distance_map
+from ..gis import map_elevation, Raster, Shape, distance_map
 from ..logging import log, warn, debug
 
 
@@ -298,12 +298,43 @@ def triangulation_jigsaw_refined__backup(
 
 def triangulation_jigsaw(
         raster: Raster, 
-        boundary_distance: float,
+        raster_boundary: Shape = None,
+        min_edge_length: float = None,
+        max_edge_length: float = None,
+        refinement_feature: Shape = None,
+        scaling_type: str = "relative",
+        verbosity: int = 1,
     ):
     """
-    Triangulates using the Python wrapper for JIGSAW.
-    Author: Darren Engwirda.
+    Uses JIGSAW to triangulate a raster.
+
+    Parameters
+    ==========
+
+    raster : TINerator Raster object
+    raster_boundary : Shape
+    min_edge_length : float
+    max_edge_length : float, optional
+    refinement_feature : Shape, optional
+    scaling_type : {'absolute', 'relative'}, optional
+
+    Scaling type for mesh-size function. `scaling_type = 'relative'`
+    interprets mesh-size values as percentages of the (mean)
+    length of the axis-aligned bounding-box (AABB) associated 
+    with the geometry. `scaling_type = 'absolute'` interprets 
+    mesh-size values as absolute measures.
+
+    Returns
+    =======
+
+    A TINerator Mesh object.
     """
+
+    if scaling_type not in ["absolute", "relative"]:
+        raise ValueError(f"Invalid value for scal: {scaling_type}")
+
+    print(refinement_feature)
+    exit(0)
 
     #init_near = 1.e-6
     #geom_seed = 16
@@ -353,15 +384,15 @@ def triangulation_jigsaw(
         err += "  https://github.com/dengwirda/jigsaw-python"
         raise ModuleNotFoundError(err)
 
-    log(f"Creating uniform triplane with JIGSAW at edge length {boundary_distance}")
-
-    boundary = raster.get_boundary(distance=boundary_distance)
+    log(f"Triangulating raster with JIGSAW")
 
     debug("Setting JIGSAW parameters")
 
-    verts = [((pt[0], pt[1]), 0) for pt in boundary.points]
-    conn = [((i, i + 1), 0) for i in range(len(boundary.points) - 1)]
-    conn += [((len(boundary.points) - 1, 0), 0)]
+    # TODO: does this respect nodes that aren't already ordered
+    # clockwise?
+    verts = [((pt[0], pt[1]), 0) for pt in raster_boundary.points]
+    conn = [((i, i + 1), 0) for i in range(len(raster_boundary.points) - 1)]
+    conn += [((len(raster_boundary.points) - 1, 0), 0)]
 
     opts = jigsawpy.jigsaw_jig_t()
     geom = jigsawpy.jigsaw_msh_t()
@@ -373,12 +404,13 @@ def triangulation_jigsaw(
     geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
 
     # max. mesh-size function value. Interpreted based on SCAL setting.
-    opts.hfun_scal = "absolute" # relative
-    opts.hfun_hmax = 100. #0.05
+    opts.hfun_scal = scaling_type
 
     # --> max edge = 
     # xmin, ymin, xmax, ymax = dem.extent
     # hfun_hmax * np.mean(((ymax - ymin), (xmax - xmin)))
+    opts.hfun_hmin = min_edge_length
+    opts.hfun_hmax = max_edge_length
 
     # number of "topological" dimensions to mesh.
     opts.mesh_dims = +2
@@ -393,9 +425,15 @@ def triangulation_jigsaw(
     # attempt to auto-detect "sharp-features" in the input geometry.
     opts.geom_feat = True
 
-    jigsawpy.lib.jigsaw(opts, geom, mesh)
+    opts.verbosity = verbosity
+
+    #mesh.mesh_iter = 1e5
 
     debug("Starting triangulation")
+    log(opts.__dict__)
+    #exit(0)
+    jigsawpy.lib.jigsaw(opts, geom, mesh)
+    debug("Finished triangulation")
 
     scr2 = jigsawpy.triscr2(mesh.point["coord"], mesh.tria3["index"])
 
