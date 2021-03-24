@@ -15,9 +15,5 @@ from .facesets_lg import (
 from .util import estimate_edge_lengths
 from .metrics import *
 
-# DEBUG ###########
-from .triangulation_jigsaw import triangulation_jigsaw, triangulation_jigsaw_refined
-# DEBUG ###########
-
 NODE = "node"
 CELL = "cell"
