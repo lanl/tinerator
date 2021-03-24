@@ -97,12 +97,13 @@ def triangulation_jigsaw(
         hmat.mshID = "euclidean-grid"
         hmat.ndims = +2
 
-        dY, dX = dmap.shape
         xmin, ymin, xmax, ymax = dmap.extent
 
-        xpos = np.linspace(xmin, xmax, dX)
-        ypos = np.linspace(ymin, ymax, dY)
-        hfunc = np.array(dmap.data, dtype=float)
+        xpos = np.linspace(xmin, xmax, dmap.ncols)
+        ypos = np.linspace(ymin, ymax, dmap.nrows)
+
+        # The dmap array needs to be flipped vertically
+        hfunc = np.flipud(np.array(dmap.data, dtype=float))
 
         hmat.xgrid = np.array(xpos, dtype=hmat.REALS_t)
         hmat.ygrid = np.array(ypos, dtype=hmat.REALS_t)
@@ -123,7 +124,7 @@ def triangulation_jigsaw(
     jigsawpy.lib.jigsaw(opts, geom, mesh, hfun=hmat)
     debug("Finished triangulation")
 
-    scr2 = jigsawpy.triscr2(mesh.point["coord"], mesh.tria3["index"])
+    # scr2 = jigsawpy.triscr2(mesh.point["coord"], mesh.tria3["index"])
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "mesh.vtk")
