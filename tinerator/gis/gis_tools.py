@@ -9,6 +9,7 @@ import shutil
 import geopandas
 import numpy as np
 import tempfile
+import snowy
 from ..logging import log, warn, debug, error
 from .raster import Raster, load_raster, new_raster
 from .vector import Shape, ShapeType
@@ -160,47 +161,37 @@ def distance_map(raster: Raster, shape: Shape, min_dist: float = 0., max_dist: f
     Creates a distance map.
     '''
 
-    # ======================= #
-    # ASSERT - NORMALIZED 0 TO 1
-    # ======================= #
-
-    # Refernces: 
-    # Marching Parabolas algorithm
-    # https://prideout.net/blog/distance_fields/
-    # http://cs.brown.edu/people/pfelzens/dt/
-
     log("Creating distance map")
 
-    log("ALKSJDKLASJDALDSA")
+    # Rasterize a shapefile onto the same dimensionality
+    # and projection as `raster`
     shape_raster = rasterize_shape(raster, shape)
-    log("2>>> ALKSJDKLASJDALDSA")
-    nrows, ncols = shape_raster.shape
 
-    #x = np.repeat(list(range(ncols)), nrows)
-    #y = np.repeat(list(range(nrows)), ncols)
+    data = np.array(shape_raster.data)
+    data[data < 0] = 0
+    data[data > 0] = 1
+    data = data.astype(bool)
 
-    # 
+    # Use Snowy to generate a signed distance field
+    # (The weird "[:,:,None]" slicing is due to Snowy
+    #  expecting a "channels" dimension (i.e. for RGB))
+    dmap = snowy.generate_sdf(data[:,:,None])[:,:,0]
 
-    print(nrows, ncols)
+    # Turn it from a signed distance field to unsigned
+    dmap[dmap < 0.] = 0.
 
-    x, y = np.meshgrid(np.linspace(1,ncols,80), np.linspace(1,nrows,40)) 
-    dst = np.sqrt(x*x+y*y) 
-    
-    # Intializing sigma and muu 
-    sigma = 100
-    muu = +300.000
-    
-    # Calculating Gaussian array 
-    gauss = np.exp(-( (dst-muu)**2 / ( 2.0 * sigma**2 ) ) ) 
+    # Normalize distance values to [0, 1]
+    dmap /= np.nanmax(dmap)
 
-    #all_nodes = np.array([x,y]).T
-    #shape_nodes = np.argwhere(shape_raster.data == 255)
+    # Now, reproject dfield value range to [min_dist, max_dist]
+    dmap = dmap * (max_dist - min_dist) + min_dist
 
-    #debug(f"Attempting distance map between {shape_nodes.shape} and {all_nodes.shape} nodes")
-
-    #distance_map = new_raster(gauss)
-    gauss = gauss * (max_dist-min_dist) + min_dist
-    return gauss
+    return new_raster(
+        data=dmap, 
+        geotransform=shape_raster.geotransform,
+        crs=shape_raster.crs, 
+        no_data=-9999.
+    )
 
 
 def clip_raster(raster: Raster, shape: Shape) -> Raster:

@@ -5,6 +5,7 @@ import os
 import rasterio
 import gdal
 import pyproj
+import tempfile
 from contextlib import redirect_stdout
 from copy import deepcopy
 from pyproj import CRS
@@ -35,8 +36,28 @@ def load_raster(filename: str, no_data: float = None, to_crs: str = None):
 
     return r
 
-def new_raster(data: np.ndarray, crs: CRS = None, xll_corner: float = None, yll_corner: float = None, no_data_value: float = None, cell_size: float = None):
-    raise NotImplementedError("sorry bout it")
+def new_raster(data: np.ndarray, geotransform: tuple, crs: CRS, no_data: float = -3.e16):
+    '''
+    Creates a new Raster object from a Numpy array.
+    '''
+
+    data = np.array(data, dtype=np.float64)
+    nrows, ncols = data.shape
+    dtype = gdal.GDT_Float64
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        outfile = os.path.join(tmp_dir, "tmp_raster.tif")
+
+        driver = gdal.GetDriverByName("GTiff")
+        outdata = driver.Create(outfile, ncols, nrows, 1, dtype)
+        outdata.SetGeoTransform(geotransform)
+        outdata.SetProjection(crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL))
+        outdata.GetRasterBand(1).WriteArray(data)
+        outdata.GetRasterBand(1).SetNoDataValue(no_data)
+        outdata.FlushCache()
+        outdata = None
+
+        return load_raster(outfile)
 
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):

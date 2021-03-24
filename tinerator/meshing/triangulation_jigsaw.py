@@ -98,13 +98,15 @@ def triangulation_jigsaw(
         hmat.ndims = +2
 
         dY, dX = dmap.shape
-        xmin, ymin, xmax, ymax = raster.extent
+        xmin, ymin, xmax, ymax = dmap.extent
+
         xpos = np.linspace(xmin, xmax, dX)
         ypos = np.linspace(ymin, ymax, dY)
+        hfunc = np.array(dmap.data, dtype=float)
 
         hmat.xgrid = np.array(xpos, dtype=hmat.REALS_t)
         hmat.ygrid = np.array(ypos, dtype=hmat.REALS_t)
-        hmat.value = np.array(dmap, dtype=hmat.REALS_t)
+        hmat.value = np.array(hfunc, dtype=hmat.REALS_t)
 
         # Set to 0 and +inf: 
         # HMIN and HMAX are contained within the HMAT raster now
