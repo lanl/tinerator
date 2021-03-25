@@ -135,5 +135,6 @@ def triangulation_jigsaw(
         mesh = load(outfile, driver="vtk", block_id=1, name="jigsaw-triplane")
 
     mesh.nodes[:, 2] = map_elevation(raster, mesh.nodes)
+    mesh.crs = raster_boundary.crs
 
     return mesh

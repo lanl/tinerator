@@ -2,6 +2,9 @@ import meshio
 import os
 import shutil
 import numpy as np
+import pyproj
+from pyproj import CRS
+from pyproj.crs import CRSError
 from pylagrit import PyLaGriT
 from copy import deepcopy
 from enum import Enum, auto
@@ -143,11 +146,13 @@ class Mesh:
         nodes: np.ndarray = None,
         elements: np.ndarray = None,
         etype: ElementType = None,
+        crs: CRS = None,
     ):
         self.name = name
         self.nodes = nodes
         self.elements = elements
         self.element_type = etype
+        self.crs = crs
         self.metadata = {}
         self.attributes = {}
 
