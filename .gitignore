@@ -2,6 +2,7 @@
 __pycache__/
 build/
 internal/
+*.inp
 lagrit.log
 lagrit.out
 outx3dgen
