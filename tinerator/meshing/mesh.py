@@ -9,7 +9,7 @@ from pylagrit import PyLaGriT
 from copy import deepcopy
 from enum import Enum, auto
 from .facesets_lg import write_facesets
-from .readwrite import write_avs, read_mpas
+from .readwrite import ElementType, read_avs, write_avs, read_mpas
 from ..visualize import view_3d as v3d
 
 
@@ -43,101 +43,55 @@ def load_mesh(
     if driver is None:
         driver = _get_driver(filename)
 
+    if name is None:
+        name = os.path.basename(filename)
+
+    mesh_object = Mesh()
+
     if driver == "mpas":
-        nodes, cells = read_mpas(filename, load_dual_mesh=load_dual_mesh)
+        mesh_object.nodes, mesh_object.elements = read_mpas(filename, load_dual_mesh=load_dual_mesh)
 
         if load_dual_mesh:
-            element_type = ElementType.TRIANGLE
+            mesh_object.element_type = ElementType.TRIANGLE
         else:
-            element_type = ElementType.POLYGON
+            mesh_object.element_type = ElementType.POLYGON
+
+    elif driver == "avsucd":
+        nodes, elements, element_type, material_id, node_atts, cell_atts = read_avs(filename)
+        mesh_object.nodes = nodes
+        mesh_object.elements = elements
+        mesh_object.element_type = element_type
+
+        if material_id is not None:
+            mesh_object.material_id = material_id
+        
+        if node_atts is not None:
+            for att in node_atts.keys():
+                mesh_object.add_attribute(att, node_atts[att], attrb_type="node")
+
+        if cell_atts is not None:
+            for att in cell_atts.keys():
+                mesh_object.add_attribute(att, cell_atts[att], attrb_type="cell")
     else:
         mesh = meshio.read(filename, file_format=driver)
-        nodes = mesh.points
+        mesh_object.nodes = mesh.points
 
         if block_id is None:
             block_id = 0
 
-        cells = mesh.cells[block_id].data + 1
+        mesh_object.elements = mesh.cells[block_id].data + 1
 
         if mesh.cells[block_id].type == "triangle":
-            element_type = ElementType.TRIANGLE
+            mesh_object.element_type = ElementType.TRIANGLE
         elif mesh.cells[block_id].type == "wedge":
-            element_type = ElementType.PRISM
+            mesh_object.element_type = ElementType.PRISM
         else:
             raise ValueError("Mesh type is currently not supported.")
 
-    if name is None:
-        name = os.path.basename(filename)
-
-    return Mesh(name=name, nodes=nodes, elements=cells, etype=element_type)
-
-
-def read_avs(
-    inp_filename: str,
-    keep_material_id: bool = True,
-    keep_node_attributes: bool = True,
-    keep_cell_attributes: bool = True,
-):
-    """
-    Reads an AVS-UCD mesh file (extension: `.inp`) and returns a Mesh object.
-    """
-
-    m = Mesh()
-
-    with open(inp_filename, "r") as f:
-        header = f.readline().strip().split()
-        npts, nelems, nnatt, neatt, _ = [int(x) for x in header]
-
-        nodes = np.zeros((npts, 3), dtype=float)
-
-        for i in range(npts):
-            pt = f.readline().strip().split()
-            _, x, y, z = [float(p) for p in pt]
-
-            nodes[i, :] = np.array([x, y, z], dtype=float)
-
-        m.nodes = nodes
-
-        if nelems:
-            elements = np.zeros((nelems, 3), dtype=int)
-            mat_id = np.ones((nelems,), dtype=int)
-
-        for i in range(nelems):
-            el = f.readline().strip().split()
-
-            if i == 0:
-                if el[2].lower() != "tri":
-                    raise ValueError("Only tri meshes are supported")
-
-            mat_id[i] = int(el[1])
-            elements[i, :] = np.array((el[3], el[4], el[5]), dtype=int)
-
-        if nelems:
-            m.elements = elements
-            m.element_type = ElementType.TRIANGLE
-
-            if keep_material_id:
-                m.material_id = mat_id
-
-        if keep_node_attributes:
-            pass
-
-        if keep_cell_attributes:
-            pass
-
-    return m
-
-
-class ElementType(Enum):
-    TRIANGLE = auto()
-    QUAD = auto()
-    PRISM = auto()
-    HEX = auto()
-    POLYGON = auto()
+    return mesh_object
 
 
 # TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
-
 
 class Mesh:
     def __init__(
@@ -284,7 +238,19 @@ class Mesh:
 
     @material_id.setter
     def material_id(self, v):
-        self.add_attribute("material_id", v, attrb_type="cell")
+        self.add_attribute("material_id", np.array(v, dtype=int), attrb_type="cell")
+
+    @property
+    def node_attributes(self):
+        '''Returns available node attributes'''
+        atts = self.attributes
+        return [x for x in atts if atts[x]["type"] == "node"]
+
+    @property
+    def element_attributes(self):
+        '''Returns available element (cell) attributes'''
+        atts = self.attributes
+        return [x for x in atts if atts[x]["type"] == "cell"]
 
     def map_raster_to_attribute(
         self,
@@ -485,13 +451,11 @@ class Mesh:
             except KeyError:
                 mat_id = None
 
-            node_attributes = {}
-            for attr in self.attributes:
-                if self.attributes[attr]["type"] == "node":
-                    node_attributes[attr] = {
-                        "data": self.attributes[attr]["data"],
-                        "type": "integer",
-                    }
+            node_attributes = { x: self.get_attribute(x) for x in self.node_attributes }
+            elem_attributes = { x: self.get_attribute(x) for x in self.element_attributes if x != 'material_id' }
+
+            print(node_attributes)
+            print(elem_attributes)
 
             write_avs(
                 outfile,
@@ -500,6 +464,7 @@ class Mesh:
                 cname=cell_type,
                 matid=mat_id,
                 node_attributes=node_attributes,
+                cell_attributes=elem_attributes,
             )
         else:
             self.as_meshio().write(outfile)
