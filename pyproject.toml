@@ -6,11 +6,11 @@ line-length = 88
 target-version = ['py36', 'py37', 'py38']
 include = '\.pyi?$'
 
-[flake8]
-ignore = E203, E266, E501, W503, F403, F401
-max-line-length = 79
-max-complexity = 18
-select = B,C,E,F,W,T4,B9
+#[flake8]
+#ignore = E203, E266, E501, W503, F403, F401
+#max-line-length = 79
+#max-complexity = 18
+#select = B,C,E,F,W,T4,B9
 
 #[build-system]
 #requires = ["setuptools>=41.0", "setuptools-scm", "wheel"]
