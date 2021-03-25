@@ -2,15 +2,12 @@ import meshio
 import os
 import shutil
 import numpy as np
-import pyproj
 from pyproj import CRS
-from pyproj.crs import CRSError
 from pylagrit import PyLaGriT
-from copy import deepcopy
-from enum import Enum, auto
 from .facesets_lg import write_facesets
 from .readwrite import ElementType, read_avs, write_avs, read_mpas
 from ..visualize import view_3d as v3d
+from ..logging import error
 
 
 def _get_driver(filename: str):
@@ -49,7 +46,9 @@ def load_mesh(
     mesh_object = Mesh()
 
     if driver == "mpas":
-        mesh_object.nodes, mesh_object.elements = read_mpas(filename, load_dual_mesh=load_dual_mesh)
+        mesh_object.nodes, mesh_object.elements = read_mpas(
+            filename, load_dual_mesh=load_dual_mesh
+        )
 
         if load_dual_mesh:
             mesh_object.element_type = ElementType.TRIANGLE
@@ -57,14 +56,16 @@ def load_mesh(
             mesh_object.element_type = ElementType.POLYGON
 
     elif driver == "avsucd":
-        nodes, elements, element_type, material_id, node_atts, cell_atts = read_avs(filename)
+        nodes, elements, element_type, material_id, node_atts, cell_atts = read_avs(
+            filename
+        )
         mesh_object.nodes = nodes
         mesh_object.elements = elements
         mesh_object.element_type = element_type
 
         if material_id is not None:
             mesh_object.material_id = material_id
-        
+
         if node_atts is not None:
             for att in node_atts.keys():
                 mesh_object.add_attribute(att, node_atts[att], attrb_type="node")
@@ -93,6 +94,7 @@ def load_mesh(
 
 # TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
 
+
 class Mesh:
     def __init__(
         self,
@@ -119,14 +121,10 @@ class Mesh:
         except KeyError:
             raise KeyError("Attribute '%s' does not exist" % name)
 
-    def set_attribute(
-        self, name: str, vector: np.ndarray, at_layer: int = None
-    ):
+    def set_attribute(self, name: str, vector: np.ndarray, at_layer: int = None):
         if at_layer is not None:
             if self.element_type != ElementType.PRISM:
-                raise ValueError(
-                    f"`at_layer` not supported for {self.element_type}."
-                )
+                raise ValueError(f"`at_layer` not supported for {self.element_type}.")
 
             if at_layer < 0:
                 at_layer = self._num_layers + at_layer + 1
@@ -160,9 +158,7 @@ class Mesh:
 
         self.attributes[name]["data"][start:end] = vector
 
-    def add_empty_attribute(
-        self, name: str, attrb_type: str, fill_value: float = 0.0
-    ):
+    def add_empty_attribute(self, name: str, attrb_type: str, fill_value: float = 0.0):
         """
         Creates an empty cell or node attribute with an optional given fill value.
         """
@@ -178,9 +174,7 @@ class Mesh:
 
         self.add_attribute(name, vector, attrb_type=attrb_type)
 
-    def add_attribute(
-        self, name: str, vector: np.ndarray, attrb_type: str = None
-    ):
+    def add_attribute(self, name: str, vector: np.ndarray, attrb_type: str = None):
         # TODO: change 'cell' to 'elem' for consistency or vice versa
         # TODO: auto-add attribute as cell or node based on array length
         if name in self.attributes:
@@ -242,13 +236,13 @@ class Mesh:
 
     @property
     def node_attributes(self):
-        '''Returns available node attributes'''
+        """Returns available node attributes"""
         atts = self.attributes
         return [x for x in atts if atts[x]["type"] == "node"]
 
     @property
     def element_attributes(self):
-        '''Returns available element (cell) attributes'''
+        """Returns available element (cell) attributes"""
         atts = self.attributes
         return [x for x in atts if atts[x]["type"] == "cell"]
 
@@ -344,16 +338,16 @@ class Mesh:
 
     @property
     def edges(self):
-        '''
+        """
         Returns all unique edges in the mesh.
-        '''
-        
+        """
+
         # TODO: this is probably not the most efficient algorithm
 
-        v_edges = [np.vstack([self.elements[:,-1],self.elements[:,0]]).T]
+        v_edges = [np.vstack([self.elements[:, -1], self.elements[:, 0]]).T]
 
         for i in range(self.elements.shape[-1] - 1):
-            v_edges.append(self.elements[:,i:i+2])
+            v_edges.append(self.elements[:, i : i + 2])
 
         return np.unique(np.sort(np.vstack(v_edges), axis=1), axis=0)
 
@@ -385,9 +379,7 @@ class Mesh:
         elif self.element_type == ElementType.POLYGON:
             etype = "polygon"
         else:
-            raise ValueError(
-                "Unknown `self.element_type`...is mesh object malformed?"
-            )
+            raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
 
         cell_arrays = None
         node_arrays = None
@@ -451,11 +443,12 @@ class Mesh:
             except KeyError:
                 mat_id = None
 
-            node_attributes = { x: self.get_attribute(x) for x in self.node_attributes }
-            elem_attributes = { x: self.get_attribute(x) for x in self.element_attributes if x != 'material_id' }
-
-            print(node_attributes)
-            print(elem_attributes)
+            node_attributes = {x: self.get_attribute(x) for x in self.node_attributes}
+            elem_attributes = {
+                x: self.get_attribute(x)
+                for x in self.element_attributes
+                if x != "material_id"
+            }
 
             write_avs(
                 outfile,
@@ -469,9 +462,7 @@ class Mesh:
         else:
             self.as_meshio().write(outfile)
 
-    def as_meshio(
-        self, material_id_as_cell_blocks: bool = False
-    ) -> meshio.Mesh:
+    def as_meshio(self, material_id_as_cell_blocks: bool = False) -> meshio.Mesh:
         """Converts a Mesh object into a meshio.Mesh object."""
 
         if self.element_type == ElementType.TRIANGLE:
@@ -521,9 +512,7 @@ class Mesh:
         """
 
         if facesets is not None and self.element_type == ElementType.TRIANGLE:
-            raise TypeError(
-                "Triangle meshes currently cannot support facesets"
-            )
+            raise TypeError("Triangle meshes currently cannot support facesets")
 
         if self.element_type == ElementType.TRIANGLE:
             dims = 2
@@ -569,21 +558,22 @@ class Mesh:
                 os.remove(fs)
 
 
-class StackedMesh(Mesh):
-    def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
-        super().__init__(name=name, etype=etype)
+# class StackedMesh(Mesh):
+#    def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
+#        super().__init__(name=name, etype=etype)#
 
-        self._cell_layer_ids = None
-        self._num_layers = None
-        self._nodes_per_layer = None
-        self._elems_per_layer = None
+#        self._cell_layer_ids = None
+#        self._num_layers = None
+#        self._nodes_per_layer = None
+#        self._elems_per_layer = None#
 
-    def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
-        return self._cell_layer_ids == layer
+#    def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
+#        return self._cell_layer_ids == layer#
+#
 
-class TriangularMesh(Mesh):
-    def __init__(self, **kwargs):
-        super().__init__(etype=ElementType.TRIANGLE, **kwargs)
+# class TriangularMesh(Mesh):
+#    def __init__(self, **kwargs):
+#        super().__init__(etype=ElementType.TRIANGLE, **kwargs)#
 
-    def stack(self):
-        pass
+#    def stack(self):
+#        pass
