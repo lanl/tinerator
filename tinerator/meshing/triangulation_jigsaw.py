@@ -2,7 +2,7 @@ import numpy as np
 import random
 import os
 import tempfile
-from .mesh import load
+from .mesh import load_mesh
 from ..gis import map_elevation, Raster, Shape, distance_map
 from ..logging import log, warn, debug
 
@@ -132,7 +132,7 @@ def triangulation_jigsaw(
         debug(f"Writing triangulation to disk: {outfile}")
 
         jigsawpy.savevtk(outfile, mesh)
-        mesh = load(outfile, driver="vtk", block_id=1, name="jigsaw-triplane")
+        mesh = load_mesh(outfile, driver="vtk", block_id=1, name="jigsaw-triplane")
 
     mesh.nodes[:, 2] = map_elevation(raster, mesh.nodes)
     mesh.crs = raster_boundary.crs

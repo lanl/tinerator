@@ -331,12 +331,12 @@ def extrude_surface(
             depth, subdivisions = layer
 
         if matids is None:
-            matid_i = [i + 1] * subdivisions
+            matid = [i + 1] * subdivisions
         else:
             matid = matids[i]
 
         layer_objs.append(
-            layer_type(depth, subdivisions, matids=matids, relative_z=True)
+            layer_type(depth, subdivisions, matids=[matid], relative_z=True)
         )
 
     return stack(surfmesh, layer_objs)

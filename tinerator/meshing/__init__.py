@@ -1,4 +1,4 @@
-from .mesh import Mesh, ElementType, load
+from .mesh import Mesh, ElementType, load_mesh
 from .layering import (
     ProportionalSublayering,
     UniformSublayering,

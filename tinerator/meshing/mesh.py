@@ -29,7 +29,7 @@ def _get_driver(filename: str):
         return None
 
 
-def load(
+def load_mesh(
     filename: str,
     load_dual_mesh: bool = True,
     block_id: int = None,
@@ -615,3 +615,10 @@ class StackedMesh(Mesh):
 
     def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
         return self._cell_layer_ids == layer
+
+class TriangularMesh(Mesh):
+    def __init__(self, **kwargs):
+        super().__init__(etype=ElementType.TRIANGLE, **kwargs)
+
+    def stack(self):
+        pass
