@@ -4,7 +4,7 @@ from .gis_tools import (
     get_geometry,
     clip_raster,
     rasterize_shape,
-    distance_map
+    distance_map,
 )
 from .raster import Raster, load_raster
 from .vector import Shape, load_shapefile, ShapeType

@@ -36,10 +36,13 @@ def load_raster(filename: str, no_data: float = None, to_crs: str = None):
 
     return r
 
-def new_raster(data: np.ndarray, geotransform: tuple, crs: CRS, no_data: float = -3.e16):
-    '''
+
+def new_raster(
+    data: np.ndarray, geotransform: tuple, crs: CRS, no_data: float = -3.0e16
+):
+    """
     Creates a new Raster object from a Numpy array.
-    '''
+    """
 
     data = np.array(data, dtype=np.float64)
     nrows, ncols = data.shape
@@ -59,15 +62,14 @@ def new_raster(data: np.ndarray, geotransform: tuple, crs: CRS, no_data: float =
 
         return load_raster(outfile)
 
+
 class Raster:
     def __init__(self, raster_path: str, no_data: float = None):
         self.data = rd.LoadGDAL(raster_path, no_data=no_data)
         self.no_data_value = self.data.no_data
         self.cell_size = self.data.geotransform[1]
         self.xll_corner = self.data.geotransform[0]
-        self.yll_corner = (
-            self.data.geotransform[3] - self.nrows * self.cell_size
-        )
+        self.yll_corner = self.data.geotransform[3] - self.nrows * self.cell_size
         self.filename = raster_path
         self.crs = parse_crs(self.data.projection)
 
@@ -96,20 +98,18 @@ class Raster:
         display += "Units\t\t: %s\n" % self.units
         display += "Dimensions\t: %s\n" % repr((self.nrows, self.ncols))
         display += "NoDataValue\t: %s\n" % repr(self.no_data_value)
-        display += "Value range\t: %s\n" % repr(
-            (np.nanmin(arr), np.nanmax(arr))
-        )
+        display += "Value range\t: %s\n" % repr((np.nanmin(arr), np.nanmax(arr)))
         display += "\n%s\n" % repr(self.data)
 
         return display
 
     @property
     def geotransform(self):
-        '''
+        """
         Raster geotransform.
         In the form of:
         (x_min, pixel_width, 0, y_min, 0, pixel_width)
-        '''
+        """
         return self.data.geotransform
 
     @property
@@ -207,9 +207,7 @@ class Raster:
         masked[self.mask] = np.nan
         return masked
 
-    def fill_depressions(
-        self, fill_depressions: bool = True, fill_flats: bool = True
-    ):
+    def fill_depressions(self, fill_depressions: bool = True, fill_flats: bool = True):
         """
         Fills flats and depressions in a DEM raster.
         On meshes intended to be high-resolution, leaving flats and
@@ -254,7 +252,9 @@ class Raster:
         """
 
         if title is None:
-            title = f'Raster: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
+            title = (
+                f'Raster: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
+            )
 
         objects = [self]
 
@@ -310,10 +310,11 @@ class Raster:
 
         outdata = driver.Create(outfile, self.ncols, self.nrows, 1, gdal.GDT_Float64)
         outdata.SetGeoTransform(self.geotransform)
-        outdata.SetProjection(self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL))
+        outdata.SetProjection(
+            self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
+        )
         outdata.GetRasterBand(1).WriteArray(np.array(self.data, dtype=np.float64))
         outdata.GetRasterBand(1).SetNoDataValue(self.no_data_value)
         outdata.FlushCache()
-        
-        log(f"Raster object saved to {outfile}")
 
+        log(f"Raster object saved to {outfile}")

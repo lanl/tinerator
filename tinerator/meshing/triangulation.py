@@ -4,19 +4,17 @@ from .triangulation_jigsaw import triangulation_jigsaw
 from ..logging import warn, debug, log
 from ..gis import Raster
 
-TRIANGULATION_METHODS = {
-    "jigsaw": triangulation_jigsaw,
-}
+TRIANGULATION_METHODS = {"jigsaw": triangulation_jigsaw}
 
 
 def triangulate(
     raster: Raster,
     min_edge_length: float = None,
     max_edge_length: float = None,
-    refinement_feature = None,
-    method = "jigsaw",
-    scaling_type = "relative",
-    **kwargs
+    refinement_feature=None,
+    method="jigsaw",
+    scaling_type="relative",
+    **kwargs,
 ):
     """
     Triangulate a raster.
@@ -25,7 +23,9 @@ def triangulate(
     valid_callbacks = list(TRIANGULATION_METHODS.keys())
 
     if method not in valid_callbacks:
-        raise ValueError(f"Incorrect method \"{method}\". Must be one of: {valid_callbacks}")
+        raise ValueError(
+            f'Incorrect method "{method}". Must be one of: {valid_callbacks}'
+        )
 
     triang_cb = TRIANGULATION_METHODS[method]
 
@@ -34,14 +34,27 @@ def triangulate(
         coeff = min_edge_length if min_edge_length is not None else max_edge_length
         boundary_dist = coeff * np.mean((np.abs(ymax - ymin), np.abs(xmax - xmin)))
     elif scaling_type == "absolute":
-        boundary_dist = min_edge_length if min_edge_length is not None else max_edge_length
+        boundary_dist = (
+            min_edge_length if min_edge_length is not None else max_edge_length
+        )
     else:
-        raise ValueError(f"Incorrect scaling type \"{scaling_type}\". Must be one of: [\"relative\", \"absolute\"].")
+        raise ValueError(
+            f'Incorrect scaling type "{scaling_type}". Must be one of: ["relative", "absolute"].'
+        )
 
     debug(f"Generating boundary for triangulation at distance = {boundary_dist}")
     boundary = raster.get_boundary(distance=boundary_dist)
 
-    return triang_cb(raster, raster_boundary=boundary, refinement_feature=refinement_feature, min_edge_length=min_edge_length, max_edge_length=max_edge_length, scaling_type=scaling_type, **kwargs)
+    return triang_cb(
+        raster,
+        raster_boundary=boundary,
+        refinement_feature=refinement_feature,
+        min_edge_length=min_edge_length,
+        max_edge_length=max_edge_length,
+        scaling_type=scaling_type,
+        **kwargs,
+    )
+
 
 def triangulate_old(
     raster: Raster,
@@ -76,17 +89,16 @@ def triangulate_old(
 
             return build_uniform_triplane(raster, min_edge, **kwargs)
         elif method == "jigsaw":
-            
 
             return triangulation_jigsaw(raster, min_edge, **kwargs)
         else:
-            raise ValueError(
-                f'Unknown uniform triangulation method: "{method}"'
-            )
+            raise ValueError(f'Unknown uniform triangulation method: "{method}"')
     else:
 
         if refinement_feature is None:
-            raise ValueError("For refined triangulation, `refinement_feature` is required")
+            raise ValueError(
+                "For refined triangulation, `refinement_feature` is required"
+            )
 
         if method == "lagrit":
             from .refined_triplane_lg import build_refined_triplane
@@ -101,6 +113,4 @@ def triangulate_old(
                 raster, min_edge, max_edge, refinement_feature, **kwargs
             )
         else:
-            raise ValueError(
-                f'Unknown refined triangulation method: "{method}"'
-            )
+            raise ValueError(f'Unknown refined triangulation method: "{method}"')

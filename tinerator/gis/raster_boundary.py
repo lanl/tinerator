@@ -1,9 +1,8 @@
 import numpy as np
 from ..logging import log, warn, debug, error
 
-def __line_connectivity(
-    nodes: np.ndarray, connect_ends: bool = False
-) -> np.ndarray:
+
+def __line_connectivity(nodes: np.ndarray, connect_ends: bool = False) -> np.ndarray:
     """
     Simple function to define a closed or open polyline for a set of
     nodes. Assumes adjacency in array == implicit connection.
@@ -171,11 +170,10 @@ def square_trace_boundary(
     p.direction = p.north
     _updateB(p.x, p.y)
     p.moveLeft()
-    c = [p.x, p.y]
 
     iters = 0
     while iters < maxiters:
-        iters += 1 # Break if no convergence
+        iters += 1  # Break if no convergence
 
         # Are we back at the origin?
         if [p.x, p.y] == s:

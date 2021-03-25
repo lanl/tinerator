@@ -35,10 +35,7 @@ class Shape:
         self.connectivity = connectivity
         self.shape_type = shape_type
 
-        if (
-            self.connectivity is not None
-            and self.shape_type == ShapeType.POINT
-        ):
+        if self.connectivity is not None and self.shape_type == ShapeType.POINT:
             error("Shape of type `point` has meaningless connectivity.")
 
         self.crs = parse_crs(crs)
@@ -93,7 +90,9 @@ class Shape:
         """
 
         if title is None:
-            title = f'Shape: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
+            title = (
+                f'Shape: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
+            )
 
         objects = [self]
 
@@ -132,18 +131,22 @@ class Shape:
 
             # LINESTRING
             elif self.shape_type == ShapeType.POLYLINE:
-                warn("Saving shapefile as polyline: does not take connectivity vector into account")
+                warn(
+                    "Saving shapefile as polyline: does not take connectivity vector into account"
+                )
                 w.field("name", "C")
                 w.line([points])
                 w.record("linestring1")
 
             # POLYGON
             elif self.shape_type == ShapeType.POLYGON:
-                warn("Saving shapefile as polygon: does not take connectivity vector into account")
+                warn(
+                    "Saving shapefile as polygon: does not take connectivity vector into account"
+                )
                 w.field("name", "C")
                 w.poly([points])
                 w.record("polygon1")
-            
+
             else:
                 raise ValueError(f"Unknown shape_type: {self.shape_type}")
 
@@ -152,7 +155,7 @@ class Shape:
         # CRS info must be written out manually. See the reader.
         with open(crs_outfile, "w") as f:
             f.write(self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_ESRI))
-        
+
         log(f"CRS information written to {crs_outfile}")
 
     def reproject(self, to_crs: str):

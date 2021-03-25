@@ -8,7 +8,8 @@ from pyproj import CRS
 from pyproj.crs import CRSError
 from ..logging import log, warn, debug, error
 
-def parse_crs(crs):#: Union[str, int, CRS]) -> CRS:
+
+def parse_crs(crs):  #: Union[str, int, CRS]) -> CRS:
     """Make a CRS from a string (WKT) or int (EPSG).
 
     Parameters
@@ -29,6 +30,7 @@ def parse_crs(crs):#: Union[str, int, CRS]) -> CRS:
     else:
         warn("Could not parse CRS. Defaulting to EPSG: 32601.")
         return CRS.from_epsg(32601)
+
 
 def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:
     """
@@ -77,9 +79,7 @@ def unproject_vector(vector: np.ndarray, raster) -> np.ndarray:
     cellSize = raster.cell_size
     nRows = raster.nrows
 
-    map_x = lambda x: (cellSize + 2.0 * float(x) - 2.0 * xllCorner) / (
-        2.0 * cellSize
-    )
+    map_x = lambda x: (cellSize + 2.0 * float(x) - 2.0 * xllCorner) / (2.0 * cellSize)
     map_y = lambda y: ((yllCorner - y) / cellSize + nRows + 1.0 / 2.0)
 
     x_arr = np.reshape(list(map(map_x, vector[:, 0])), (nNodes, 1))
@@ -107,9 +107,7 @@ def project_vector(vector: np.ndarray, raster) -> np.ndarray:
 
     map_x = lambda x: (xllCorner + (float(x) * cellSize) - (cellSize / 2.0))
     map_y = lambda y: (
-        yllCorner
-        + (float(0.0 - y + float(nRows)) * cellSize)
-        - (cellSize / 2.0)
+        yllCorner + (float(0.0 - y + float(nRows)) * cellSize) - (cellSize / 2.0)
     )
 
     x_arr = np.reshape(list(map(map_x, vector[:, 0])), (nNodes, 1))
@@ -168,14 +166,13 @@ def get_feature_trace(
     """
 
     threshold_matrix = feature > feature_threshold
-    xy = np.transpose(np.where(threshold_matrix == True))
+    xy = np.transpose(np.where(threshold_matrix is True))
     xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
 
     return xy
 
-def order_points(
-    points: np.ndarray, opt: str = "polar", clockwise: bool = True
-):
+
+def order_points(points: np.ndarray, opt: str = "polar", clockwise: bool = True):
     """
     Given a 2D array of points, this function reorders points clockwise.
     Available methods are: 'angle', to sort by angle, 'polar', to sort by
@@ -244,7 +241,7 @@ def order_points(
         pts = nearest_neighbor_sort(points)
     else:
         raise ValueError("Unknown sorting method")
-    
+
     if not clockwise:
         pts = pts[::-1]
 

@@ -7,6 +7,7 @@ from .vector import Shape, ShapeType
 from .raster import Raster
 from ..logging import log, warn, debug
 
+
 def watershed_delineation(
     raster: Raster,
     threshold: float = None,
@@ -24,7 +25,7 @@ def watershed_delineation(
 
     raster : tin.gis.Raster object
         A DEM as a TINerator Raster object.
-    
+
     threshold : float, optional
         The numerical threshold where every cell with a value
         above this number is considered a flow path, and every
@@ -32,13 +33,13 @@ def watershed_delineation(
 
     method : str, optional
        The watershed delineation algorithm, one of:
-       * D8, 
-    
+       * D8,
+
     Returns
     -------
     river_network : tin.gis.Shape
        The extracted river network.
-    
+
     Examples
     --------
     >>> d = tin.gis.load_raster("dem.tif")
@@ -66,19 +67,19 @@ def watershed_delineation(
     if threshold is None:
         M = np.asarray(accum_matrix)
         threshold = np.mean(M) + np.std(M)
-        log(f"Threshold was not set by user; set automatically to: {round(threshold, 5)}. Adjust this value to adjust the river network.")
+        log(
+            f"Threshold was not set by user; set automatically to: {round(threshold, 5)}. Adjust this value to adjust the river network."
+        )
 
     # Generate a polyline from data
     threshold_matrix = accum_matrix > threshold
-    xy = np.transpose(np.where(threshold_matrix == True))
+    xy = np.transpose(np.where(threshold_matrix is True))
     xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
     xy = xy.astype(float)
 
     # Was threshold too high? Or method/params wrong?
     if np.size(xy) == 0:
-        raise ValueError(
-            "Could not generate feature. Threshold may be too high."
-        )
+        raise ValueError("Could not generate feature. Threshold may be too high.")
 
     # Put data into Shape object
     xy = Shape(

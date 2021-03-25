@@ -1,5 +1,5 @@
 from copy import deepcopy
-from .lagrit_helper import *
+from .lagrit_helper import write_line, cleanup
 from .mesh import read_avs
 from ..gis import Raster, DistanceMap
 from ..gis import map_elevation
@@ -15,7 +15,7 @@ def build_uniform_triplane(
     # a minimum edge length of `edge_length / 2`, and a maximum edge
     # length of `edge_length`.
 
-    edge_length = edge_length * 2.
+    edge_length = edge_length * 2.0
 
     from pylagrit import PyLaGriT
 

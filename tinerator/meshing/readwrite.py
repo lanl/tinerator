@@ -1,6 +1,8 @@
 import numpy as np
 from netCDF4 import Dataset
 from enum import Enum, auto
+from ..logging import debug, log
+
 
 class ElementType(Enum):
     TRIANGLE = auto()
@@ -9,10 +11,8 @@ class ElementType(Enum):
     HEX = auto()
     POLYGON = auto()
 
-AVS_TYPE_MAPPING = {
-    'tri': ElementType.TRIANGLE,
-    'prism': ElementType.PRISM,
-}
+
+AVS_TYPE_MAPPING = {"tri": ElementType.TRIANGLE, "prism": ElementType.PRISM}
 
 
 def read_mpas(filename: str, load_dual_mesh: bool = True):
@@ -22,15 +22,15 @@ def read_mpas(filename: str, load_dual_mesh: bool = True):
     with Dataset(filename, "r") as nc:
 
         try:
-            on_a_sphere = (
-                True if nc.on_a_sphere.strip().lower() == "yes" else False
-            )
-        except:
+            on_a_sphere = True if nc.on_a_sphere.strip().lower() == "yes" else False
+        except Exception:
             on_a_sphere = None
+
+        debug(f"On a sphere? {on_a_sphere}")
 
         # Get some dimensions
         nCells = nc.dimensions["nCells"].size
-        nEdges = nc.dimensions["nEdges"].size
+        # nEdges = nc.dimensions["nEdges"].size
         nVertices = nc.dimensions["nVertices"].size
 
         if load_dual_mesh:
@@ -48,6 +48,7 @@ def read_mpas(filename: str, load_dual_mesh: bool = True):
 
     return vertices, connectivity
 
+
 def read_avs(
     inp_filename: str,
 ):
@@ -57,10 +58,7 @@ def read_avs(
 
     nodes = elements = element_type = node_atts = elem_atts = None
 
-    dtype_map = {
-        'integer': int,
-        'real': float,
-    }
+    dtype_map = {"integer": int, "real": float}
 
     with open(inp_filename, "r") as f:
         header = map(int, f.readline().strip().split())
@@ -72,7 +70,7 @@ def read_avs(
                 lines.append(f.readline().strip().split())
             lines = np.array(lines)
 
-            nodes = lines[:,1:].astype(float)
+            nodes = lines[:, 1:].astype(float)
 
         if n_elems:
             lines = []
@@ -80,25 +78,40 @@ def read_avs(
                 lines.append(f.readline().strip().split())
             lines = np.array(lines)
 
-            material_id = lines[:,1].astype(int)
-            elements = lines[:,3:].astype(int)
-            element_type = AVS_TYPE_MAPPING[lines[0,2].lower()]
+            material_id = lines[:, 1].astype(int)
+            elements = lines[:, 3:].astype(int)
+            element_type = AVS_TYPE_MAPPING[lines[0, 2].lower()]
 
         if n_node_atts:
-            _ = f.readline() # 00005  1  1  1  1  1
+            _ = f.readline()  # 00005  1  1  1  1  1
 
-            names = [[x.strip() for x in f.readline().split(',')] for _ in range(n_node_atts)]
-            data = np.array([f.readline().split()[1:] for _ in range(n_nodes)], dtype=float)
-            node_atts = { names[i][0]: data[:,i].astype(dtype_map[names[i][1]]) for i in range(n_node_atts) }
+            names = [
+                [x.strip() for x in f.readline().split(",")] for _ in range(n_node_atts)
+            ]
+            data = np.array(
+                [f.readline().split()[1:] for _ in range(n_nodes)], dtype=float
+            )
+            node_atts = {
+                names[i][0]: data[:, i].astype(dtype_map[names[i][1]])
+                for i in range(n_node_atts)
+            }
 
         if n_elem_atts:
-            _ = f.readline() # 00005  1  1  1  1  1
+            _ = f.readline()  # 00005  1  1  1  1  1
 
-            names = [[x.strip() for x in f.readline().split(',')] for _ in range(n_elem_atts)]
-            data = np.array([f.readline().split()[1:] for _ in range(n_elems)], dtype=float)
-            elem_atts = { names[i][0]: data[:,i].astype(dtype_map[names[i][1]]) for i in range(n_node_atts) }
-            
+            names = [
+                [x.strip() for x in f.readline().split(",")] for _ in range(n_elem_atts)
+            ]
+            data = np.array(
+                [f.readline().split()[1:] for _ in range(n_elems)], dtype=float
+            )
+            elem_atts = {
+                names[i][0]: data[:, i].astype(dtype_map[names[i][1]])
+                for i in range(n_node_atts)
+            }
+
     return nodes, elements, element_type, material_id, node_atts, elem_atts
+
 
 def write_avs(
     outfile: str,
@@ -113,18 +126,14 @@ def write_avs(
     Write a mesh to an AVS-UCD file.
     """
 
-    write_list = lambda f, lst: f.write(' '.join(map(str, lst)) + '\n')
+    write_list = lambda f, lst: f.write(" ".join(map(str, lst)) + "\n")
 
     with open(outfile, "w") as f:
 
         n_nodes = nodes.shape[0]
         n_cells = cells.shape[0] if cells is not None else 0
-        n_node_atts = (
-            len(node_attributes) if node_attributes is not None else 0
-        )
-        n_cell_atts = (
-            len(cell_attributes) if cell_attributes is not None else 0
-        )
+        n_node_atts = len(node_attributes) if node_attributes is not None else 0
+        n_cell_atts = len(cell_attributes) if cell_attributes is not None else 0
 
         # Write out the header
         write_list(f, [n_nodes, n_cells, n_node_atts, n_cell_atts, 0])
@@ -133,7 +142,7 @@ def write_avs(
         #    index, x, y, z
         if n_nodes:
             for (i, node) in enumerate(nodes):
-                write_list(f, [i+1, *node])
+                write_list(f, [i + 1, *node])
 
         # Write out the cells
         # index, material id, cell type, ...connectivity
@@ -142,7 +151,7 @@ def write_avs(
                 matid = [1] * n_cells
 
             for (i, cell) in enumerate(cells):
-                write_list(f, [i+1, matid[i], cname, *cell])
+                write_list(f, [i + 1, matid[i], cname, *cell])
 
         if n_node_atts:
             atts = node_attributes
@@ -159,7 +168,7 @@ def write_avs(
 
             # node index, all attribute values at that node
             for i in range(n_nodes):
-                write_list(f, [i+1] + [atts[x][i] for x in att_names])
+                write_list(f, [i + 1] + [atts[x][i] for x in att_names])
 
         if n_cell_atts:
             atts = cell_attributes
@@ -176,4 +185,4 @@ def write_avs(
 
             # node index, all attribute values at that node
             for i in range(n_nodes):
-                write_list(f, [i+1] + [atts[x][i] for x in att_names])
+                write_list(f, [i + 1] + [atts[x][i] for x in att_names])

@@ -14,6 +14,7 @@ from ..logging import log, warn, debug, error
 from .raster import Raster, load_raster, new_raster
 from .vector import Shape, ShapeType
 
+
 def get_geometry(shapefile_path: str) -> list:
     """
     Reads a shapefile and returns a list of dicts of
@@ -121,10 +122,11 @@ def reproject_raster_2(raster_in: str, raster_out: str, dst_crs: str) -> None:
                     resampling=Resampling.nearest,
                 )
 
+
 def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
-    '''
+    """
     Rasterizes a shape.
-    '''
+    """
 
     log(f"Rasterizing {shape} to {raster}")
 
@@ -143,12 +145,18 @@ def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
         shp_layer = shp_fh.GetLayer()
 
         driver = gdal.GetDriverByName("GTiff")
-        outdata = driver.Create(RASTERIZE_OUT, raster.ncols, raster.nrows, 1, gdal.GDT_Float64)
+        outdata = driver.Create(
+            RASTERIZE_OUT, raster.ncols, raster.nrows, 1, gdal.GDT_Float64
+        )
         outdata.SetGeoTransform(raster.geotransform)
-        outdata.SetProjection(raster.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL))
+        outdata.SetProjection(
+            raster.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
+        )
         outdata.GetRasterBand(1).SetNoDataValue(raster.no_data_value)
         outdata.GetRasterBand(1).FlushCache()
-        gdal.RasterizeLayer(outdata, [1], shp_layer, burn_values=[255])#, options=["ATTRIBUTE=hedgerow"])
+        gdal.RasterizeLayer(
+            outdata, [1], shp_layer, burn_values=[255]
+        )  # , options=["ATTRIBUTE=hedgerow"])
         outdata.FlushCache()
 
         # Deleting this forces GDAL to flush to disk
@@ -156,10 +164,13 @@ def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
 
         return load_raster(RASTERIZE_OUT)
 
-def distance_map(raster: Raster, shape: Shape, min_dist: float = 0., max_dist: float = 1.) -> Raster:
-    '''
+
+def distance_map(
+    raster: Raster, shape: Shape, min_dist: float = 0.0, max_dist: float = 1.0
+) -> Raster:
+    """
     Creates a distance map.
-    '''
+    """
 
     log("Creating distance map")
 
@@ -175,10 +186,10 @@ def distance_map(raster: Raster, shape: Shape, min_dist: float = 0., max_dist: f
     # Use Snowy to generate a signed distance field
     # (The weird "[:,:,None]" slicing is due to Snowy
     #  expecting a "channels" dimension (i.e. for RGB))
-    dmap = snowy.generate_sdf(data[:,:,None])[:,:,0]
+    dmap = snowy.generate_sdf(data[:, :, None])[:, :, 0]
 
     # Turn it from a signed distance field to unsigned
-    dmap[dmap < 0.] = 0.
+    dmap[dmap < 0.0] = 0.0
 
     # Normalize distance values to [0, 1]
     dmap /= np.nanmax(dmap)
@@ -187,26 +198,28 @@ def distance_map(raster: Raster, shape: Shape, min_dist: float = 0., max_dist: f
     dmap = dmap * (max_dist - min_dist) + min_dist
 
     return new_raster(
-        data=dmap, 
+        data=dmap,
         geotransform=shape_raster.geotransform,
-        crs=shape_raster.crs, 
-        no_data=-9999.
+        crs=shape_raster.crs,
+        no_data=-9999.0,
     )
 
 
 def clip_raster(raster: Raster, shape: Shape) -> Raster:
-    '''
+    """
     Returns a new Raster object, clipped by a Shape polygon.
 
     dem = tin.gis.load_raster("raster.tif")
     boundary = tin.gis.load_shapefile("boundary.shp")
     new_dem = tin.gis.clip_raster(dem, boundary)
-    '''
+    """
 
-    log(f"Clipping raster with shapefile")
+    log("Clipping raster with shapefile")
 
     if shape.shape_type != ShapeType.POLYGON:
-        warn(f"Vector shape type must be polygon to clip raster, not {shape.shape_type}.")
+        warn(
+            f"Vector shape type must be polygon to clip raster, not {shape.shape_type}."
+        )
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         debug(f"Temp directory created at: {tmp_dir}")
@@ -218,18 +231,19 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
         raster.save(RASTER_OUT)
         shape.save(VECTOR_OUT)
 
-        debug(f"Shapefile was saved from memory to disk")
+        debug("Shapefile was saved from memory to disk")
 
         gdal.Warp(
-            CLIPPED_RASTER_OUT, 
-            RASTER_OUT, 
-            format = 'GTiff',
-            outputType = gdal.GDT_Float64, 
-            cutlineDSName = VECTOR_OUT,
-            cropToCutline = True
+            CLIPPED_RASTER_OUT,
+            RASTER_OUT,
+            format="GTiff",
+            outputType=gdal.GDT_Float64,
+            cutlineDSName=VECTOR_OUT,
+            cropToCutline=True,
         )
 
         return load_raster(CLIPPED_RASTER_OUT)
+
 
 def reproject_raster(raster: Raster, dst_crs) -> Raster:
 
@@ -240,20 +254,8 @@ def reproject_raster(raster: Raster, dst_crs) -> Raster:
         REPROJ_RASTER_OUT = os.path.join(tmp_dir, "raster_reprojected.tif")
 
         raster.save(RASTER_OUT)
+        debug("Shapefile was saved from memory to disk")
 
-        #if isinstance(dst_crs, CRS):
-        #    self.crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
-
-        #gdalsrsinfo -o wkt other.tif > target.wkt
-        #gdalwarp -t_srs target.wkt source.tif output.tif
-
-        debug(f"Shapefile was saved from memory to disk")
-
-        gdal.Warp(
-            REPROJ_RASTER_OUT,
-            RASTER_OUT,
-            dstSRS = dst_crs,
-            format = 'GTiff',
-        )
+        gdal.Warp(REPROJ_RASTER_OUT, RASTER_OUT, dstSRS=dst_crs, format="GTiff")
 
         return load_raster(REPROJ_RASTER_OUT)

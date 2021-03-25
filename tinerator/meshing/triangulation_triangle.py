@@ -16,11 +16,7 @@ def triangulation_triangle_uniform(
     max_area = max_edge
     boundary = raster.get_boundary(distance=5.0, connect_ends=True)
 
-    opts = {
-        "q": quality,
-        "p": True,
-        "a": (round(max_area, 2)),
-    }
+    # opts = {"q": quality, "p": True, "a": (round(max_area, 2))}
 
     t = tr.triangulate(
         {
@@ -38,6 +34,6 @@ def triangulation_triangle_uniform(
     m.elements = t["triangles"] + 1
     m.element_type = ElementType.TRIANGLE
 
-    m.nodes[:, 2] = map_elevation(dem, m.nodes)
+    m.nodes[:, 2] = map_elevation(raster, m.nodes)
 
     return m

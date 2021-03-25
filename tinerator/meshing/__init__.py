@@ -7,16 +7,13 @@ from .layering import (
     extrude_surface,
 )
 from .triangulation import triangulate
-from .facesets_lg import (
-    FacesetBasic,
-    FacesetFromSides,
-    FacesetFromElevations,
-)
+from .facesets_lg import FacesetBasic, FacesetFromSides, FacesetFromElevations
 from .util import estimate_edge_lengths
 from .metrics import *
 
 # DEV ================== #
 from .layering_dev import DEV_get_dummy_layers, DEV_stack
+
 # DEV ================== #
 
 NODE = "node"

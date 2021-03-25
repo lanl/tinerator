@@ -6,16 +6,17 @@ from .mesh import load_mesh
 from ..gis import map_elevation, Raster, Shape, distance_map
 from ..logging import log, warn, debug
 
+
 def triangulation_jigsaw(
-        raster: Raster, 
-        raster_boundary: Shape = None,
-        min_edge_length: float = None,
-        max_edge_length: float = None,
-        refinement_feature: Shape = None,
-        scaling_type: str = "relative",
-        meshing_kernel: str = "delfront",
-        jigsaw_opts: dict = { 'verbosity': 1 },
-    ):
+    raster: Raster,
+    raster_boundary: Shape = None,
+    min_edge_length: float = None,
+    max_edge_length: float = None,
+    refinement_feature: Shape = None,
+    scaling_type: str = "relative",
+    meshing_kernel: str = "delfront",
+    jigsaw_opts: dict = {"verbosity": 1},
+):
     """
     Uses JIGSAW to triangulate a raster.
 
@@ -31,8 +32,8 @@ def triangulation_jigsaw(
 
       Scaling type for mesh-size function. `scaling_type = 'relative'`
       interprets mesh-size values as percentages of the (mean)
-      length of the axis-aligned bounding-box (AABB) associated 
-      with the geometry. `scaling_type = 'absolute'` interprets 
+      length of the axis-aligned bounding-box (AABB) associated
+      with the geometry. `scaling_type = 'absolute'` interprets
       mesh-size values as absolute measures.
 
     meshing_kernel : {'delfront', 'delaunay'}, optional
@@ -55,7 +56,7 @@ def triangulation_jigsaw(
         err += "  https://github.com/dengwirda/jigsaw-python"
         raise ModuleNotFoundError(err)
 
-    log(f"Triangulating raster with JIGSAW")
+    log("Triangulating raster with JIGSAW")
 
     # TODO: does this respect nodes that aren't already ordered
     # clockwise?
@@ -75,7 +76,7 @@ def triangulation_jigsaw(
     geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
 
     # Construct JIGSAW opts object
-    opts.hfun_scal = scaling_type # Interpret HMIN/HMAX as relative or absolute?
+    opts.hfun_scal = scaling_type  # Interpret HMIN/HMAX as relative or absolute?
     opts.hfun_hmin = min_edge_length
     opts.hfun_hmax = max_edge_length
     opts.mesh_kern = meshing_kernel
@@ -87,10 +88,10 @@ def triangulation_jigsaw(
     # Construct HMAT object (refinement function)
     if refinement_feature is not None:
         dmap = distance_map(
-            raster, 
-            refinement_feature, 
-            min_dist=min_edge_length, 
-            max_dist=max_edge_length
+            raster,
+            refinement_feature,
+            min_dist=min_edge_length,
+            max_dist=max_edge_length,
         )
 
         hmat = jigsawpy.jigsaw_msh_t()
@@ -109,7 +110,7 @@ def triangulation_jigsaw(
         hmat.ygrid = np.array(ypos, dtype=hmat.REALS_t)
         hmat.value = np.array(hfunc, dtype=hmat.REALS_t)
 
-        # Set to 0 and +inf: 
+        # Set to 0 and +inf:
         # HMIN and HMAX are contained within the HMAT raster now
         opts.hfun_hmin = float(+0.00)
         opts.hfun_hmax = float("inf")
@@ -128,7 +129,7 @@ def triangulation_jigsaw(
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "mesh.vtk")
-        
+
         debug(f"Writing triangulation to disk: {outfile}")
 
         jigsawpy.savevtk(outfile, mesh)
