@@ -6,12 +6,20 @@ line-length = 88
 target-version = ['py36', 'py37', 'py38']
 include = '\.pyi?$'
 
-#[flake8]
-#ignore = E203, E266, E501, W503, F403, F401
-#max-line-length = 79
-#max-complexity = 18
-#select = B,C,E,F,W,T4,B9
+[tool.poetry]
+name = "tinerator"
+version = "1.0.0"
+description = "Complex mesh generation from GIS data."
+authors = ["Daniel Reece Livingston <livingston@lanl.gov>"]
 
-#[build-system]
-#requires = ["setuptools>=41.0", "setuptools-scm", "wheel"]
-#build-backend = "setuptools.build_meta"
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "^1.20.1"
+pyproj = "^3.0.1"
+meshio = "^4.3.11"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
