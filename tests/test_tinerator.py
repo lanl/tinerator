@@ -55,3 +55,33 @@ def test_meshing_workflow():
     volume_mesh.save("test_vol.inp")
 
     assert meshes_equal("test_vol.inp", data.volume_mesh)
+
+    tin.meshing.DEV_basic_facesets(volume_mesh)
+
+
+"""
+    _cleanup.append(boundary_file)
+    dem_object._stacked_mesh.resetpts_itp()
+
+    dem_object.lg.sendline('resetpts/itp')
+    dem_object.lg.sendline('createpts/median')
+    dem_object.lg.sendline('sort/{0}/index/ascending/ikey/itetclr zmed ymed xmed'.format(dem_object._stacked_mesh.name))
+    dem_object.lg.sendline('reorder/{0}/ikey'.format(dem_object._stacked_mesh.name))
+    dem_object.lg.sendline('cmo/DELATT/{0}/ikey'.format(dem_object._stacked_mesh.name))
+    dem_object.lg.sendline('cmo/DELATT/{0}/xmed'.format(dem_object._stacked_mesh.name))
+    dem_object.lg.sendline('cmo/DELATT/{0}/ymed'.format(dem_object._stacked_mesh.name))
+    dem_object.lg.sendline('cmo/DELATT/{0}/zmed'.format(dem_object._stacked_mesh.name))
+    dem_object.lg.sendline('cmo/DELATT/{0}/ikey'.format(dem_object._stacked_mesh.name))
+
+    cmo_in = dem_object._stacked_mesh.copy()
+
+    # Extract surface w/ cell & face attributes to get the outside face
+    # to element relationships
+
+    try:
+        raise Exception('Unknown bug in standard surfmesh...move to catch')
+        mo_surf = dem_object.lg.extract_surfmesh(cmo_in=cmo_in,
+                                                 stride=[1,0,0],
+                                                 external=True,
+                                                 resetpts_itp=True)
+"""
