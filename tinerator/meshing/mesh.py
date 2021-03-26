@@ -558,18 +558,18 @@ class Mesh:
                 os.remove(fs)
 
 
-# class StackedMesh(Mesh):
-#    def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
-#        super().__init__(name=name, etype=etype)#
+class StackedMesh(Mesh):
+    def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
+        super().__init__(name=name, etype=etype)
+        self._cell_layer_ids = None
+        self._num_layers = None
+        self._nodes_per_layer = None
+        self._elems_per_layer = None
 
-#        self._cell_layer_ids = None
-#        self._num_layers = None
-#        self._nodes_per_layer = None
-#        self._elems_per_layer = None#
+    def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
+        raise NotImplementedError("Layering in progress")
+        # return self._cell_layer_ids == layer
 
-#    def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
-#        return self._cell_layer_ids == layer#
-#
 
 # class TriangularMesh(Mesh):
 #    def __init__(self, **kwargs):

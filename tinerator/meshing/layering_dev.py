@@ -44,9 +44,9 @@ def DEV_stack(layers: list, matids: list = None):
         lg = PyLaGriT(verbose=_pylagrit_verbosity(), cwd=tmp_dir)
 
         if matids is None:
-            matids = [1] * (len(layers) - 1)
+            matids = list(range(1, len(layers)))
 
-        assert len(matids) == (len(layers) - 1)
+        assert len(matids) == len(layers) - 1
 
         layer_files = []
 
@@ -57,14 +57,14 @@ def DEV_stack(layers: list, matids: list = None):
             layer_files.append(layer_out)
 
         log("Adding volume to layers")
-        debug(f"Layer files: {layer_files}")
+        debug(f"Layer files: {str(layer_files)}")
 
         stack = lg.create()
         stack.stack_layers(
             layer_files,
             flip_opt=True,
             nlayers=[""] * len(layer_files),
-            matids=matids,
+            matids=matids[::-1] + [-1],
         )
 
         debug("Filling layers with `stack_fill`")
