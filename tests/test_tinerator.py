@@ -34,6 +34,21 @@ def meshes_equal(test_fname, gold_fname) -> bool:
     return True
 
 
+# def test_get_boundary():
+#    boundary = dem.get_boundary(distance=1)
+
+# def test_clip_raster():
+#    boundary = tin.gis.load_shapefile
+#    dem2 = tin.gis.clip_raster(dem, boundary)
+#    assert something
+
+# def test_reproject():
+#    usgs_dem = tin.gis.reproject_raster(usgs_dem, 'EPSG:32112')
+#    usgs_dem = tin.gis.reproject_shapefile(usgs_dem, 'EPSG:32112')#
+#    dem.reproject('EPSG:6666')
+#    shapefile.reproject('EPSG:234')
+
+
 def test_raster_load():
     data = ExampleData.NewMexico
     _ = tin.gis.load_raster(data.dem)

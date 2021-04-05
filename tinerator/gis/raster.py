@@ -272,11 +272,18 @@ class Raster:
             raster_hillshade=hillshade,
         )
 
-    def get_boundary(self, distance: float = None, connect_ends: bool = False) -> Shape:
+    def get_boundary(self, distance: float = None, as_polygon: bool = False) -> Shape:
         """
         Get a line mesh with nodes seperated by distance `distance` that
         describe the boundary of this raster object.
         """
+
+        if as_polygon:
+            connect_ends = True
+            shape_type = ShapeType.POLYGON
+        else:
+            connect_ends = False
+            shape_type = ShapeType.POLYLINE
 
         if distance is None:
             distance = 10.0
@@ -292,7 +299,7 @@ class Raster:
         return Shape(
             points=project_vector(vertices, self),
             crs=self.crs,
-            shape_type=ShapeType.POLYLINE,
+            shape_type=shape_type,
             connectivity=connectivity,
         )
 

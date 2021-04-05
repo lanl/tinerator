@@ -9,6 +9,10 @@ from .mesh import Mesh, StackedMesh, ElementType, load_mesh
 from ..logging import log, warn, debug, _pylagrit_verbosity
 
 
+def DEV_spit_out_simple_mesh(volume_mesh):
+    pass
+
+
 def extract_surface_mesh(mesh):  #: Mesh):
     """
     Extracts the boundary of a mesh. For a solid (volume) mesh,
