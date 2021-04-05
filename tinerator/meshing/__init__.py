@@ -12,7 +12,12 @@ from .util import estimate_edge_lengths
 from .metrics import *
 
 # DEV ================== #
-from .layering_dev import DEV_get_dummy_layers, DEV_stack, DEV_basic_facesets
+from .layering_dev import (
+    DEV_get_dummy_layers,
+    DEV_stack,
+    DEV_basic_facesets,
+    DEV_spit_out_simple_mesh,
+)
 
 # DEV ================== #
 
