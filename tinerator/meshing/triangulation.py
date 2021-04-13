@@ -1,10 +1,15 @@
 import numpy as np
 from .mesh import Mesh
 from .triangulation_jigsaw import triangulation_jigsaw
+from .triangulation_triangle import triangulation_triangle
 from ..logging import warn, debug, log
 from ..gis import Raster
 
-TRIANGULATION_METHODS = {"jigsaw": triangulation_jigsaw}
+TRIANGULATION_METHODS = {
+    "default": triangulation_triangle,
+    "triangle": triangulation_triangle,
+    "jigsaw": triangulation_jigsaw,
+}
 
 
 def triangulate(

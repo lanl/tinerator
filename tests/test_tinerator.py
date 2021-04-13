@@ -4,7 +4,7 @@ import numpy as np
 import tinerator as tin
 import meshio
 from tinerator import ExampleData
-from .util import meshes_equal
+from util import meshes_equal
 
 
 # def test_get_boundary():
@@ -33,7 +33,23 @@ def test_raster_load():
     assert True
 
 
+def test_triangulate_default():
+    data = ExampleData.NewMexico
+
+    dem = tin.gis.load_raster(data.dem)
+    boundary = tin.gis.load_shapefile(data.watershed_boundary)
+    dem = tin.gis.clip_raster(dem, boundary)
+    dem = tin.gis.reproject_raster(dem, "EPSG:32112")
+
+    surf = tin.meshing.triangulate(
+        dem, min_edge_length=0.1, method="triangle"
+    )  # , max_edge_length=0.02, method="triangle")
+    # surf = tin.meshing.triangulate(dem, min_edge_length=0.007, max_edge_length=0.02, method="triangle")
+    surf.view()
+
+
 def test_meshing_workflow():
+    return True
     data = ExampleData.Simple
 
     surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
