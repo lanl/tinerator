@@ -49,7 +49,7 @@ def test_triangulate():
 
     flowline = tin.gis.load_shapefile("/Users/livingston/playground/lanl/tinerator/tmp/shapeflriver.shp")
 
-    for method in ["triangle"]:
+    for method in ["meshpy", "jigsaw"]:
         surf = tin.meshing.triangulate(
             dem, 
             min_edge_length=0.01, 
@@ -59,11 +59,9 @@ def test_triangulate():
             refinement_feature=flowline,
         )
 
-    surf.view()
-
 
 def test_meshing_workflow():
-    return True
+    #return True
     data = ExampleData.Simple
 
     surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
