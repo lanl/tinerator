@@ -1,13 +1,13 @@
 import numpy as np
 from .mesh import Mesh
 from .triangulation_jigsaw import triangulation_jigsaw
-from .triangulation_triangle import triangulation_triangle
+from .triangulation_meshpy import triangulation_meshpy
 from ..logging import warn, debug, log
 from ..gis import Raster
 
 TRIANGULATION_METHODS = {
-    "default": triangulation_triangle,
-    "triangle": triangulation_triangle,
+    "default": triangulation_meshpy,
+    "triangle": triangulation_meshpy,
     "jigsaw": triangulation_jigsaw,
 }
 
@@ -17,7 +17,7 @@ def triangulate(
     min_edge_length: float = None,
     max_edge_length: float = None,
     refinement_feature=None,
-    method="jigsaw",
+    method="default",
     scaling_type="relative",
     **kwargs,
 ):

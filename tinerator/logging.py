@@ -34,14 +34,17 @@ def set_logging_verbosity(level: LogLevel):
     """
     console_opts["log_level"] = level
 
+
 def get_log_level():
     return console_opts["log_level"]
+
 
 def _pylagrit_verbosity():
     if get_log_level() == LogLevel.DEBUG:
         return True
     else:
         return False
+
 
 def debug_mode():
     """Turns on debug mode."""

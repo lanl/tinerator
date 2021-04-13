@@ -33,7 +33,7 @@ def test_raster_load():
     assert True
 
 
-def test_triangulate_default():
+def test_triangulate():
     data = ExampleData.NewMexico
 
     dem = tin.gis.load_raster(data.dem)
@@ -41,10 +41,24 @@ def test_triangulate_default():
     dem = tin.gis.clip_raster(dem, boundary)
     dem = tin.gis.reproject_raster(dem, "EPSG:32112")
 
-    surf = tin.meshing.triangulate(
-        dem, min_edge_length=0.1, method="triangle"
-    )  # , max_edge_length=0.02, method="triangle")
-    # surf = tin.meshing.triangulate(dem, min_edge_length=0.007, max_edge_length=0.02, method="triangle")
+    # TODO: 
+    # Be able to handle geometries with multiple shapes
+    # Also, this is a: shapefile.POLYLINEZ
+    # Throws error
+    # flowline = tin.gis.load_shapefile(data.flowline)
+
+    flowline = tin.gis.load_shapefile("/Users/livingston/playground/lanl/tinerator/tmp/shapeflriver.shp")
+
+    for method in ["triangle"]:
+        surf = tin.meshing.triangulate(
+            dem, 
+            min_edge_length=0.01, 
+            max_edge_length = 0.1, 
+            scaling_type="relative", 
+            method=method,
+            refinement_feature=flowline,
+        )
+
     surf.view()
 
 

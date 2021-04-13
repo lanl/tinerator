@@ -25,18 +25,14 @@ class DistanceMap(Raster):
         projected = project_vector(np.array(unraveled), self)
         print("running cdist")
         distance_map = (
-            cdist(self.feature, projected)
-            .min(axis=0)
-            .reshape(self.ncols, self.nrows)
+            cdist(self.feature, projected).min(axis=0).reshape(self.ncols, self.nrows)
         )
         print("done")
 
         self.data = np.flipud(np.rot90(distance_map))
 
 
-def import_refinement_features(
-    parent_raster: Raster, shp_paths: str
-) -> DistanceMap:
+def import_refinement_features(parent_raster: Raster, shp_paths: str) -> DistanceMap:
     """
     Imports one or more shapefiles and creates a distance map, relative
     to the DEM `parent_raster`. This distance map can then be used for
@@ -50,9 +46,7 @@ def import_refinement_features(
 
     for shp_path in shp_paths:
         if not os.path.exists(shp_path):
-            raise FileNotFoundError(
-                f'Shapefile doesn\'t exist at path "{shp_path}"'
-            )
+            raise FileNotFoundError(f'Shapefile doesn\'t exist at path "{shp_path}"')
 
         arr = rasterize_shapefile_like(shp_path, parent_raster.filename)
 

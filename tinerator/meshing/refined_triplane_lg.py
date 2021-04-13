@@ -39,9 +39,7 @@ def build_refined_triplane(
     a = min_edge_length * 1.75
     h = min_edge_length * 1.75
 
-    boundary, connectivity = dem_raster.get_boundary(
-        distance=boundary_distance
-    )
+    boundary, connectivity = dem_raster.get_boundary(distance=boundary_distance)
     # feature = filter_points(deepcopy(refinement_feature.points), a)
     feature = deepcopy(refinement_feature.points)
 

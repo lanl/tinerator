@@ -65,9 +65,7 @@ def FacesetFromElevations(heights: list, keep_body: bool = False) -> Faceset:
     # Returns
     A Faceset object
     """
-    return Faceset(
-        "__FROM_ELEVATION", heights, metadata={"keep_body": keep_body}
-    )
+    return Faceset("__FROM_ELEVATION", heights, metadata={"keep_body": keep_body})
 
 
 def FacesetFromSides(coords: np.ndarray, top_layer: bool = False) -> Faceset:
@@ -129,12 +127,8 @@ def FacesetFromSides(coords: np.ndarray, top_layer: bool = False) -> Faceset:
         at_layers = [at_layers]
 
     # Verify data integrity
-    assert isinstance(
-        at_layers, (list, np.ndarray)
-    ), "at_layers must be a list"
-    assert all(
-        isinstance(x, int) for x in at_layers
-    ), "at_layers values must be int"
+    assert isinstance(at_layers, (list, np.ndarray)), "at_layers must be a list"
+    assert all(isinstance(x, int) for x in at_layers), "at_layers values must be int"
 
     return Faceset("__SIDESETS", coords, metadata={"layers": at_layers})
 
@@ -235,13 +229,9 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
 
     mo_surf.dump("surface_mesh_test.inp")
 
-    ptop = mo_surf.pset_attribute(
-        "layertyp", -2, comparison="eq", stride=[1, 0, 0]
-    )
+    ptop = mo_surf.pset_attribute("layertyp", -2, comparison="eq", stride=[1, 0, 0])
 
-    pbot = mo_surf.pset_attribute(
-        "layertyp", -1, comparison="eq", stride=[1, 0, 0]
-    )
+    pbot = mo_surf.pset_attribute("layertyp", -1, comparison="eq", stride=[1, 0, 0])
 
     etop = ptop.eltset(membership="exclusive")
     ebot = pbot.eltset(membership="exclusive")
@@ -261,9 +251,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            lg.sendline(
-                "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
-            )
+            lg.sendline("dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2")
 
         faceset_fnames.append(fname)
         mo_tmp.delete()
@@ -278,9 +266,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            lg.sendline(
-                "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
-            )
+            lg.sendline("dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2")
 
         # if cfg.DEBUG_MODE:
         #    mo_tmp.dump("DEBUG_naive_bottom_fs.inp")
@@ -298,9 +284,7 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            lg.sendline(
-                "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
-            )
+            lg.sendline("dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2")
 
         faceset_fnames.append(fname)
         mo_tmp.delete()
@@ -357,12 +341,8 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
     mo_surf.select()
     mo_surf.setatt("id_side", 3)
 
-    ptop = mo_surf.pset_attribute(
-        "layertyp", -2, comparison="eq", stride=[1, 0, 0]
-    )
-    pbot = mo_surf.pset_attribute(
-        "layertyp", -1, comparison="eq", stride=[1, 0, 0]
-    )
+    ptop = mo_surf.pset_attribute("layertyp", -2, comparison="eq", stride=[1, 0, 0])
+    pbot = mo_surf.pset_attribute("layertyp", -1, comparison="eq", stride=[1, 0, 0])
 
     etop = ptop.eltset(membership="exclusive")
     ebot = pbot.eltset(membership="exclusive")
@@ -420,12 +400,8 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
     )
 
     if has_top:
-        mo_surf.addatt(
-            "ioutlet", vtype="vint", rank="scalar", length="nelements"
-        )
-        mo_surf.addatt(
-            "ilayer", vtype="vint", rank="scalar", length="nelements"
-        )
+        mo_surf.addatt("ioutlet", vtype="vint", rank="scalar", length="nelements")
+        mo_surf.addatt("ilayer", vtype="vint", rank="scalar", length="nelements")
         mo_surf.interpolate(
             "map",
             "ioutlet",
@@ -435,12 +411,8 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
         )
 
     if has_top > 1:
-        mo_surf.addatt(
-            "iinlet", vtype="vint", rank="scalar", length="nelements"
-        )
-        mo_surf.addatt(
-            "ilayer", vtype="vint", rank="scalar", length="nelements"
-        )
+        mo_surf.addatt("iinlet", vtype="vint", rank="scalar", length="nelements")
+        mo_surf.addatt("ilayer", vtype="vint", rank="scalar", length="nelements")
         mo_surf.interpolate(
             "map",
             "iinlet",
@@ -471,9 +443,7 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
 
         elay_inc = ptop.eltset(membership="inclusive")
         mo_surf.setatt("ilayer", 1, stride=["eltset", "get", elay_inc.name])
-        mo_surf.setatt(
-            "ilayer", 0, stride=["eltset", "get", etop.name]
-        )  # ????
+        mo_surf.setatt("ilayer", 0, stride=["eltset", "get", etop.name])  # ????
 
         e1 = mo_surf.eltset_attribute("ilayer", 1, boolstr="eq")
         e2 = mo_surf.eltset_attribute("ioutlet", 2, boolstr="eq")
@@ -481,9 +451,7 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
         faceset_count += 1
 
         e_out1 = mo_surf.eltset_inter([e1, e2])
-        mo_surf.setatt(
-            "id_side", faceset_count, stride=["eltset", "get", e_out1]
-        )
+        mo_surf.setatt("id_side", faceset_count, stride=["eltset", "get", e_out1])
 
         # If outlet is defined with inlet...
         if has_top > 1:
@@ -491,12 +459,8 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
             mo_surf.setatt("ilayer", 0.0)
 
             elay_inc = ptop.eltset(membership="inclusive")
-            mo_surf.setatt(
-                "ilayer", 1, stride=["eltset", "get", elay_inc.name]
-            )
-            mo_surf.setatt(
-                "ilayer", 0, stride=["eltset", "get", etop.name]
-            )  # ????
+            mo_surf.setatt("ilayer", 1, stride=["eltset", "get", elay_inc.name])
+            mo_surf.setatt("ilayer", 0, stride=["eltset", "get", etop.name])  # ????
 
             e1 = mo_surf.eltset_attribute("ilayer", 1, boolstr="eq")
             e2 = mo_surf.eltset_attribute("iinlet", 2, boolstr="eq")
@@ -504,9 +468,7 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
             faceset_count += 1
 
             e_out1 = mo_surf.eltset_inter([e1, e2])
-            mo_surf.setatt(
-                "id_side", faceset_count, stride=["eltset", "get", e_out1]
-            )
+            mo_surf.setatt("id_side", faceset_count, stride=["eltset", "get", e_out1])
 
             mo_surf.delatt("iinlet")
 
@@ -528,9 +490,7 @@ def __driver_sidesets(lg, surface_mesh, has_top, boundary_file, full_sidesets):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            lg.sendline(
-                "dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2"
-            )
+            lg.sendline("dump / avs2 / " + fname + "/" + mo_tmp.name + "/ 0 0 0 2")
 
         mo_tmp.delete()
         _all_facesets.append(fname)
@@ -582,9 +542,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
     mo.rmpoint_eltset(edel, compress=True, resetpts_itp=False)
 
     if keep_body:
-        ptop = mo.pset_attribute(
-            "layertyp", -2, comparison="eq", stride=[1, 0, 0]
-        )
+        ptop = mo.pset_attribute("layertyp", -2, comparison="eq", stride=[1, 0, 0])
         etop = ptop.eltset(membership="exclusive")
 
         edel = mo.eltset_not([etop])
@@ -617,9 +575,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
 
     # Capture all intermediary layers
     for i in range(count - 1):
-        r = mo.region_bool(
-            "gt " + planes[i].name + " and le " + planes[i + 1].name
-        )
+        r = mo.region_bool("gt " + planes[i].name + " and le " + planes[i + 1].name)
         regions.append(r)
 
     # Capture everything above max point
@@ -648,9 +604,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
         cut = mo.copy()
 
         if not keep_body:
-            ptop = cut.pset_attribute(
-                "layertyp", -2, comparison="eq", stride=[1, 0, 0]
-            )
+            ptop = cut.pset_attribute("layertyp", -2, comparison="eq", stride=[1, 0, 0])
             ebot = ptop.eltset(membership="exclusive")
             edel = cut.eltset_not([ebot])
             cut.rmpoint_eltset(edel, compress=True, resetpts_itp=False)
@@ -664,9 +618,7 @@ def __driver_top(lg, surface_mesh, heights, keep_body):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            lg.sendline(
-                "dump / avs2 / " + fs_name + "/" + cut.name + "/ 0 0 0 2"
-            )
+            lg.sendline("dump / avs2 / " + fs_name + "/" + cut.name + "/ 0 0 0 2")
 
         # cfg.log.debug("Wrote faceset %s" % fs_name)
 
@@ -824,11 +776,7 @@ def write_facesets(lg, dem_object, facesets):
         cmo_in.dump(mesh_prism)
 
         with open(tmp_infile, "w") as f:
-            f.write(
-                Infiles._surf_mesh_backup(
-                    mesh_prism, mesh_surf, skip_sort=True
-                )
-            )
+            f.write(Infiles._surf_mesh_backup(mesh_prism, mesh_surf, skip_sort=True))
 
         subprocess.check_output(
             lg.lagrit_exe + " < " + tmp_infile,
@@ -847,9 +795,7 @@ def write_facesets(lg, dem_object, facesets):
 
     # Generate discretized sidesets
     if bool(sidesets):
-        new_fs = __driver_sidesets(
-            lg, mo_surf, has_top, boundary_file, full_sidesets
-        )
+        new_fs = __driver_sidesets(lg, mo_surf, has_top, boundary_file, full_sidesets)
 
         exported_fs.extend(new_fs)
 

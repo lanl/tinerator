@@ -53,6 +53,9 @@ class Shape:
 
         return display
 
+    def __str__(self):
+        return f'Shape<shape_type={self.shape_type}, points={len(self.points)}, CRS="{self.crs.name}">'
+
     @property
     def units(self):
         return self.crs.axis_info[0].unit_name
@@ -198,7 +201,12 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
             try:
                 shape_type = type_dict[shape.shapeType]
             except KeyError:
-                print("WARNING: couldn't parse shape type. Skipping shape.")
+                import ipdb
+
+                ipdb.set_trace()
+                warn(
+                    f"WARNING: couldn't parse shape type {shape.shapeType}. Skipping shape."
+                )
                 continue
 
             shapes.append(

@@ -103,6 +103,9 @@ class Raster:
 
         return display
 
+    def __str__(self):
+        return f'Raster<data.shape={self.data.shape}, extent={self.extent}, CRS="{self.crs.name}">'
+
     @property
     def geotransform(self):
         """

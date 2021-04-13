@@ -77,9 +77,7 @@ def write_line(
         f.write("{} {} {} {} 0\n".format(nnodes, nlines, natts, catts))
 
         for i in range(nnodes):
-            f.write(
-                "{} {} {} 0.0\n".format(i + 1, boundary[i][0], boundary[i][1])
-            )
+            f.write("{} {} {} 0.0\n".format(i + 1, boundary[i][0], boundary[i][1]))
 
         for i in range(nlines):
             mat_id = material_id[i] if material_id is not None else 1
@@ -104,9 +102,7 @@ def write_line(
             # itp1, integer
             _t = "\n".join(
                 [
-                    key + ", " + "integer"
-                    if node_atts[key].dtype == int
-                    else "real"
+                    key + ", " + "integer" if node_atts[key].dtype == int else "real"
                     for key in node_atts.keys()
                 ]
             )
@@ -134,9 +130,7 @@ def write_line(
             # itp1, integer
             _t = "\n".join(
                 [
-                    key + ", " + "integer"
-                    if cell_atts[key].dtype == int
-                    else "real"
+                    key + ", " + "integer" if cell_atts[key].dtype == int else "real"
                     for key in cell_atts.keys()
                 ]
             )

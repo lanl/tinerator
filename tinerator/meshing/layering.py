@@ -33,9 +33,7 @@ class Layer:
     ):
 
         if matids is not None:
-            assert (
-                len(matids) == nlayers
-            ), "Each layer required a material ID value"
+            assert len(matids) == nlayers, "Each layer required a material ID value"
 
         self.sl_type = sl_type
         self.depth = depth
@@ -46,9 +44,7 @@ class Layer:
         self.relative_z = relative_z
 
     def __repr__(self):
-        return "Layer<{}, {}, {}>".format(
-            self.sl_type, self.nlayers, self.data
-        )
+        return "Layer<{}, {}, {}>".format(self.sl_type, self.nlayers, self.data)
 
 
 def TranslatedSublayering(
@@ -174,9 +170,7 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
 
     if surfmesh.element_type != ElementType.TRIANGLE:
         raise ValueError(
-            "Mesh must be triangular; is actually: {}".format(
-                surfmesh.element_type
-            )
+            "Mesh must be triangular; is actually: {}".format(surfmesh.element_type)
         )
 
     if isinstance(layers, Layer):
@@ -223,9 +217,7 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
         elif layer.sl_type in [LayerType.TRANSLATED]:
             bottom_layer.nodes[:, 2] = bottom_layer.nodes[:, 2] - z_abs
         else:
-            raise ValueError(
-                "An unknown or unsupported layer type was assigned"
-            )
+            raise ValueError("An unknown or unsupported layer type was assigned")
 
         middle_layers = []
 
