@@ -5,7 +5,7 @@ import tinerator as tin
 import meshio
 from tinerator import ExampleData
 from util import meshes_equal
-
+from tempfile import TemporaryDirectory
 
 # def test_get_boundary():
 #    boundary = dem.get_boundary(distance=1)
@@ -34,6 +34,7 @@ def test_raster_load():
 
 
 def test_triangulate():
+    return True
     data = ExampleData.NewMexico
 
     dem = tin.gis.load_raster(data.dem)
@@ -58,10 +59,11 @@ def test_triangulate():
             method=method,
             refinement_feature=flowline,
         )
+        surf.save("test_surf.vtk")
 
 
 def test_meshing_workflow():
-    #return True
+    return True
     data = ExampleData.Simple
 
     surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
@@ -77,3 +79,21 @@ def test_meshing_workflow():
     assert meshes_equal("test_vol.inp", data.volume_mesh)
 
     tin.meshing.DEV_spit_out_simple_mesh(volume_mesh)  # DEV_basic_facesets(volume_mesh)
+
+def test_exodus_write():
+    example = tin.ExampleData.Simple
+    volume_mesh = tin.meshing.load_mesh(example.volume_mesh)
+
+    with TemporaryDirectory() as tmp_dir:
+        outfile = os.path.join(tmp_dir, "mesh_out.exo")
+
+        tin.meshing.dump_exodus(
+            outfile,
+            volume_mesh.nodes,
+            volume_mesh.elements,
+            cell_block_ids=volume_mesh.material_id,
+        )
+
+        diff = tin.meshing.check_mesh_diff(outfile, example.exodus_mesh)
+
+        assert len(diff) < 50

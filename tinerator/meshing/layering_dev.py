@@ -126,9 +126,11 @@ def DEV__driver_naive(lg, surface_mesh, top, bottom, sides):
 
 def DEV_spit_out_simple_mesh(mesh):
     with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_dir = "/Users/livingston/playground/tinerator/tmp/test_full_mesh"
+        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tmp/exo"
 
         mesh.save(os.path.join(tmp_dir, "volmesh.inp"))
+
+        mesh.save(os.path.join(tmp_dir, "BRONZE.inp"))
 
         debug("Launching PyLaGriT")
 
@@ -178,7 +180,8 @@ def DEV_spit_out_simple_mesh(mesh):
 
             exported_fs.extend(new_fs)
 
-        outfile = "EXODUSMESHOUT.exo"
+        # outfile = "EXODUSMESHOUT.exo"
+        outfile = "GOLD.exo"
         cmd = f"dump/exo/{outfile}/{stacked_mesh.name}///facesets &\n"
         cmd += " &\n".join(exported_fs)
         lg.sendline(cmd)
@@ -315,7 +318,6 @@ def DEV_stack(layers: list, matids: list = None):
     # Create and chdir to a temporary dir,
     # so that LaGriT artifacts aren't saved
     with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_dir = "/Users/livingston/playground/tinerator/tmp/test_stack"
         debug("Launching PyLaGriT")
         lg = PyLaGriT(verbose=_pylagrit_verbosity(), cwd=tmp_dir)
 
