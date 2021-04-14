@@ -139,6 +139,13 @@ def dump_exodus(
     clobber_existing_file: bool = True,
     element_mapping: dict = EXODUS_ELEMENT_MAPPING,
 ):
+    '''
+    Writes nodes and elements to an Exodus-format mesh.
+
+    mesh_nodes[num_nodes, 3]: The mesh nodes array
+    mesh_cells[num_cells, N]: The mesh cells array
+    cell_block_ids[num_cells]: A vector of length `num_cells`
+    '''
 
     import exodus3 as exodus
 
@@ -180,10 +187,11 @@ def dump_exodus(
     num_node_sets = 0
     num_side_sets = 0
 
+    # Gather coordinate data
     coord_names = ["coordX", "coordY", "coordZ"]
-    x_coor = mesh_nodes[:, 0]
-    y_coor = mesh_nodes[:, 1]
-    z_coor = mesh_nodes[:, 2]
+    x_coor = mesh_nodes[:, 0].astype(FLOAT_TYPE)
+    y_coor = mesh_nodes[:, 1].astype(FLOAT_TYPE)
+    z_coor = mesh_nodes[:, 2].astype(FLOAT_TYPE)
 
     mapping = exodus_cell_remapping(mesh_elems - 1, cell_block_ids, mesh_nodes)
 
@@ -193,6 +201,9 @@ def dump_exodus(
 
     num_elem_blk = len(block_ids)
 
+    # Here, we're going to create blocks into a psuedo-data structure
+    # using dictionaries. This will make very simple to pass the data
+    # to the Exodus API.
     blocks = []
 
     for block_id in block_ids:
@@ -213,48 +224,8 @@ def dump_exodus(
             }
         )
 
-    # import ipdb; ipdb.set_trace()
-
-    # For a working example, see Appendix C: sample code in [0]
-
-    # The function ex_create or (EXCRE for Fortran) creates a new EXODUS II
-    # file and returns an ID that can subsequently be used to refer to the file.
-
-    # int ex_create(char *path, int mode, int *comp_ws, int *io_ws)
-    #   path: filename of new Exodus file (relative or absolute)
-    #   mode: EX_NOCLOBBER, EX_CLOBBER, EX_LARGE_MODEL, EX_NORMAL_MODEL,
-    #         EX_NETCDF4, EX_NOSHARE, EX_SHARE
-    #   comp_ws: The word size in bytes (0, 4, or 8) of the floating-point
-    #            variables used in the application program.
-    #            WARNING: all EXODUS functions requiring floats must be
-    #            passed floats declared with this passed in or returned
-    #            compute word size (4 or 8).
-    #   io_ws: The word size in bytes (4 or 8) of the floating point data
-    #          as they are to be stored in the EXODUS file.
-    # exoid = ex_create(outfile, mode, comp_ws, io_ws)
-
-    # ????????? cannot find in documentation
-    # exo_lg_ini(
-    #     idexo, nsdgeom, nnodes, nelements,
-    #     nelblocks, npsets, nsidesets, neltsets, status
-    # )
-
-    # probably instead:
-    # int ex_put_init(int exoid, char *title, int num_dim, int num_nodes,
-    #                 int num_elem, int num_elem_blk, int num_node_sets,
-    #                 int num_side_sets)
-    #   exoid: EXODUS file ID from ex_create or ex_open
-    #   title: Database title (max length: MAX_LINE_LENGTH)
-    #   num_dim: dimensionality of database. Num. coordinates per node.
-    #   num_nodes: Number of nodal points.
-    #   num_elem: Number of element blocks.
-    #   num_elem_blk: Number of element blocks.
-    #   num_node_sets: Number of node sets.
-    #   num_side_sets: Number of side sets.
-    # status = ex_put_init(
-    #     exoid, "This is a test", num_dim, num_nodes, num_elem,
-    #     num_elem_blk, num_node_sets, num_side_sets
-    # )
+    # -------------------------------------------------
+    # SECTION BEGIN Exodus mesh write
 
     title = mesh_title.encode("ascii")
     ex_pars = exodus.ex_init_params(
@@ -274,18 +245,6 @@ def dump_exodus(
     # SECTION WRITE QA Information
     # Put some QA info - problem name, date, time etc.
 
-    # num_qa_rec = 1
-    # qa_record(1,1) = cmo_name(1:MXSTLN)
-    # qa_record(2,1) = "probname"
-    # qa_record(3,1) = "Today"
-    # qa_record(4,1) = "Time"
-
-    # int ex_put_qa(int exoid, int num_qa_records, char *qa_record[][4])
-    #   exoid: EXODUS file ID from ex_create or ex_open
-    #   num_qa_records: The number of QA records
-    #   qa_record: Array containing the QA records
-    # status = ex_put_qa(idexo, num_qa_rec, qa_record)
-
     cmo_name = "CMO_NAME"
     records = [(cmo_name, "probname", "Today", "Time")]
     exo_id.put_qa_records(records)
@@ -293,39 +252,13 @@ def dump_exodus(
     # -------------------------------------------------
     # SECTION WRITE Coordinates
 
-    # int ex_put_coord_names(int exoid, char **coord_names)
-    #   exoid: EXODUS file ID
-    #   coord_names: Array containing num_dim names of length MAX_STR_LENGTH of nodal coordinate arrays.
-    # TODO: this is not in LaGriT. Check.
-    # status = ex_put_coord_names(exoid, ['coordX', 'coordY', 'coordZ'])
     exo_id.put_coord_names(coord_names)
-
-    # int ex_put_coord(int exoid, void *x_coor, void *y_coor, void *z_coor)
-    #   exoid: Exodus file ID
-    #   x_coord: X coordinates of the nodes. If NULL, X coords won't be written.
-    #   y_coord: Y coordinates of the nodes. If NULL, Y coords won't be written.
-    #   z_coord: Z coordinates of the nodes. If NULL, Z coords won't be written.
-    # status = ex_put_coord(exoid, x_coor, y_coor, z_coor)
     exo_id.put_coords(x_coor, y_coor, z_coor)
 
     # -------------------------------------------------
     # SECTION WRITE Element Blocks
     # The function ex_put_elem_block (or EXPELB for Fortran) writes the
-    # parameters used to describe an element block. In case of an error,
-    # ex_put_elem_block returns a negative number; a warning will return a positive number.
-
-    # int ex_put_elem_block(int exoid, int elem_blk_id, char *elem_type, int num_elem_this_blk,
-    #                       int num_nodes_per_elem, int num_attr)
-    #   exoid: EXODUS file ID
-    #   elem_blk_id: The element block ID
-    #   elem_type: The type of elements in the element block. Max. length of string is MAX_STR_LENGTH.
-    #   num_elem_this_blk: Number of elements in the element block.
-    #   num_nodes_per_elem: Number of nodes per element in the element block.
-    #   num_attr: The number of attributes per element in the element block.
-    # status = ex_put_elem_block(
-    #    idexo, iblk_id, eltyp_str, numelblk(i),
-    #    nelnodes(eltyp), inumatt, status
-    # )
+    # parameters used to describe an element block.
 
     for block in blocks:
         exo_id.put_elem_blk_info(
@@ -341,19 +274,6 @@ def dump_exodus(
 
     # -------------------------------------------------
     # SECTION WRITE Element Connectivity
-    # ecolnblk array - 8 is the maximum number of nodes per element
-    # maxelblk is the maximum number of elements in any block
-    # fill arrays for exodus ordering based on sort key ikey_utr
-
-    # EXPELC(idexo, iblk_id, elconblk, status)
-    # connect = [1,2,3,4]
-    # ex_put_conn(exoid, EX_ELEM_BLOCK, ebids[0], connect, 0, 0)
-
-    # int ex_put_elem_conn(int exoid, int elem_blk_id, int *connect)
-    #   exoid: EXODUS file ID
-    #   elem_blk_id: The element block ID
-    #   connect[num_elem_this_blk, num_nodes_per_elem]: The connectivity array;
-    #       a list of nodes that define each element in the element block.
 
     for block in blocks:
         print(

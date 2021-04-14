@@ -14,6 +14,10 @@ from .utils import project_vector, parse_crs
 from ..visualize import plot as pl
 from ..logging import log, warn, debug, error
 
+class Geometry():
+    def __init__(self):
+        self.shapes = []
+        self.crs = None
 
 class ShapeType(Enum):
     POINT = auto()
@@ -179,6 +183,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
         shapefile.POLYGON: ShapeType.POLYGON,
         shapefile.POINT: ShapeType.POINT,
         shapefile.POLYLINE: ShapeType.POLYLINE,
+        11: ShapeType.POINT, # TODO: wrong!
     }
 
     if to_crs is not None:
@@ -203,7 +208,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
             except KeyError:
                 import ipdb
 
-                ipdb.set_trace()
+                #ipdb.set_trace()
                 warn(
                     f"WARNING: couldn't parse shape type {shape.shapeType}. Skipping shape."
                 )

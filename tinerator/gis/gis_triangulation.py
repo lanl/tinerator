@@ -10,23 +10,36 @@ from ..logging import log, warn, debug
 def save_triangulation_to_shapefile(outfile: str, mesh):
     """
     Saves triangulated surface as an ESRI Shapefile.
+    Contains additional fields of:
+
+        - "elementID" - int - the integer ID of the triangle
+        - "elevation" - float - triangle centroid Z value
     """
 
     # assert mesh.element_type == ElementType.TRIANGLE
+    assert mesh.elements.shape[1] == 3
 
     crs = mesh.crs
 
     elems = mesh.elements - 1
     elems = np.vstack([elems.T, elems[:, 0]]).T
-    points = mesh.nodes[elems].tolist()
+    triangles = mesh.nodes[elems].tolist()
 
     crs_outfile = os.path.splitext(outfile)[0] + ".prj"
 
     with shapefile.Writer(outfile) as w:
         debug(f"Attempting to save vector object to {outfile}")
-        w.field("name", "C")
-        w.poly(points)
-        w.record("polygon1")
+
+        w.field("elementID", "N")
+        w.field("elevation", "N", decimal=10)
+
+        z_values = mesh.get_cell_centroids()[:,2]
+
+        for (i, triangle) in enumerate(triangles):
+            w.record(i+1, z_values[i])
+            w.poly([triangle])
+
+        w.balance()
 
     log(f"Shapefile data written to {outfile}")
 
