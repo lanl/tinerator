@@ -84,6 +84,14 @@ def test_exodus_write():
     example = tin.ExampleData.Simple
     volume_mesh = tin.meshing.load_mesh(example.volume_mesh)
 
+    tin.debug_mode()
+    surf_mesh = tin.meshing.SurfaceMesh(volume_mesh)
+    top_faces = surf_mesh.top_faces
+    top_points = surf_mesh.top_points
+    import ipdb; ipdb.set_trace()
+
+    exit(0)
+
     with TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "mesh_out.exo")
 
@@ -92,6 +100,8 @@ def test_exodus_write():
             volume_mesh.nodes,
             volume_mesh.elements,
             cell_block_ids=volume_mesh.material_id,
+            side_sets=[top_faces],
+            node_sets=[top_points],
         )
 
         diff = tin.meshing.check_mesh_diff(outfile, example.exodus_mesh)

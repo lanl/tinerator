@@ -135,6 +135,9 @@ def dump_exodus(
     mesh_nodes: np.ndarray,
     mesh_cells: np.ndarray,
     cell_block_ids: np.ndarray = None,
+    side_sets: list = None,
+    node_sets: list = None,
+    element_sets: list = None,
     mesh_title: str = "TINerator Mesh",
     clobber_existing_file: bool = True,
     element_mapping: dict = EXODUS_ELEMENT_MAPPING,
@@ -186,6 +189,7 @@ def dump_exodus(
 
     num_node_sets = 0
     num_side_sets = 0
+    num_elem_sets = 0
 
     # Gather coordinate data
     coord_names = ["coordX", "coordY", "coordZ"]
@@ -216,7 +220,7 @@ def dump_exodus(
             {
                 "connectivity": connectivity.flatten(order="C"),
                 "block_id": block_id,
-                "block_name": f"blockID_{block_id}",
+                "block_name": f"blockID={block_id}",
                 "elem_type": elem_type.upper(),
                 "num_elem_this_blk": connectivity.shape[0],
                 "num_nodes_per_elem": connectivity.shape[1],
@@ -310,7 +314,7 @@ def dump_exodus(
         # )
         print("???")
 
-    if 0 == 1:  # num_elem_sets > 0:
+    if num_elem_sets > 0:
         # -------------------------------------------------
         # SECTION WRITE element sets (eltset) (if defined)
         # exo_put_sets(

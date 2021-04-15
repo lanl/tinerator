@@ -18,6 +18,8 @@ from .dump_exodus import (
     EXODUS_FACE_MAPPING,
 )
 
+from .surface_mesh import SurfaceMesh
+
 # DEV ================== #
 from .layering_dev import (
     DEV_get_dummy_layers,

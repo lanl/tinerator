@@ -230,7 +230,6 @@ def __driver_naive(lg, surface_mesh, top, bottom, sides):
     mo_surf.dump("surface_mesh_test.inp")
 
     ptop = mo_surf.pset_attribute("layertyp", -2, comparison="eq", stride=[1, 0, 0])
-
     pbot = mo_surf.pset_attribute("layertyp", -1, comparison="eq", stride=[1, 0, 0])
 
     etop = ptop.eltset(membership="exclusive")
