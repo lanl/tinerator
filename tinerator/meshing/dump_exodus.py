@@ -63,7 +63,9 @@ EXODUS_ELEMENT_MAPPING = {"TRI3": None, "WEDGE6": [3, 4, 5, 0, 1, 2]}
 # &                    4, 5, 1, 2, 3, 0, ! Wedge/Prism
 # &                    5, 6, 1, 2, 3, 4/ ! Hex
 
-EXODUS_FACE_MAPPING = {}
+EXODUS_FACE_MAPPING = {
+    "WEDGE6": [4, 5, 1, 2, 3]
+}
 
 
 def check_mesh_diff(mesh1_filename: str, mesh2_filename: str, print_diff: bool = True):
@@ -188,7 +190,6 @@ def dump_exodus(
     assert elem_type.upper() in [x.upper() for x in EXODUS_ELEMENTS]
 
     num_node_sets = 0
-    num_side_sets = 0
     num_elem_sets = 0
 
     # Gather coordinate data
@@ -227,6 +228,44 @@ def dump_exodus(
                 "num_attr": 0,
             }
         )
+
+    # ======================
+    # Configuring side sets
+    # ======================
+    num_side_sets = 0 if side_sets is None else len(side_sets)
+
+    side_sets_exo = []
+    if num_side_sets > 0:
+        for (i, ss) in enumerate(side_sets):
+            name = ss.name
+            setid = ss.setid
+
+            if setid is None:
+                setid = int(f'3{i}')
+
+            if name is None or name.strip() == '':
+                name = f"SideSetID={setid}"
+
+            face_map = np.array(EXODUS_FACE_MAPPING[elem_type.upper()])
+
+            ss_elems = np.sort(mapping[ss.elem_list - 1] + 1)
+            ss_sides = face_map[ss.side_list - 1]
+
+            # <  elem_ss1 = 7, 4, 6, 3, 2, 0, 1, 5 ;
+            # >  elem_ss1 = 1, 2, 3, 4, 5, 6, 7, 8 ;
+
+            #import ipdb; ipdb.set_trace()
+
+            assert len(ss_elems) == len(ss_sides)
+
+            side_sets_exo.append({
+                'name': name,
+                'side_set_id': setid,
+                'num_ss_sides': len(ss_elems),
+                'num_ss_dist_facts': 0,
+                'ss_elems': ss_elems,
+                'ss_sides': ss_sides,
+            })
 
     # -------------------------------------------------
     # SECTION BEGIN Exodus mesh write
@@ -312,7 +351,7 @@ def dump_exodus(
         #     idexo, EXNSET, trim(cpt3), ilen, set_id,
         #     mpno, 0, pmpary1, status
         # )
-        print("???")
+        print("Node sets: not implemented")
 
     if num_elem_sets > 0:
         # -------------------------------------------------
@@ -322,7 +361,7 @@ def dump_exodus(
         #     icharlnf(trim(cpt3)), set_id, mpno, 0,
         #     exo_elt_ary, status
         # )
-        print("???")
+        print("Elem sets: not implemented")
 
     if num_side_sets > 0:
         # -------------------------------------------------
@@ -353,7 +392,12 @@ def dump_exodus(
 
         # EXPSS(idexo, sideset_tag(i), sselemlist(ibeg), ssfacelist(ibeg), status)
         # status = ex_put_side_set(exoid, side_set_id, side_set_elem_list, side_set_side_list)
-        print("???")
+
+        exo_id.put_side_set_names([ss['name'] for ss in side_sets_exo])
+
+        for ss in side_sets_exo:
+            exo_id.put_side_set_params(ss['side_set_id'], ss['num_ss_sides'], ss['num_ss_dist_facts'])
+            exo_id.put_side_set(ss['side_set_id'], ss['ss_elems'], ss['ss_sides'])
 
     # -------------------------------------------------
     # SECTION DONE with ExodusII file

@@ -87,12 +87,12 @@ def test_exodus_write():
     tin.debug_mode()
     surf_mesh = tin.meshing.SurfaceMesh(volume_mesh)
     top_faces = surf_mesh.top_faces
+    bottom_faces = surf_mesh.bottom_faces
+    side_faces = surf_mesh.side_faces
     top_points = surf_mesh.top_points
-    import ipdb; ipdb.set_trace()
-
-    exit(0)
 
     with TemporaryDirectory() as tmp_dir:
+        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tmp/exo_sets"
         outfile = os.path.join(tmp_dir, "mesh_out.exo")
 
         tin.meshing.dump_exodus(
@@ -100,7 +100,7 @@ def test_exodus_write():
             volume_mesh.nodes,
             volume_mesh.elements,
             cell_block_ids=volume_mesh.material_id,
-            side_sets=[top_faces],
+            side_sets=[top_faces, bottom_faces, side_faces],
             node_sets=[top_points],
         )
 
