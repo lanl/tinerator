@@ -251,11 +251,6 @@ def dump_exodus(
             ss_elems = np.sort(mapping[ss.elem_list - 1] + 1)
             ss_sides = face_map[ss.side_list - 1]
 
-            # <  elem_ss1 = 7, 4, 6, 3, 2, 0, 1, 5 ;
-            # >  elem_ss1 = 1, 2, 3, 4, 5, 6, 7, 8 ;
-
-            #import ipdb; ipdb.set_trace()
-
             assert len(ss_elems) == len(ss_sides)
 
             side_sets_exo.append({
@@ -319,9 +314,6 @@ def dump_exodus(
     # SECTION WRITE Element Connectivity
 
     for block in blocks:
-        print(
-            f'>> {block["connectivity"].shape} == {block["num_elem_this_blk"]} * {block["num_nodes_per_elem"]}'
-        )
         exo_id.put_elem_connectivity(block["block_id"], block["connectivity"])
 
     if num_node_sets > 0:
@@ -366,32 +358,6 @@ def dump_exodus(
     if num_side_sets > 0:
         # -------------------------------------------------
         # SECTION WRITE Side Sets (if defined)
-        # Side Set transform LaGriT local face numbers to Exodus II local face numbers
-        # The function ex_put_side_set_param (or EXPSP for Fortran) writes the side set ID and the
-        # number of sides (faces on 3-d element types; edges on 2-d element types) which describe a
-        # single side set, and the number of distribution factors on the side set. Because each side of a
-        # side set is completely defined by an element and a local side number, the number of sides is
-        # equal to the number of elements in a side set.
-        # In case of an error, ex_put_side_set_param returns a negative number; a warning will return
-        # a positive number.
-
-        # int ex_put_side_set_param(int exoid, int side_set_id, int num_side_in_set, int num_dist_fact_in_set)
-        #   exoid: EXODUS file ID
-        #   side_set_id: The side set ID
-        #   num_side_in_set: The number of sides (faces or edges) in the side set
-        #   num_dist_fact_in_set: The number of distribution factors on the side set
-
-        # EXPSP(idexo, sideset_tag(i), nfaces_ss(i), 0, status)
-        # status = ex_put_side_set_param(exoid, side_set_id, num_side_in_set, num_dist_fact_in_set)
-
-        # int ex_put_side_set(int exoid, int side_set_id, int *side_set_elem_list, int *side_set_side_list)
-        #   exoid: EXODUS file ID
-        #   side_set_id: The side set ID
-        #   side_set_elem_list: Array containing the elements in the side set.
-        #   side_set_side_list: Array containing the sides (faces or edges) in the side set.
-
-        # EXPSS(idexo, sideset_tag(i), sselemlist(ibeg), ssfacelist(ibeg), status)
-        # status = ex_put_side_set(exoid, side_set_id, side_set_elem_list, side_set_side_list)
 
         exo_id.put_side_set_names([ss['name'] for ss in side_sets_exo])
 
