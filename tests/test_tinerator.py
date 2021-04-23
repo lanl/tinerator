@@ -4,8 +4,35 @@ import numpy as np
 import tinerator as tin
 import meshio
 from tinerator import ExampleData
-from util import meshes_equal
 from tempfile import TemporaryDirectory
+
+def meshes_equal(test_fname, gold_fname) -> bool:
+    mo_test = meshio.read(test_fname, file_format="avsucd")
+    mo_gold = meshio.read(gold_fname, file_format="avsucd")
+
+    # TODO: what if points are in different order?
+    assert np.allclose(mo_test.points, mo_gold.points)
+    assert len(mo_test.cells) == len(mo_gold.cells)
+
+    # TODO: what if cells are in different order?
+    for i in range(len(mo_gold.cells)):
+        assert np.array_equal(mo_test.cells[i].data, mo_gold.cells[i].data)
+
+    assert np.array_equal(
+        list(mo_test.point_data.keys()), list(mo_gold.point_data.keys())
+    )
+    assert np.array_equal(
+        list(mo_test.cell_data.keys()), list(mo_gold.cell_data.keys())
+    )
+
+    for key in mo_gold.point_data.keys():
+        assert np.allclose(mo_test.point_data[key], mo_gold.point_data[key])
+
+    for key in mo_gold.cell_data.keys():
+        assert np.allclose(mo_test.cell_data[key], mo_gold.cell_data[key])
+
+    return True
+
 
 # def test_get_boundary():
 #    boundary = dem.get_boundary(distance=1)
@@ -93,7 +120,10 @@ def test_exodus_write():
 
     with TemporaryDirectory() as tmp_dir:
         tmp_dir = "/Users/livingston/playground/lanl/tinerator/tmp/exo_sets"
+        surf_mesh.save(os.path.join(tmp_dir, "surf.inp"))
         outfile = os.path.join(tmp_dir, "mesh_out.exo")
+
+        import ipdb; ipdb.set_trace()
 
         tin.meshing.dump_exodus(
             outfile,
@@ -107,3 +137,26 @@ def test_exodus_write():
         diff = tin.meshing.check_mesh_diff(outfile, example.exodus_mesh)
 
         assert len(diff) < 50
+
+'''
+<   "CMO_NAME",
+---
+>   "mo3",
+167,169c167,169
+TIN
+<  elem_ss3 = 1, 1, 3, 4, 5, 6, 6, 7, 9, 9, 11, 12, 13, 14, 14, 15, 17, 17, 19, 
+<     20, 21, 22, 22, 23, 25, 25, 27, 28, 29, 30, 30, 31, 33, 33, 35, 36, 37, 
+<     38, 38, 39 ;
+---
+LG
+>  elem_ss3 = 1, 1, 2, 4, 5, 7, 8, 8, 9, 9, 10, 12, 13, 15, 16, 16, 17, 17, 18, 
+>     20, 21, 23, 24, 24, 25, 25, 26, 28, 29, 31, 32, 32, 33, 33, 34, 36, 37, 
+>     39, 40, 40 ;
+171,172c171,172
+<  side_ss3 = 2, 3, 2, 1, 2, 3, 1, 3, 2, 3, 2, 1, 2, 3, 1, 3, 2, 3, 2, 1, 2, 3, 
+<     1, 3, 2, 3, 2, 1, 2, 3, 1, 3, 2, 3, 2, 1, 2, 3, 1, 3 ;
+---
+>  side_ss3 = 1, 3, 1, 2, 3, 2, 2, 3, 1, 3, 1, 2, 3, 2, 2, 3, 1, 3, 1, 2, 3, 2, 
+>     2, 3, 1, 3, 1, 2, 3, 2, 2, 3, 1, 3, 1, 2, 3, 2, 2, 3 ;
+'''
+#np.sort(m1[mapping]-1)
