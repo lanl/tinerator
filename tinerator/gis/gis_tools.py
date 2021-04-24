@@ -1,5 +1,3 @@
-import gdal
-from osgeo import ogr
 import pyproj
 import os
 import fiona
@@ -10,10 +8,15 @@ import geopandas
 import numpy as np
 import tempfile
 import snowy
+from osgeo import ogr
 from ..logging import log, warn, debug, error
 from .raster import Raster, load_raster, new_raster
 from .vector import Shape, ShapeType
 
+try:
+    from osgeo import gdal
+except ImportError:
+    import gdal
 
 def get_geometry(shapefile_path: str) -> list:
     """

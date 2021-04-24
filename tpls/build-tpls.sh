@@ -28,8 +28,6 @@ build_pylagrit() {
     rm -rf test/ && rm -rf doc/ && rm -rf .git/
 
     cd PyLaGriT/ && python setup.py install
-    echo "lagrit_exe : '${LAGRIT_EXE}'" >> ~/.pylagritrc
-
     cd $_cwd
 }
 
@@ -96,6 +94,8 @@ build_exodus() {
 
     make && make install
 
+    export PYTHONPATH=${SEACAS_SRC_DIR}/install/lib:${PYTHONPATH}
+
     cd $_cwd
 }
 
@@ -103,7 +103,7 @@ help() {
     echo -e "------------------------------"
     echo -e "TINerator TPL bootstrap script"
     echo -e "------------------------------"
-    echo -e "usage: ./build-tpls.sh [-h] [-A | -p | -j | -e] [-d path/]"
+    echo -e "usage: ./build-tpls.sh [-h] [-A | -p | -j | -e] [-d path/] [-M]"
     echo -e ""
     echo -e "-h\tShows this help screen"
     echo -e ""
@@ -113,6 +113,8 @@ help() {
     echo -e "-e\tBuild only ExodusII"
     echo -e ""
     echo -e "-d\tThe path where the TPLs will be built (currently set to: ${TPL_ROOT_DIR})"
+    echo -e ""
+    echo -e "-M\tWill append lines to ~/.bashrc and ~/.pylagritrc with package environment variables"
     exit 0
 }
 
@@ -120,8 +122,10 @@ _should_build_all=false
 _should_build_pylagrit=false
 _should_build_jigsaw=false
 _should_build_exodus=false
+_should_modify_files=false
 
-while getopts hApjed: flag
+
+while getopts hApjed:M flag
 do
     case "${flag}" in
         h) help;;
@@ -130,6 +134,7 @@ do
         j) _should_build_jigsaw=true;;
         e) _should_build_exodus=true;;
         d) TPL_ROOT_DIR=${OPTARG};;
+        M) _should_modify_files=true;;
         [?]) help;;
     esac
 done
@@ -159,6 +164,16 @@ info "Building ExodusII? ${_should_build_exodus}"
 if [ "$_should_build_pylagrit" = true ]
 then
     build_pylagrit ${TPL_ROOT_DIR}
+
+    _rc_line="lagrit_exe : '${TPL_ROOT_DIR}/LaGriT/src/lagrit'"
+
+    if [ "$_should_modify_files" = true ]
+    then
+        echo "$_rc_line" >> ~/.pylagritrc
+    else
+        info "Add the following line to your ~/.pylagritrc:"
+        info "echo \"$_rc_line\" >> ~/.pylagritrc"
+    fi
 fi
 
 if [ "$_should_build_jigsaw" = true ]
@@ -169,4 +184,15 @@ fi
 if [ "$_should_build_exodus" = true ]
 then
     build_exodus ${TPL_ROOT_DIR}
+
+    _rc_line="${TPL_ROOT_DIR}/seacas/install/lib/"
+    _rc_line="export PYTHONPATH=$_rc_line"':${PYTHONPATH}'
+
+    if [ "$_should_modify_files" = true ]
+    then
+        echo "$_rc_line" >> ~/.bashrc
+    else
+        info "Add the following line to your ~/.bashrc:"
+        info "echo \"$_rc_line\" >> ~/.bashrc"
+    fi
 fi

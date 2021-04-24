@@ -18,7 +18,7 @@ RUN apt-get update -y && \
     apt-get install -y \
     build-essential openssl vim gfortran cmake git \
     wget libz-dev m4 bison r-base  \
-    software-properties-common \
+    software-properties-common curl \
     python3 python3-pip python3-setuptools && \
     \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 && \
@@ -33,18 +33,16 @@ RUN apt-get update -y && \
 RUN pip install -r requirements.txt
 
 # Build all TPLs
-RUN ./tpls/build-tpls.sh -A
+RUN ./tpls/build-tpls.sh -A -M
 
 # Configure Jupyter Notebook/Jupyter Lab
-# RUN mkdir ~/.jupyter && \
-#     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
-#     echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
-#     echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
-#     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
-#     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
-#     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
-# 
-# # Launch Jupyter Lab on start
-# CMD jupyter lab --port=8888
+RUN mkdir ~/.jupyter && \
+    jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
+    echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
+    echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
+    echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
+    echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
+    echo "c.NotebookApp.token = u''" >> $jupyter_cfg
 
-CMD bash
+# Launch Jupyter Lab on start
+CMD jupyter lab --port=8888

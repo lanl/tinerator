@@ -53,7 +53,6 @@ def meshes_equal(test_fname, gold_fname) -> bool:
 #    dem.reproject('EPSG:6666')
 #    shapefile.reproject('EPSG:234')
 
-
 def test_raster_load():
     data = ExampleData.NewMexico
     _ = tin.gis.load_raster(data.dem)

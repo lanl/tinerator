@@ -3,7 +3,6 @@ import numpy as np
 import io
 import os
 import rasterio
-import gdal
 import pyproj
 import tempfile
 from contextlib import redirect_stdout
@@ -15,6 +14,11 @@ from ..visualize import plot as pl
 from .utils import project_vector, unproject_vector, parse_crs
 from .raster_boundary import square_trace_boundary as st_boundary
 from .vector import Shape, ShapeType
+
+try:
+    from osgeo import gdal
+except ImportError:
+    import gdal
 
 # Rendering a DEM in 3D:
 # https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
