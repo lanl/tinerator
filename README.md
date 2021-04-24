@@ -1,6 +1,6 @@
 ![logo](docs/assets/images/logo_horizontal.png)
 
-[![Build Status](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml/badge.svg)](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml)
+[![build](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml/badge.svg)](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml) [![docs](https://github.com/daniellivingston/tinerator-core/actions/workflows/gh-pages.yml/badge.svg)](https://github.com/daniellivingston/tinerator-core/actions/workflows/gh-pages.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## About
 

@@ -1,4 +1,4 @@
-name: TINerator - Docker Image CI
+name: build
 
 on:
   push:
