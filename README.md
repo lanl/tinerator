@@ -1,5 +1,7 @@
 ![logo](docs/assets/images/logo_horizontal.png)
 
+[![Build Status](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml/badge.svg)](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml)
+
 ## About
 
 TINerator is a tool for the fast creation of extruded and refined meshes from
@@ -20,27 +22,28 @@ In addition, there are geometrical tools for removing triangles outside of a
 polygon, generating quality analytics on the mesh, adding cell- and
 node-based attributes to a mesh, and much more.
 
-## Getting Started
-
-If you have Conda, run
-
-```
-conda env create -f environment.yml
-```
-
-to pre-install all required packages and dependencies needed for TINerator.
-
 ## Documentation
 
-For installation instructions and API usage,
-[refer to the documentation here](https://raw.githack.com/lanl/LaGriT/tinerator/html/index.html)
-or by navigating to `docs/index.md`.
+uses [pydoc-markdown](https://pydoc-markdown.readthedocs.io/en/latest/).
 
-## Docker
+```sh
+$ pip install pydoc-markdown
+$ _cwd=$(pwd)
+$ mkdir -p ~/.bin
+$ wget https://github.com/gohugoio/hugo/releases/download/v0.82.1/hugo_0.82.1_Linux-64bit.tar.gz -O ~/.bin/hugo.tar.gz
+$ cd ~/.bin
+$ tar -xvzf ~/.bin/hugo.tar.gz
+$ ./hugo version
+$ export PATH=$(pwd):$PATH
+$ hugo version
+$ cd $_cwd
+```
 
-A [Docker image](https://hub.docker.com/r/ees16/tinerator) can be pulled and run via:
+```sh
+$ pydoc-markdown --server --open
+```
 
-    docker pull ees16/tinerator
-    docker run --rm -p 8888:8888 ees16/tinerator
-
-![](docs/assets/images/examples/attribute_final.png)
+```sh
+$ pydoc-markdown --build
+$ open ./build/docs/public/index.html
+```

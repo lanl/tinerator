@@ -32,9 +32,6 @@ RUN apt-get update -y && \
 # Build Python packages
 RUN pip install -r requirements.txt
 
-# Build all TPLs
-RUN ./tpls/build-tpls.sh -A -M
-
 # Configure Jupyter Notebook/Jupyter Lab
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
@@ -43,6 +40,15 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
+
+# Build all TPLs
+RUN ./tpls/build-tpls.sh -A -M
+
+# Test TINerator
+#RUN cd /tinerator/tests && \
+#    pytest
+
+WORKDIR /tinerator/playground/
 
 # Launch Jupyter Lab on start
 CMD jupyter lab --port=8888

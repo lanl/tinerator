@@ -24,3 +24,4 @@ fiona
 geopandas
 richdem
 setuptools>=56.0.0
+mkdocs
