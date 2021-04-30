@@ -184,5 +184,5 @@ def write_avs(
                     raise ValueError("Unknown type")
 
             # node index, all attribute values at that node
-            for i in range(n_nodes):
+            for i in range(n_cells):
                 write_list(f, [i + 1] + [atts[x][i] for x in att_names])

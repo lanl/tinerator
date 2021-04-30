@@ -48,6 +48,9 @@ RUN ./tpls/build-tpls.sh -A -M
 #RUN cd /tinerator/tests && \
 #    pytest
 
+RUN cd /tinerator/docs/ && \
+    make html
+
 WORKDIR /tinerator/playground/
 
 # Launch Jupyter Lab on start

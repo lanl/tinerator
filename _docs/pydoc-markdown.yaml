@@ -1,6 +1,6 @@
-hooks:
-  pre-render:
-  - generate-changelog >docs/CHANGELOG.md
+#hooks:
+#  pre-render:
+#  - generate-changelog >docs/CHANGELOG.md
 loaders:
   - type: python
 processors:
@@ -15,7 +15,7 @@ renderer:
       source: README.md
     - title: API Documentation
       contents:
-        - 'tinerator.*'
+        - '*'
   mkdocs_config:
     mkdocs_config:
       # Project information
@@ -71,8 +71,8 @@ renderer:
         - pymdownx.caret
         - pymdownx.critic
         - pymdownx.details
-        - pymdownx.emoji:
-            emoji_generator: !!python/name:pymdownx.emoji.to_svg
+        #- pymdownx.emoji:
+        #    emoji_generator: !!python/name:pymdownx.emoji.to_svg
         - pymdownx.inlinehilite
         - pymdownx.magiclink
         - pymdownx.mark

@@ -262,8 +262,6 @@ def dump_exodus(
                 'ss_sides': ss_sides,
             })
 
-    import ipdb; ipdb.set_trace()
-
     # -------------------------------------------------
     # SECTION BEGIN Exodus mesh write
 

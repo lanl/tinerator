@@ -33,49 +33,51 @@ def meshes_equal(test_fname, gold_fname) -> bool:
 
     return True
 
+def test_get_boundary():
+    data = ExampleData.NewMexico
+    dem = tin.gis.load_shapefile(data.dem)
+    boundary = dem.get_boundary(distance=1)
+    assert True
 
-# def test_get_boundary():
-#    boundary = dem.get_boundary(distance=1)
+def test_clip_raster():
+   data = ExampleData.NewMexico
+   dem = tin.gis.load_raster(data.dem)
+   boundary = tin.gis.load_shapefile(data.watershed_boundary)
+   _ = tin.gis.clip_raster(dem, boundary)
+   assert True
 
-# def test_clip_raster():
-#    boundary = tin.gis.load_shapefile
-#    dem2 = tin.gis.clip_raster(dem, boundary)
-#    assert something
+def test_clip_raster_with_boundary():
+    data = ExampleData.NewMexico
+    dem = tin.gis.load_raster(data.dem)
+    boundary = dem.get_boundary(distance=1)
+    _ = tin.gis.clip_raster(dem, boundary)
+    assert True
 
-# def test_clip_raster_with_boundary():
-#     boundary = dem.get_boundary(distance=1)
-#     dem2 = tin.gis.clip_raster(dem, boundary)
-#     assert something
+def test_reproject():
+    data = ExampleData.NewMexico
+    dem = tin.gis.load_raster(data.dem)
+    boundary = tin.gis.load_shapefile(data.watershed_boundary)
 
-# def test_reproject():
-#    usgs_dem = tin.gis.reproject_raster(usgs_dem, 'EPSG:32112')
-#    usgs_dem = tin.gis.reproject_shapefile(usgs_dem, 'EPSG:32112')#
-#    dem.reproject('EPSG:6666')
-#    shapefile.reproject('EPSG:234')
+    _ = tin.gis.reproject_raster(dem, 'EPSG:32112')
+    _ = tin.gis.reproject_shapefile(boundary, 'EPSG:32112')
+    _ = dem.reproject('EPSG:32112')
+    _ = boundary.reproject('EPSG:32112')
 
 def test_raster_load():
     data = ExampleData.NewMexico
     _ = tin.gis.load_raster(data.dem)
     assert True
 
-
 def test_triangulate():
-    return True
     data = ExampleData.NewMexico
 
     dem = tin.gis.load_raster(data.dem)
     boundary = tin.gis.load_shapefile(data.watershed_boundary)
+    flowline = tin.gis.load_shapefile(data.flowline)
+
     dem = tin.gis.clip_raster(dem, boundary)
     dem = tin.gis.reproject_raster(dem, "EPSG:32112")
-
-    # TODO: 
-    # Be able to handle geometries with multiple shapes
-    # Also, this is a: shapefile.POLYLINEZ
-    # Throws error
-    # flowline = tin.gis.load_shapefile(data.flowline)
-
-    flowline = tin.gis.load_shapefile("/Users/livingston/playground/lanl/tinerator/tmp/shapeflriver.shp")
-
+    
     for method in ["meshpy", "jigsaw"]:
         surf = tin.meshing.triangulate(
             dem, 
@@ -87,9 +89,7 @@ def test_triangulate():
         )
         surf.save("test_surf.vtk")
 
-
 def test_meshing_workflow():
-    return True
     data = ExampleData.Simple
 
     surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
@@ -118,11 +118,8 @@ def test_exodus_write():
     top_points = surf_mesh.top_points
 
     with TemporaryDirectory() as tmp_dir:
-        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tmp/exo_sets"
         surf_mesh.save(os.path.join(tmp_dir, "surf.inp"))
         outfile = os.path.join(tmp_dir, "mesh_out.exo")
-
-        import ipdb; ipdb.set_trace()
 
         tin.meshing.dump_exodus(
             outfile,
@@ -135,27 +132,4 @@ def test_exodus_write():
 
         diff = tin.meshing.check_mesh_diff(outfile, example.exodus_mesh)
 
-        assert len(diff) < 50
-
-'''
-<   "CMO_NAME",
----
->   "mo3",
-167,169c167,169
-TIN
-<  elem_ss3 = 1, 1, 3, 4, 5, 6, 6, 7, 9, 9, 11, 12, 13, 14, 14, 15, 17, 17, 19, 
-<     20, 21, 22, 22, 23, 25, 25, 27, 28, 29, 30, 30, 31, 33, 33, 35, 36, 37, 
-<     38, 38, 39 ;
----
-LG
->  elem_ss3 = 1, 1, 2, 4, 5, 7, 8, 8, 9, 9, 10, 12, 13, 15, 16, 16, 17, 17, 18, 
->     20, 21, 23, 24, 24, 25, 25, 26, 28, 29, 31, 32, 32, 33, 33, 34, 36, 37, 
->     39, 40, 40 ;
-171,172c171,172
-<  side_ss3 = 2, 3, 2, 1, 2, 3, 1, 3, 2, 3, 2, 1, 2, 3, 1, 3, 2, 3, 2, 1, 2, 3, 
-<     1, 3, 2, 3, 2, 1, 2, 3, 1, 3, 2, 3, 2, 1, 2, 3, 1, 3 ;
----
->  side_ss3 = 1, 3, 1, 2, 3, 2, 2, 3, 1, 3, 1, 2, 3, 2, 2, 3, 1, 3, 1, 2, 3, 2, 
->     2, 3, 1, 3, 1, 2, 3, 2, 2, 3, 1, 3, 1, 2, 3, 2, 2, 3 ;
-'''
-#np.sort(m1[mapping]-1)
+        assert len(diff) < 66
