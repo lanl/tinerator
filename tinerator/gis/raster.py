@@ -9,11 +9,13 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 from pyproj import CRS
 from pyproj.crs import CRSError
+from shapely.ops import polygonize, linemerge
 from ..logging import log, warn, debug, error
+from .geometry import Geometry
 from ..visualize import plot as pl
 from .geoutils import project_vector, unproject_vector, parse_crs
 from .raster_boundary import square_trace_boundary as st_boundary
-from .vector import Shape, ShapeType
+from ..constants import DEFAULT_NO_DATA_VALUE, DEFAULT_PROJECTION
 
 try:
     from osgeo import gdal
@@ -26,7 +28,7 @@ except ImportError:
 extension = lambda x: os.path.splitext(x)[-1].replace(".", "").lower().strip()
 
 
-def load_raster(filename: str, no_data: float = None, to_crs: str = None):
+def load_raster(filename: str, no_data: float = None):
     """
     Loads a raster from a given filename.
     Supports all raster datatypes that GDAL supports, including
@@ -46,27 +48,49 @@ def load_raster(filename: str, no_data: float = None, to_crs: str = None):
         >>> dem = tin.gis.load_raster("my_dem.tif", no_data=-9999., crs="EPSG:3114")
     """
 
-    log(f"Loading raster from {filename}")
-
-    r = Raster(filename, no_data=no_data)
-
-    if to_crs is not None:
-        r.reproject(to_crs)
-
-    return r
-
+    return Raster(filename, no_data=no_data)
 
 def new_raster(
-    data: np.ndarray, geotransform: tuple, crs: CRS, no_data: float = -3.0e16
+    data: np.ndarray, geotransform: tuple = None, crs: CRS = DEFAULT_PROJECTION, no_data: float = DEFAULT_NO_DATA_VALUE
 ):
     """
-    Creates a new Raster object from a Numpy array.
+    Creates a new Raster object from an NxM Numpy array.
+
+    https://gdal.org/tutorials/geotransforms_tut.html
+
+    Args:
+        data (np.ndarray): An NxM matrix to create the raster from.
+        geotransform (:obj:`tuple`, optional): The geotransform of the raster. See the GDAL
+            documentation for more information.
+        crs (:obj:`pyproj.CRS`, optional): The CRS to create the raster into.
+        no_data (:obj:`float`, optional): The No Data value to use for the raster.
+    
+    Returns:
+        A TINerator raster object.
+    
+    Examples:
+        >>> A = np.array([[1,2,3],[4,5,6],[7,8,9]], dtype=float)
+        >>> raster = tin.gis.new_raster(A, )
     """
+
 
     data = np.array(data, dtype=np.float64)
     nrows, ncols = data.shape
     dtype = gdal.GDT_Float64
 
+    if geotransform is None:
+        xmin = 0.0
+        cell_size = 1.0
+
+        geotransform = (
+            xmin,
+            cell_size,
+            0.0,
+            float(nrows),
+            0.0,
+            -cell_size,
+        )
+    
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "tmp_raster.tif")
 
@@ -83,6 +107,13 @@ def new_raster(
 
 
 class Raster:
+    """
+    The main Raster class object in TINerator.
+    This stores the data and metadata for a loaded or created
+    Raster object (like from reading in a GeoTIFF), and has
+    many helper functions for reprojection, resampling, 
+    depression filling, and more.
+    """
     def __init__(self, raster_path: str, no_data: float = None):
         self.data = rd.LoadGDAL(raster_path, no_data=no_data)
         self.no_data_value = self.data.no_data
@@ -282,18 +313,13 @@ class Raster:
             raster_hillshade=hillshade,
         )
 
-    def get_boundary(self, distance: float = None, as_polygon: bool = False) -> Shape:
+    def get_boundary(self, distance: float = None) -> Geometry:
         """
         Get a line mesh with nodes seperated by distance `distance` that
         describe the boundary of this raster object.
         """
 
-        if as_polygon:
-            connect_ends = True
-            shape_type = ShapeType.POLYGON
-        else:
-            connect_ends = False
-            shape_type = ShapeType.POLYLINE
+        connect_ends = True
 
         if distance is None:
             distance = 10.0
@@ -306,11 +332,13 @@ class Raster:
             connect_ends=connect_ends,
         )
 
-        return Shape(
-            points=project_vector(vertices, self),
+
+        vertices = project_vector(vertices, self)
+        polygons = polygonize(linemerge(vertices[connectivity - 1].tolist()))
+
+        return Geometry(
+            shapes=list(polygons),
             crs=self.crs,
-            shape_type=shape_type,
-            connectivity=connectivity,
         )
 
     def save(self, outfile: str):

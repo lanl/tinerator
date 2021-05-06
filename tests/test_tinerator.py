@@ -75,14 +75,17 @@ def test_raster_write():
         assert dem.shape == dem2.shape
         assert np.allclose(dem.extent, dem2.extent)
 
-def test_get_boundary():
+def test_raster_boundary():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
-    boundary = dem.get_boundary(distance=1)
-    assert True
+    boundary = dem.get_boundary()
 
-def test_clip_raster_with_boundary():
-   assert True
+    with TemporaryDirectory() as tmp_dir:
+        boundary.save(os.path.join(tmp_dir, "test.shp"))
+
+    _ = tin.gis.clip_raster(dem, boundary)
+
+    assert True
 
 def test_clip_raster():
     data = ExampleData.NewMexico
