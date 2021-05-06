@@ -92,24 +92,25 @@ def __add_raster_obj(
 
 
 def __add_vector_obj(
-    fig, ax, points: np.ndarray, shape_type: str, zorder: int = 10
+    fig, ax, shape, zorder=10
 ):
 
-    if shape_type == "POINT":
-        ax.scatter(points[:, 0], points[:, 1], zorder=zorder, c="red")
-    elif shape_type == "POLYLINE":
-        ax.plot(points[:, 0], points[:, 1], zorder=zorder, marker="o")
-    elif shape_type == "POLYGON":
-        ax.fill(
-            points[:, 0],
-            points[:, 1],
-            zorder=zorder,
-            edgecolor="black",
-            linewidth=1.2,
-        )
-    else:
-        raise ValueError(f"Could not plot shape type: {shape_type}")
+    shape_type = shape.geometry_type
 
+    if "Point" in shape_type:
+        raise NotImplementedError
+    elif "LineString" in shape_type:
+        for shp in shape.shapes:
+            coords = np.array(shp.coords[:])
+            ax.plot(coords[:,0], coords[:,1], zorder=zorder, marker="o")
+    elif "Polygon" in shape_type:
+        for shp in shape.shapes: 
+            xs, ys = shp.exterior.xy
+            ax.fill(xs, ys, alpha=0.5, zorder=zorder, linewidth=1.2, fc='r', ec='black')
+    elif "GeometryCollection" in shape_type:
+        raise NotImplementedError
+    else:
+        raise ValueError(f"Unknown shape type: {shape_type}")
 
 def plot_objects(
     objects: list,
@@ -122,6 +123,14 @@ def plot_objects(
     crs: Union[str, int, dict] = None,
 ):
 
+    if crs is None:
+        crs = objects[0].crs
+    else:
+        crs = parse_crs(crs)
+
+    if title is None:
+        title = f"CRS: {crs.name}"
+
     fig, ax = __init_figure(title=title, xlabel=xlabel, ylabel=ylabel)
 
     if zorder is not None:
@@ -129,15 +138,10 @@ def plot_objects(
             objects
         ), "`zorder` and `objects` differ in length"
 
-    if crs is None:
-        crs = objects[0].crs
-    else:
-        crs = parse_crs(crs)
-
     for obj in objects:
         if isinstance(obj, Geometry):
             obj = reproject_geometry(obj, crs)
-            __add_vector_obj(fig, ax, obj.points, "nothing")
+            __add_vector_obj(fig, ax, obj)
         elif isinstance(obj, Raster):
             obj = reproject_raster(obj, crs)
             extent = obj.extent

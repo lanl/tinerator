@@ -2,9 +2,13 @@ import io
 from contextlib import redirect_stdout
 import numpy as np
 import richdem as rd
+from scipy.spatial.distance import cdist
+from shapely.geometry import LineString, MultiLineString
+from shapely.ops import linemerge
 from .geoutils import project_vector
 from .vector import Shape, ShapeType
 from .raster import Raster
+from .geometry import Geometry
 from ..logging import log, warn, debug
 
 
@@ -73,7 +77,7 @@ def watershed_delineation(
 
     # Generate a polyline from data
     threshold_matrix = accum_matrix > threshold
-    xy = np.transpose(np.where(threshold_matrix is True))
+    xy = np.transpose(np.where(threshold_matrix == True))
     xy[:, 0], xy[:, 1] = xy[:, 1], xy[:, 0].copy()
     xy = xy.astype(float)
 
@@ -81,11 +85,24 @@ def watershed_delineation(
     if np.size(xy) == 0:
         raise ValueError("Could not generate feature. Threshold may be too high.")
 
-    # Put data into Shape object
-    xy = Shape(
-        points=project_vector(xy, raster),
+    # At this point, we just have a collection of points
+    # that compose the delineation.
+    # Below, we turn it into a MultiLineString object.
+    dist_matrix = cdist(xy, xy)
+    conn = np.argwhere((dist_matrix < 1.5) & (dist_matrix > 0))
+    conn = np.unique(np.sort(conn), axis=0)
+    multiline = linemerge(MultiLineString(xy[conn].tolist()))
+
+    lines = []
+    for line in multiline:
+        coords = np.array(line.coords[:])
+        coords = project_vector(coords, raster)
+        lines.append(LineString(coords))
+
+    # Put data into Geometry object
+    xy = Geometry(
+        shapes=lines,
         crs=raster.crs,
-        shape_type=ShapeType.POINT,
     )
 
     if return_matrix:

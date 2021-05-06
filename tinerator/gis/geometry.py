@@ -81,9 +81,31 @@ class Geometry:
         """Returns the (x, y) array of all shapes in the Geometry object."""
         return np.array([(x[0], x[1]) for x in shp.coords[:] for shp in self.shapes])
     
-    def plot(self):
-        pass
-    
+    def plot(
+        self,
+        layers: list = None,
+        outfile: str = None,
+        **kwargs
+    ):
+        """
+        Plots the Shape object.
+        """
+
+        objects = [self]
+
+        if layers is not None:
+            if not isinstance(layers, list):
+                layers = [layers]
+            objects += layers
+
+        pl.plot_objects(
+            objects,
+            outfile=outfile,
+            xlabel=f"Easting ({self.units})",
+            ylabel=f"Northing ({self.units})",
+            **kwargs
+        )
+
     def save(self, outfile: str, driver: str = 'ESRI Shapefile'):
         """
         Saves the Geometry object to a shapefile.
@@ -95,7 +117,7 @@ class Geometry:
         driver (:obj:`str`, optional): The file format driver. May be one of:
             ``['ESRI Shapefile', 'GeoJSON']``.
         """
-        attributes = [shp.properties.items() for shp in g.shapes]
+        attributes = [shp.properties.items() for shp in self.shapes]
         #properties = OrderedDict(chain(*attributes))
         
         gtype = self.geometry_type
@@ -125,8 +147,11 @@ class Geometry:
             schema=schema
         ) as output:
             for (i, shape) in enumerate(self.shapes):
-                props = shape.properties
-                
+                try:
+                    props = shape.properties
+                except AttributeError:
+                    props = OrderedDict()
+
                 output.write(
                     {
                         'geometry': shapely_mapping(shape),

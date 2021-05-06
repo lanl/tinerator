@@ -186,9 +186,9 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
 
     log("Clipping raster with shapefile")
 
-    if shape.shape_type != ShapeType.POLYGON:
-        warn(
-            f"Vector shape type must be polygon to clip raster, not {shape.shape_type}."
+    if shape.geometry_type not in ["Polygon", "MultiPolygon", "3D Polygon", "3D MultiPolygon"]:
+        raise ValueError(
+            f"Vector shape type must be polygon to clip raster, not {shape.geometry_type}."
         )
 
     with tempfile.TemporaryDirectory() as tmp_dir:

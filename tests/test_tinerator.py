@@ -58,24 +58,44 @@ def test_geometry_write():
         assert np.allclose(shp.extent, shp2.extent)
         assert shp.properties == shp2.properties
 
+def test_raster_load():
+    data = ExampleData.NewMexico
+    dem = tin.gis.load_raster(data.dem)
+    assert dem.shape == (2373, 2575)
+    assert np.allclose(dem.extent, [-107.70482, 36.29657, -107.46639, 36.5163])
+
+def test_raster_write():
+    with TemporaryDirectory() as tmp_dir:
+        data = ExampleData.NewMexico
+        dem = tin.gis.load_raster(data.dem) 
+        dem.save("test.tif")
+
+        dem2 = tin.gis.load_raster(os.path.join(tmp_dir, "test.tif"))
+
+        assert dem.shape == dem2.shape
+        assert np.allclose(dem.extent, dem2.extent)
+
 def test_get_boundary():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
     boundary = dem.get_boundary(distance=1)
     assert True
 
-def test_clip_raster():
-   data = ExampleData.NewMexico
-   dem = tin.gis.load_raster(data.dem)
-   boundary = tin.gis.load_shapefile(data.watershed_boundary)
-   _ = tin.gis.clip_raster(dem, boundary)
+def test_clip_raster_with_boundary():
    assert True
 
-def test_clip_raster_with_boundary():
+def test_clip_raster():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
-    boundary = dem.get_boundary(distance=1)
-    _ = tin.gis.clip_raster(dem, boundary)
+    boundary = tin.gis.load_shapefile(data.watershed_boundary)
+    new_dem = tin.gis.clip_raster(dem, boundary)
+    assert new_dem.no_data_value == new_dem[0][0]
+    assert round(np.nanmax(new_dem.data.data)) == 2289
+
+def test_fill_raster_depressions():
+    data = ExampleData.NewMexico
+    dem = tin.gis.load_raster(data.dem)
+    dem.fill_depressions()
     assert True
 
 def test_reproject():
@@ -84,14 +104,10 @@ def test_reproject():
     boundary = tin.gis.load_shapefile(data.watershed_boundary)
 
     _ = tin.gis.reproject_raster(dem, 'EPSG:32112')
-    _ = tin.gis.reproject_shapefile(boundary, 'EPSG:32112')
-    _ = dem.reproject('EPSG:32112')
-    _ = boundary.reproject('EPSG:32112')
+    _ = tin.gis.reproject_geometry(boundary, 'EPSG:32112')
 
-def test_raster_load():
-    data = ExampleData.NewMexico
-    _ = tin.gis.load_raster(data.dem)
     assert True
+
 
 def test_triangulate():
     data = ExampleData.NewMexico
