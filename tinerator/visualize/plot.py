@@ -4,7 +4,7 @@ from matplotlib.colors import LightSource
 import numpy as np
 import os
 import json
-from ..gis import Raster, Shape, ShapeType
+from ..gis import Raster, Geometry 
 
 with open(
     os.path.join(
@@ -91,14 +91,14 @@ def __add_raster_obj(
 
 
 def __add_vector_obj(
-    fig, ax, points: np.ndarray, shape_type: ShapeType, zorder: int = 10
+    fig, ax, points: np.ndarray, shape_type: str, zorder: int = 10
 ):
 
-    if shape_type == ShapeType.POINT:
+    if shape_type == "POINT":
         ax.scatter(points[:, 0], points[:, 1], zorder=zorder, c="red")
-    elif shape_type == ShapeType.POLYLINE:
+    elif shape_type == "POLYLINE":
         ax.plot(points[:, 0], points[:, 1], zorder=zorder, marker="o")
-    elif shape_type == ShapeType.POLYGON:
+    elif shape_type == "POLYGON":
         ax.fill(
             points[:, 0],
             points[:, 1],
@@ -128,8 +128,8 @@ def plot_objects(
         ), "`zorder` and `objects` differ in length"
 
     for obj in objects:
-        if isinstance(obj, Shape):
-            __add_vector_obj(fig, ax, obj.points, obj.shape_type)
+        if isinstance(obj, Geometry):
+            __add_vector_obj(fig, ax, obj.points, "nothing")
         elif isinstance(obj, Raster):
             extent = obj.extent
             extent = [extent[0], extent[2], extent[1], extent[3]]

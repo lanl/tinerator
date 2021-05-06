@@ -33,9 +33,34 @@ def meshes_equal(test_fname, gold_fname) -> bool:
 
     return True
 
+def test_geometry_read():
+    data = ExampleData.NewMexico
+    shp = tin.gis.load_shapefile(data.flowline)
+
+    assert len(shp) == 3694
+    assert np.allclose(shp.centroid, [-107.57728379, 36.41307757])
+    assert shp.ndim == 3
+    assert shp.geometry_type == '3D MultiLineString'
+    assert all([shape.type == 'LineString' for shape in shp.shapes])
+
+def test_geometry_write():
+    data = ExampleData.NewMexico
+    shp = tin.gis.load_shapefile(data.flowline)
+
+    with TemporaryDirectory() as tmp_dir:
+        shp.save('shapefile.shp')
+        shp2 = tin.gis.load_shapefile('shapefile.shp')
+
+        assert shp.crs == shp2.crs
+        assert len(shp) == len(shp2)
+        assert shp.geometry_type == shp2.geometry_type
+        assert shp.ndim == shp2.ndim
+        assert np.allclose(shp.extent, shp2.extent)
+        assert shp.properties == shp2.properties
+
 def test_get_boundary():
     data = ExampleData.NewMexico
-    dem = tin.gis.load_shapefile(data.dem)
+    dem = tin.gis.load_raster(data.dem)
     boundary = dem.get_boundary(distance=1)
     assert True
 
@@ -101,8 +126,10 @@ def test_meshing_workflow():
     layers = tin.meshing.DEV_get_dummy_layers(surface_mesh, depths)
 
     volume_mesh = tin.meshing.DEV_stack(layers, matids=matids)
-    volume_mesh.save("test_vol.inp")
-    assert meshes_equal("test_vol.inp", data.volume_mesh)
+
+    with TemporaryDirectory() as tmp_dir:
+        volume_mesh.save(os.path.join(tmp_dir, "test_vol.inp"))
+        assert meshes_equal(os.path.join(tmp_dir, "test_vol.inp"), data.volume_mesh)
 
     tin.meshing.DEV_spit_out_simple_mesh(volume_mesh)  # DEV_basic_facesets(volume_mesh)
 

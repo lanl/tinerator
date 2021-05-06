@@ -172,7 +172,29 @@ def distance_map(
     raster: Raster, shape: Shape, min_dist: float = 0.0, max_dist: float = 1.0
 ) -> Raster:
     """
-    Creates a distance map.
+    Creates a distance map. A new raster will be returned, where
+    every cell will contain the (normalized) distance to the nearest
+    intersection on :obj:`shape`.
+
+    By default, the values will be normalized from 0 to 1.
+    Setting `min_dist` and `max_dist` adjust that range.
+
+    Args:
+        raster (tinerator.gis.Raster): The input raster.
+        shape (tinerator.gis.Shape): The shape to measure distance from.
+        min_dist (:obj:`float`, optional): Defaults to 0.
+        max_dist (:obj:`float`, optional): Defaults to 1.
+    
+    Returns:
+        A raster filled with the normalized distance from each cell
+        to the nearest intersection on `shape`.
+
+    Note:
+        It is rare that a user would want to call this. This is 
+        mainly an internal function used for triangulation.
+
+    Examples:
+        >>> dist = tin.gis.distance_map(dem, flowline)
     """
 
     log("Creating distance map")
@@ -211,10 +233,21 @@ def distance_map(
 def clip_raster(raster: Raster, shape: Shape) -> Raster:
     """
     Returns a new Raster object, clipped by a Shape polygon.
+    The raster will have the same shape and projection as the 
+    previous one, but cells not covered by :obj:`shape` will
+    be filled with the no data value of the parent raster.
 
-    dem = tin.gis.load_raster("raster.tif")
-    boundary = tin.gis.load_shapefile("boundary.shp")
-    new_dem = tin.gis.clip_raster(dem, boundary)
+    Args:
+        raster (tinerator.gis.Raster): The raster to clip.
+        shape (tinerator.gis.Shape): The shape to clip the raster with.
+    
+    Returns:
+        A clipped raster.
+
+    Examples:
+        >>> dem = tin.gis.load_raster("raster.tif")
+        >>> boundary = tin.gis.load_shapefile("boundary.shp")
+        >>> new_dem = tin.gis.clip_raster(dem, boundary)
     """
 
     log("Clipping raster with shapefile")

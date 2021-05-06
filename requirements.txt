@@ -27,3 +27,4 @@ setuptools>=56.0.0
 mkdocs
 Sphinx
 furo
+sphinxcontrib-napoleon

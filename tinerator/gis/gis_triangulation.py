@@ -12,8 +12,22 @@ def save_triangulation_to_shapefile(outfile: str, mesh):
     Saves triangulated surface as an ESRI Shapefile.
     Contains additional fields of:
 
-        - "elementID" - int - the integer ID of the triangle
-        - "elevation" - float - triangle centroid Z value
+    - "elementID" - `int` - the integer ID of the triangle
+    - "elevation" - `float` - triangle centroid Z value
+
+    Useful for importing into QGIS / ArcGIS to validate
+    the triangulation relative to other GIS objects.
+
+    Args:
+        outfile (str): The path to save the shapefile.
+        mesh (tinerator.meshing.Mesh): The triangulated surface to save.
+
+    Note:
+        Only triangulations will work with this function. Prism meshes
+        and other mesh types will not.
+
+    Examples:
+        >>> tin.gis.save_triangulation_to_shapefile("triang.shp", triangulation)
     """
 
     # assert mesh.element_type == ElementType.TRIANGLE

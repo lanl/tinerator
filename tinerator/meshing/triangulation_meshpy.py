@@ -4,16 +4,16 @@ import random
 import os
 import tempfile
 from .mesh import load_mesh, Mesh, ElementType
-from ..gis import map_elevation, Raster, Shape, distance_map, unproject_vector
+from ..gis import map_elevation, Raster, Geometry, distance_map, unproject_vector
 from ..logging import log, warn, debug
 
 
 def triangulation_meshpy(
     raster: Raster,
-    raster_boundary: Shape = None,
+    raster_boundary: Geometry = None,
     min_edge_length: float = None,
     max_edge_length: float = None,
-    refinement_feature: Shape = None,
+    refinement_feature: Geometry = None,
     scaling_type: str = "relative",
     verbose: bool = False,
     min_triangle_area: float = None,

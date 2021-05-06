@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from scipy.spatial.distance import cdist
-from .utils import project_vector, rasterize_shapefile_like, get_feature_trace
+from .geoutils import project_vector, rasterize_shapefile_like, get_feature_trace
 from .raster import Raster
 
 

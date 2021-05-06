@@ -10,7 +10,7 @@ from enum import Enum, auto
 import pyproj
 from pyproj import CRS
 from pyproj.crs import CRSError
-from .utils import project_vector, parse_crs
+from .geoutils import project_vector, parse_crs
 from ..visualize import plot as pl
 from ..logging import log, warn, debug, error
 
@@ -175,7 +175,19 @@ class Shape:
 def load_shapefile(filename: str, to_crs: str = None) -> list:
     """
     Given a path to a shapefile, reads and returns each object
-    in the shapefile as a tin.gis.Shape object.
+    in the shapefile as a :obj:`tinerator.gis.Shape` object.
+
+    Args:
+        filename (str): The input filename.
+        to_crs (:obj:`str`, optional): If provided, will reproject
+            the shapefile object to the given CRS (can be an EPSG code,
+            WKT string, or :obj:`pyproj.CRS` object).
+    
+    Returns:
+        A :obj:`tinerator.gis.Shape` object.
+    
+    Examples:
+        >>> boundary = tin.gis.load_shapefile("my_shapefile.shp", crs="EPSG:3114")
     """
     shapes = []
 

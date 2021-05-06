@@ -3,16 +3,16 @@ import random
 import os
 import tempfile
 from .mesh import load_mesh
-from ..gis import map_elevation, Raster, Shape, distance_map
+from ..gis import map_elevation, Raster, Geometry, distance_map
 from ..logging import log, warn, debug
 
 
 def triangulation_jigsaw(
     raster: Raster,
-    raster_boundary: Shape = None,
+    raster_boundary: Geometry = None,
     min_edge_length: float = None,
     max_edge_length: float = None,
-    refinement_feature: Shape = None,
+    refinement_feature: Geometry = None,
     scaling_type: str = "relative",
     meshing_kernel: str = "delfront",
     jigsaw_opts: dict = {"verbosity": 1},
@@ -24,10 +24,10 @@ def triangulation_jigsaw(
     ==========
 
     raster : TINerator Raster object
-    raster_boundary : Shape
+    raster_boundary : Geometry
     min_edge_length : float
     max_edge_length : float, optional
-    refinement_feature : Shape, optional
+    refinement_feature : Geometry, optional
     scaling_type : {'absolute', 'relative'}, optional
 
       Scaling type for mesh-size function. `scaling_type = 'relative'`

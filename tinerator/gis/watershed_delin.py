@@ -2,7 +2,7 @@ import io
 from contextlib import redirect_stdout
 import numpy as np
 import richdem as rd
-from .utils import project_vector
+from .geoutils import project_vector
 from .vector import Shape, ShapeType
 from .raster import Raster
 from ..logging import log, warn, debug

@@ -11,7 +11,7 @@ from pyproj import CRS
 from pyproj.crs import CRSError
 from ..logging import log, warn, debug, error
 from ..visualize import plot as pl
-from .utils import project_vector, unproject_vector, parse_crs
+from .geoutils import project_vector, unproject_vector, parse_crs
 from .raster_boundary import square_trace_boundary as st_boundary
 from .vector import Shape, ShapeType
 
@@ -29,6 +29,21 @@ extension = lambda x: os.path.splitext(x)[-1].replace(".", "").lower().strip()
 def load_raster(filename: str, no_data: float = None, to_crs: str = None):
     """
     Loads a raster from a given filename.
+    Supports all raster datatypes that GDAL supports, including
+    GeoTIFF, IMG, and ASC.
+
+    Args:
+        filename (str): The input filename.
+        no_data (:obj:`float`, optional): If NoData value is not encoded in the raster,
+            it can be manually set here.
+        to_crs (:obj:`str`, optional): If provided, will reproject raster to the given
+            CRS (can be an EPSG code, WKT string, or `pyproj.CRS` object.)
+    
+    Returns:
+        A `tinerator.Raster` object.
+
+    Examples:
+        >>> dem = tin.gis.load_raster("my_dem.tif", no_data=-9999., crs="EPSG:3114")
     """
 
     log(f"Loading raster from {filename}")
@@ -90,25 +105,11 @@ class Raster:
         self.data[idx] = value
 
     def __repr__(self):
-        arr = self.masked_data()
-
-        # DEM information
-        display = "\ntinerator.gis.Raster object\n"
-        display += "=" * 50 + "\n"
-        display += "Source\t\t: file (%s)\n" % self.filename
-        display += "CRS\t\t: %s\n" % self.crs.name
-        display += "Extent\t\t: %s\n" % repr(self.extent)
-        display += "Cell size\t: %s\n" % repr(self.cell_size)
-        display += "Units\t\t: %s\n" % self.units
-        display += "Dimensions\t: %s\n" % repr((self.nrows, self.ncols))
-        display += "NoDataValue\t: %s\n" % repr(self.no_data_value)
-        display += "Value range\t: %s\n" % repr((np.nanmin(arr), np.nanmax(arr)))
-        display += "\n%s\n" % repr(self.data)
-
-        return display
+        return str(self)
 
     def __str__(self):
-        return f'Raster<data.shape={self.data.shape}, extent={self.extent}, CRS="{self.crs.name}">'
+        extent = [round(x, 5) for x in self.extent]
+        return f'Raster<data.shape={self.data.shape}, extent={extent}, CRS="{self.crs.name}">'
 
     @property
     def geotransform(self):
