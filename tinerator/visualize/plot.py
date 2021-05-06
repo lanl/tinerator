@@ -4,7 +4,8 @@ from matplotlib.colors import LightSource
 import numpy as np
 import os
 import json
-from ..gis import Raster, Geometry 
+from ..gis import Raster, Geometry, parse_crs, reproject_geometry, reproject_raster
+from typing import Union
 
 with open(
     os.path.join(
@@ -118,6 +119,7 @@ def plot_objects(
     xlabel: str = None,
     ylabel: str = None,
     raster_hillshade: bool = False,
+    crs: Union[str, int, dict] = None,
 ):
 
     fig, ax = __init_figure(title=title, xlabel=xlabel, ylabel=ylabel)
@@ -127,10 +129,17 @@ def plot_objects(
             objects
         ), "`zorder` and `objects` differ in length"
 
+    if crs is None:
+        crs = objects[0].crs
+    else:
+        crs = parse_crs(crs)
+
     for obj in objects:
         if isinstance(obj, Geometry):
+            obj = reproject_geometry(obj, crs)
             __add_vector_obj(fig, ax, obj.points, "nothing")
         elif isinstance(obj, Raster):
+            obj = reproject_raster(obj, crs)
             extent = obj.extent
             extent = [extent[0], extent[2], extent[1], extent[3]]
             cs = (obj.cell_size, obj.cell_size)

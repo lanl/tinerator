@@ -7,3 +7,8 @@ lagrit.log
 lagrit.out
 outx3dgen
 logx3dgen
+.vscode/
+.ipynb_checkpoints/
+docs/_build/
+*.exo
+*.vtk

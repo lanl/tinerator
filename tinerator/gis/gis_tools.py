@@ -9,126 +9,60 @@ import numpy as np
 import tempfile
 import snowy
 from osgeo import ogr
+import osr
+from shapely.ops import transform
+from .geoutils import parse_crs
 from ..logging import log, warn, debug, error
 from .raster import Raster, load_raster, new_raster
 from .vector import Shape, ShapeType
+from .geometry import Geometry
+from typing import Any, Callable, List, Union
 
 try:
     from osgeo import gdal
 except ImportError:
     import gdal
 
-def get_geometry(shapefile_path: str) -> list:
+def reproject_geometry(
+    shape: Geometry, crs: Union[pyproj.CRS, str, int, dict]
+) -> Geometry:
     """
-    Reads a shapefile and returns a list of dicts of
-    all geometric objects within the shapefile. Each dict
-    contains the type of geometrical object, its CRS, and
-    defining coordinates.
+    Reprojects a Geometry object into the provided CRS and returns
+    the new object.
 
-    # Arguments
-    shapefile_path (str): path to shapefile
-
-    # Returns
-    list[dict]
-    """
-
-    elements = []
-    with fiona.open(shapefile_path, "r") as cc:
-        for f in cc:
-            geom = f["geometry"]
-            coords = geom["coordinates"]
-
-            if not isinstance(coords[0], tuple):
-                coords = coords[0]
-
-                if not isinstance(coords[0], tuple):
-                    print("warning: shapefile parsed incorrectly")
-
-            elements.append(
-                {
-                    "type": geom["type"],
-                    "crs": None,
-                    "coordinates": np.array(coords),
-                }
-            )
-
-    return elements
-
-
-def reproject_shapefile(
-    shapefile_in: str, shapefile_out: str, crs: str = None, epsg: int = None
-) -> None:
-    """
-    Transforms all geometries in a shapefile to a new CRS and writes
-    to `shapefile_out`.
-
-    Either `crs` or `epsg` must be specified. `crs` can be either a string or
-    a dict.
-
-    See `help(geopandas.geodataframe.GeoDataFrame.to_crs)` for more information.
-
-    # Arguments
-    shapefile_in (str): filepath to the shapefile
-    shapefile_out (str): file to write re-projected shapefile to
-    crs (str or dict): Proj4 string with new projection; i.e. '+init=epsg:3413'
-    epsg (int): EPSG code specifying output projection
-    """
-    shp = geopandas.read_file(shapefile_in)
-    shp = shp.to_crs(crs=crs, epsg=epsg)
-    shp.to_file(shapefile_out, driver="ESRI Shapefile")
-
-
-def reproject_raster_2(raster_in: str, raster_out: str, dst_crs: str) -> None:
-    """
-    Re-projects a raster and writes it to `raster_out`.
-
-    # Example
-    ```python
-    reproject_raster('dem_in.asc','dem_out.tif','EPSG:2856')
-    ```
-
-    # Arguments
-    raster_in (str): Filepath to input raster
-    raster_out (str): Filepath to save reprojected raster
-    dst_crs (str): Desired CRS
+    Args:
+        shape (Geometry): The Geometry object to reproject.
+        crs (Union[pyproj.CRS, str, int, dict]): The CRS to reproject into.
+    
+    Returns:
+        A TINerator Geometry object in the new coordinate reference space.
     """
 
-    from rasterio.warp import (
-        calculate_default_transform,
-        reproject,
-        Resampling,
+    crs = parse_crs(crs)
+    project = pyproj.Transformer.from_crs(shape.crs, crs)
+    new_shapes = [transform(project.transform, shp) for shp in shape.shapes]
+
+    return Geometry(
+        shapes=new_shapes,
+        crs=crs,
+        properties=shape.properties
     )
 
-    with rasterio.open(raster_in) as src:
-        transform, width, height = calculate_default_transform(
-            src.crs, dst_crs, src.width, src.height, *src.bounds
-        )
-        kwargs = src.meta.copy()
-        kwargs.update(
-            {
-                "crs": dst_crs,
-                "transform": transform,
-                "width": width,
-                "height": height,
-            }
-        )
-
-        with rasterio.open(raster_out, "w", **kwargs) as dst:
-            for i in range(1, src.count + 1):
-                reproject(
-                    source=rasterio.band(src, i),
-                    destination=rasterio.band(dst, i),
-                    src_transform=src.transform,
-                    src_crs=src.crs,
-                    dst_transform=transform,
-                    dst_crs=dst_crs,
-                    resampling=Resampling.nearest,
-                )
-
-
-def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
+def rasterize_geometry(raster: Raster, shape: Shape) -> Raster:
     """
-    Rasterizes a shape.
+    Rasterizes a Geometry object into a raster similar to :obj:`raster`.
+
+    Args:
+        raster (Raster): The TINerator Raster object to use as a template
+            for rasterizing the shape.
+        shape (Geometry): The TINerator Geometry object to rasterize.
+    
+    Returns:
+        A TINerator Raster object with the Geometry burned into a
+        raster of the same extent, projection, and size as :obj:`raster`.
+    
+    Examples:
+        >>> rasterized_shape = tin.gis.rasterize_geometry(dem, watershed_flowline)
     """
 
     log(f"Rasterizing {shape} to {raster}")
@@ -169,7 +103,7 @@ def rasterize_shape(raster: Raster, shape: Shape) -> Raster:
 
 
 def distance_map(
-    raster: Raster, shape: Shape, min_dist: float = 0.0, max_dist: float = 1.0
+    raster: Raster, shape: Geometry, min_dist: float = 0.0, max_dist: float = 1.0
 ) -> Raster:
     """
     Creates a distance map. A new raster will be returned, where
@@ -201,7 +135,7 @@ def distance_map(
 
     # Rasterize a shapefile onto the same dimensionality
     # and projection as `raster`
-    shape_raster = rasterize_shape(raster, shape)
+    shape_raster = rasterize_geometry(raster, shape)
 
     data = np.array(shape_raster.data)
     data[data < 0] = 0
@@ -281,7 +215,35 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
         return load_raster(CLIPPED_RASTER_OUT)
 
 
-def reproject_raster(raster: Raster, dst_crs) -> Raster:
+def reproject_raster(raster: Raster, crs: Union[pyproj.CRS, str, dict, int]) -> Raster:
+    """
+    Reprojects a TINerator Raster object into the 
+    destination CRS.
+
+    The CRS must be a ``pyproj.CRS`` object, a WKT string,
+    an EPSG code (in the style of "EPSG:1234"), or a 
+    PyProj string.
+
+    Args:
+        raster (Raster): A TINerator Raster object to reproject.
+        dst_crs (pyproj.CRS): The CRS to project into.
+    
+    Returns:
+        A reprojected Raster object.
+    
+    Examples:
+        >>> tin.gis.reproject_raster(dem, "EPSG:3857")
+    """
+
+
+    dst_crs = parse_crs(crs)
+    log(f"Reprojecting from {raster.crs.name} into {dst_crs.name}")
+
+    dst_crs = dst_crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
+    dst_srs = osr.SpatialReference()
+    dst_srs.ImportFromWkt(dst_crs)
+
+    debug(f"dst_crs = {dst_crs}")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         debug(f"Temp directory created at: {tmp_dir}")
@@ -290,8 +252,59 @@ def reproject_raster(raster: Raster, dst_crs) -> Raster:
         REPROJ_RASTER_OUT = os.path.join(tmp_dir, "raster_reprojected.tif")
 
         raster.save(RASTER_OUT)
-        debug("Shapefile was saved from memory to disk")
+        debug("Raster was saved from memory to disk")
 
-        gdal.Warp(REPROJ_RASTER_OUT, RASTER_OUT, dstSRS=dst_crs, format="GTiff")
+        gdal.Warp(REPROJ_RASTER_OUT, RASTER_OUT, dstSRS=dst_srs, format="GTiff")
 
         return load_raster(REPROJ_RASTER_OUT)
+
+def resample_raster(raster: Raster, new_res: tuple = None, new_shape: tuple = None, resampling_method:str="near") -> Raster:
+    """
+    Resamples a raster into either/both of:
+        * A new resolution in geospatial units, as (xRes, yRes)
+        * A new raster shape, in (rows, cols)
+
+    Various resampling algorithms are available on the GDAL website.
+
+    https://gdal.org/programs/gdalwarp.html#cmdoption-gdalwarp-r
+
+    Args:
+        raster (Raster): A TINerator Raster object.
+        new_res (:obj:`Tuple[float, float]`, optional): The new resolution in geospatial coordinates.
+        new_shape (:obj:`Tuple[int, int]`, optional): The new number of rows and columns for the raster.
+    
+    Returns:
+        A TINerator Raster object
+    
+    Examples:
+        >>> new_shape = (x//2 for x in dem.shape)
+        >>> new_dem = tin.gis.resample_raster(dem, new_shape = new_shape)
+    """
+
+    if new_res is not None:
+        xRes, yRes = new_res
+    else:
+        xRes = yRes = None
+
+    if new_shape is not None:
+        rows, cols = new_shape
+    else:
+        rows, cols = (0, 0)
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        RASTER_OUT = os.path.join(tmp_dir, "raster.tif")
+        RESAMPLED_RASTER_OUT = os.path.join(tmp_dir, "raster_resampled.tif")
+
+        raster.save(RASTER_OUT)
+
+        args = gdal.WarpOptions(
+            xRes=xRes,
+            yRes=yRes,
+            width=cols,
+            height=rows,
+            resampleAlg=resampling_method
+        )
+
+        gdal.Warp(RESAMPLED_RASTER_OUT, RASTER_OUT, options=args)
+
+        return load_raster(RESAMPLED_RASTER_OUT)

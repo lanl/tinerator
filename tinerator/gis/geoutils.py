@@ -7,29 +7,45 @@ from osgeo import ogr, gdal, gdal_array
 from pyproj import CRS
 from pyproj.crs import CRSError
 from ..logging import log, warn, debug, error
+from ..constants import DEFAULT_PROJECTION
+from typing import Any, Callable, List, Union
 
+def parse_crs(crs: Union[str, int, dict]) -> CRS:
+    """
+    Returns a pyproj.CRS object from:
+        * A string (Proj4 string, "epsg:xxxx", Wkt string, ...)
+        * An int (EPSG code)
+        * A dict with Proj4 projection
 
-def parse_crs(crs):  #: Union[str, int, CRS]) -> CRS:
-    """Make a CRS from a string (WKT) or int (EPSG).
+    See the Proj4 documentation for more information.
 
-    Parameters
-    ----------
-    crs : int or str or None
-        An EPSG code.
+    https://pyproj4.github.io/pyproj/dev/api/crs/crs.html
 
-    Returns
-    -------
-    CRS
+    Args:
+        crs (Union[str, int, dict]) : A PyProj4-supported projection.
+    
+    Returns:
+        A pyproj.CRS object.
+
+    Examples:
+        >>> tin.gis.parse_crs(26915)
+        >>> tin.gis.parse_crs("EPSG:26915")
+        >>> tin.gis.parse_crs("+proj=geocent +datum=WGS84 +towgs84=0,0,0")
     """
     if isinstance(crs, CRS):
         return crs
     elif isinstance(crs, str):
-        return CRS.from_wkt(crs)
+        return CRS.from_string(crs)
     elif isinstance(crs, int):
         return CRS.from_epsg(crs)
+    elif isinstance(crs, dict):
+        return CRS.from_dict(crs)
     else:
-        warn("Could not parse CRS. Defaulting to EPSG: 32601.")
-        return CRS.from_epsg(32601)
+        try:
+            return CRS.from_user_input(crs)
+        except CRSError:
+            warn("Could not parse CRS. Defaulting to \"{DEFAULT_PROJECTION}\"")
+            return CRS.from_string(DEFAULT_PROJECTION)
 
 
 def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:

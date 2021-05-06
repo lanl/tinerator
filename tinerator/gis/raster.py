@@ -158,7 +158,9 @@ class Raster:
     @property
     def extent(self):
         """
-        Returns the spatial extent of the raster.
+        Returns the spatial extent of the raster, in the form:
+
+            ``(x_min, y_min, x_max, y_max)``
         """
         return (
             self.xll_corner,  # x_min
