@@ -40,7 +40,7 @@ def load_raster(filename: str, no_data: float = None):
             it can be manually set here.
         to_crs (:obj:`str`, optional): If provided, will reproject raster to the given
             CRS (can be an EPSG code, WKT string, or `pyproj.CRS` object.)
-    
+
     Returns:
         A `tinerator.Raster` object.
 
@@ -50,8 +50,12 @@ def load_raster(filename: str, no_data: float = None):
 
     return Raster(filename, no_data=no_data)
 
+
 def new_raster(
-    data: np.ndarray, geotransform: tuple = None, crs: CRS = DEFAULT_PROJECTION, no_data: float = DEFAULT_NO_DATA_VALUE
+    data: np.ndarray,
+    geotransform: tuple = None,
+    crs: CRS = DEFAULT_PROJECTION,
+    no_data: float = DEFAULT_NO_DATA_VALUE,
 ):
     """
     Creates a new Raster object from an NxM Numpy array.
@@ -64,15 +68,14 @@ def new_raster(
             documentation for more information.
         crs (:obj:`pyproj.CRS`, optional): The CRS to create the raster into.
         no_data (:obj:`float`, optional): The No Data value to use for the raster.
-    
+
     Returns:
         A TINerator raster object.
-    
+
     Examples:
         >>> A = np.array([[1,2,3],[4,5,6],[7,8,9]], dtype=float)
-        >>> raster = tin.gis.new_raster(A, )
+        >>> raster = tin.gis.new_raster(A)
     """
-
 
     data = np.array(data, dtype=np.float64)
     nrows, ncols = data.shape
@@ -90,7 +93,7 @@ def new_raster(
             0.0,
             -cell_size,
         )
-    
+
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "tmp_raster.tif")
 
@@ -111,9 +114,10 @@ class Raster:
     The main Raster class object in TINerator.
     This stores the data and metadata for a loaded or created
     Raster object (like from reading in a GeoTIFF), and has
-    many helper functions for reprojection, resampling, 
+    many helper functions for reprojection, resampling,
     depression filling, and more.
     """
+
     def __init__(self, raster_path: str, no_data: float = None):
         self.data = rd.LoadGDAL(raster_path, no_data=no_data)
         self.no_data_value = self.data.no_data
@@ -331,7 +335,6 @@ class Raster:
             dist=distance,
             connect_ends=connect_ends,
         )
-
 
         vertices = project_vector(vertices, self)
         polygons = polygonize(linemerge(vertices[connectivity - 1].tolist()))

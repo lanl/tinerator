@@ -6,6 +6,7 @@ import meshio
 from tinerator import ExampleData
 from tempfile import TemporaryDirectory
 
+
 def meshes_equal(test_fname, gold_fname) -> bool:
     mo_test = meshio.read(test_fname, file_format="avsucd")
     mo_gold = meshio.read(gold_fname, file_format="avsucd")
@@ -33,6 +34,7 @@ def meshes_equal(test_fname, gold_fname) -> bool:
 
     return True
 
+
 def test_geometry_read():
     data = ExampleData.NewMexico
     shp = tin.gis.load_shapefile(data.flowline)
@@ -40,16 +42,17 @@ def test_geometry_read():
     assert len(shp) == 3694
     assert np.allclose(shp.centroid, [-107.57728379, 36.41307757])
     assert shp.ndim == 3
-    assert shp.geometry_type == '3D MultiLineString'
-    assert all([shape.type == 'LineString' for shape in shp.shapes])
+    assert shp.geometry_type == "3D MultiLineString"
+    assert all([shape.type == "LineString" for shape in shp.shapes])
+
 
 def test_geometry_write():
     data = ExampleData.NewMexico
     shp = tin.gis.load_shapefile(data.flowline)
 
     with TemporaryDirectory() as tmp_dir:
-        shp.save('shapefile.shp')
-        shp2 = tin.gis.load_shapefile('shapefile.shp')
+        shp.save("shapefile.shp")
+        shp2 = tin.gis.load_shapefile("shapefile.shp")
 
         assert shp.crs == shp2.crs
         assert len(shp) == len(shp2)
@@ -58,22 +61,25 @@ def test_geometry_write():
         assert np.allclose(shp.extent, shp2.extent)
         assert shp.properties == shp2.properties
 
+
 def test_raster_load():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
     assert dem.shape == (2373, 2575)
     assert np.allclose(dem.extent, [-107.70482, 36.29657, -107.46639, 36.5163])
 
+
 def test_raster_write():
     with TemporaryDirectory() as tmp_dir:
         data = ExampleData.NewMexico
-        dem = tin.gis.load_raster(data.dem) 
+        dem = tin.gis.load_raster(data.dem)
         dem.save("test.tif")
 
         dem2 = tin.gis.load_raster(os.path.join(tmp_dir, "test.tif"))
 
         assert dem.shape == dem2.shape
         assert np.allclose(dem.extent, dem2.extent)
+
 
 def test_raster_boundary():
     data = ExampleData.NewMexico
@@ -87,6 +93,7 @@ def test_raster_boundary():
 
     assert True
 
+
 def test_clip_raster():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
@@ -95,19 +102,21 @@ def test_clip_raster():
     assert new_dem.no_data_value == new_dem[0][0]
     assert round(np.nanmax(new_dem.data.data)) == 2289
 
+
 def test_fill_raster_depressions():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
     dem.fill_depressions()
     assert True
 
+
 def test_reproject():
     data = ExampleData.NewMexico
     dem = tin.gis.load_raster(data.dem)
     boundary = tin.gis.load_shapefile(data.watershed_boundary)
 
-    _ = tin.gis.reproject_raster(dem, 'EPSG:32112')
-    _ = tin.gis.reproject_geometry(boundary, 'EPSG:32112')
+    _ = tin.gis.reproject_raster(dem, "EPSG:32112")
+    _ = tin.gis.reproject_geometry(boundary, "EPSG:32112")
 
     assert True
 
@@ -121,17 +130,18 @@ def test_triangulate():
 
     dem = tin.gis.clip_raster(dem, boundary)
     dem = tin.gis.reproject_raster(dem, "EPSG:32112")
-    
+
     for method in ["meshpy", "jigsaw"]:
         surf = tin.meshing.triangulate(
-            dem, 
-            min_edge_length=0.01, 
-            max_edge_length = 0.1, 
-            scaling_type="relative", 
+            dem,
+            min_edge_length=0.01,
+            max_edge_length=0.1,
+            scaling_type="relative",
             method=method,
             refinement_feature=flowline,
         )
         surf.save("test_surf.vtk")
+
 
 def test_meshing_workflow():
     data = ExampleData.Simple
@@ -151,6 +161,7 @@ def test_meshing_workflow():
         assert meshes_equal(os.path.join(tmp_dir, "test_vol.inp"), data.volume_mesh)
 
     tin.meshing.DEV_spit_out_simple_mesh(volume_mesh)  # DEV_basic_facesets(volume_mesh)
+
 
 def test_exodus_write():
     example = tin.ExampleData.Simple

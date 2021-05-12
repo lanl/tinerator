@@ -10,6 +10,7 @@ from ..logging import log, warn, debug, error
 from ..constants import DEFAULT_PROJECTION
 from typing import Any, Callable, List, Union
 
+
 def parse_crs(crs: Union[str, int, dict]) -> CRS:
     """
     Returns a pyproj.CRS object from:
@@ -23,7 +24,7 @@ def parse_crs(crs: Union[str, int, dict]) -> CRS:
 
     Args:
         crs (Union[str, int, dict]) : A PyProj4-supported projection.
-    
+
     Returns:
         A pyproj.CRS object.
 
@@ -44,7 +45,7 @@ def parse_crs(crs: Union[str, int, dict]) -> CRS:
         try:
             return CRS.from_user_input(crs)
         except CRSError:
-            warn("Could not parse CRS. Defaulting to \"{DEFAULT_PROJECTION}\"")
+            warn('Could not parse CRS. Defaulting to "{DEFAULT_PROJECTION}"')
             return CRS.from_string(DEFAULT_PROJECTION)
 
 

@@ -63,9 +63,7 @@ EXODUS_ELEMENT_MAPPING = {"TRI3": None, "WEDGE6": [3, 4, 5, 0, 1, 2]}
 # &                    4, 5, 1, 2, 3, 0, ! Wedge/Prism
 # &                    5, 6, 1, 2, 3, 4/ ! Hex
 
-EXODUS_FACE_MAPPING = {
-    "WEDGE6": [4, 5, 1, 2, 3]
-}
+EXODUS_FACE_MAPPING = {"WEDGE6": [4, 5, 1, 2, 3]}
 
 
 def check_mesh_diff(mesh1_filename: str, mesh2_filename: str, print_diff: bool = True):
@@ -144,13 +142,13 @@ def dump_exodus(
     clobber_existing_file: bool = True,
     element_mapping: dict = EXODUS_ELEMENT_MAPPING,
 ):
-    '''
+    """
     Writes nodes and elements to an Exodus-format mesh.
 
     mesh_nodes[num_nodes, 3]: The mesh nodes array
     mesh_cells[num_cells, N]: The mesh cells array
     cell_block_ids[num_cells]: A vector of length `num_cells`
-    '''
+    """
 
     import exodus3 as exodus
 
@@ -241,9 +239,9 @@ def dump_exodus(
             setid = ss.setid
 
             if setid is None:
-                setid = int(f'3{i}')
+                setid = int(f"3{i}")
 
-            if name is None or name.strip() == '':
+            if name is None or name.strip() == "":
                 name = f"SideSetID={setid}"
 
             face_map = np.array(EXODUS_FACE_MAPPING[elem_type.upper()])
@@ -253,14 +251,16 @@ def dump_exodus(
 
             assert len(ss_elems) == len(ss_sides)
 
-            side_sets_exo.append({
-                'name': name,
-                'side_set_id': setid,
-                'num_ss_sides': len(ss_elems),
-                'num_ss_dist_facts': 0,
-                'ss_elems': ss_elems,
-                'ss_sides': ss_sides,
-            })
+            side_sets_exo.append(
+                {
+                    "name": name,
+                    "side_set_id": setid,
+                    "num_ss_sides": len(ss_elems),
+                    "num_ss_dist_facts": 0,
+                    "ss_elems": ss_elems,
+                    "ss_sides": ss_sides,
+                }
+            )
 
     # -------------------------------------------------
     # SECTION BEGIN Exodus mesh write
@@ -359,11 +359,13 @@ def dump_exodus(
         # -------------------------------------------------
         # SECTION WRITE Side Sets (if defined)
 
-        exo_id.put_side_set_names([ss['name'] for ss in side_sets_exo])
+        exo_id.put_side_set_names([ss["name"] for ss in side_sets_exo])
 
         for ss in side_sets_exo:
-            exo_id.put_side_set_params(ss['side_set_id'], ss['num_ss_sides'], ss['num_ss_dist_facts'])
-            exo_id.put_side_set(ss['side_set_id'], ss['ss_elems'], ss['ss_sides'])
+            exo_id.put_side_set_params(
+                ss["side_set_id"], ss["num_ss_sides"], ss["num_ss_dist_facts"]
+            )
+            exo_id.put_side_set(ss["side_set_id"], ss["ss_elems"], ss["ss_sides"])
 
     # -------------------------------------------------
     # SECTION DONE with ExodusII file

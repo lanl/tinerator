@@ -6,7 +6,8 @@ from .gis_tools import (
     distance_map,
 )
 from .raster import Raster, load_raster
-#from .vector import Shape, load_shapefile, ShapeType
+
+# from .vector import Shape, load_shapefile, ShapeType
 from .geometry import Geometry, load_shapefile
 from .watershed_delin import watershed_delineation
 from .geoutils import parse_crs, map_elevation, project_vector, unproject_vector

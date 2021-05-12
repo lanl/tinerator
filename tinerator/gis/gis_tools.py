@@ -23,6 +23,7 @@ try:
 except ImportError:
     import gdal
 
+
 def reproject_geometry(
     shape: Geometry, crs: Union[pyproj.CRS, str, int, dict]
 ) -> Geometry:
@@ -33,7 +34,7 @@ def reproject_geometry(
     Args:
         shape (Geometry): The Geometry object to reproject.
         crs (Union[pyproj.CRS, str, int, dict]): The CRS to reproject into.
-    
+
     Returns:
         A TINerator Geometry object in the new coordinate reference space.
     """
@@ -42,11 +43,8 @@ def reproject_geometry(
     project = pyproj.Transformer.from_crs(shape.crs, crs)
     new_shapes = [transform(project.transform, shp) for shp in shape.shapes]
 
-    return Geometry(
-        shapes=new_shapes,
-        crs=crs,
-        properties=shape.properties
-    )
+    return Geometry(shapes=new_shapes, crs=crs, properties=shape.properties)
+
 
 def rasterize_geometry(raster: Raster, shape: Shape) -> Raster:
     """
@@ -56,11 +54,11 @@ def rasterize_geometry(raster: Raster, shape: Shape) -> Raster:
         raster (Raster): The TINerator Raster object to use as a template
             for rasterizing the shape.
         shape (Geometry): The TINerator Geometry object to rasterize.
-    
+
     Returns:
         A TINerator Raster object with the Geometry burned into a
         raster of the same extent, projection, and size as :obj:`raster`.
-    
+
     Examples:
         >>> rasterized_shape = tin.gis.rasterize_geometry(dem, watershed_flowline)
     """
@@ -118,13 +116,13 @@ def distance_map(
         shape (tinerator.gis.Shape): The shape to measure distance from.
         min_dist (:obj:`float`, optional): Defaults to 0.
         max_dist (:obj:`float`, optional): Defaults to 1.
-    
+
     Returns:
         A raster filled with the normalized distance from each cell
         to the nearest intersection on `shape`.
 
     Note:
-        It is rare that a user would want to call this. This is 
+        It is rare that a user would want to call this. This is
         mainly an internal function used for triangulation.
 
     Examples:
@@ -167,14 +165,14 @@ def distance_map(
 def clip_raster(raster: Raster, shape: Shape) -> Raster:
     """
     Returns a new Raster object, clipped by a Shape polygon.
-    The raster will have the same shape and projection as the 
+    The raster will have the same shape and projection as the
     previous one, but cells not covered by :obj:`shape` will
     be filled with the no data value of the parent raster.
 
     Args:
         raster (tinerator.gis.Raster): The raster to clip.
         shape (tinerator.gis.Shape): The shape to clip the raster with.
-    
+
     Returns:
         A clipped raster.
 
@@ -186,7 +184,12 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
 
     log("Clipping raster with shapefile")
 
-    if shape.geometry_type not in ["Polygon", "MultiPolygon", "3D Polygon", "3D MultiPolygon"]:
+    if shape.geometry_type not in [
+        "Polygon",
+        "MultiPolygon",
+        "3D Polygon",
+        "3D MultiPolygon",
+    ]:
         raise ValueError(
             f"Vector shape type must be polygon to clip raster, not {shape.geometry_type}."
         )
@@ -217,24 +220,23 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
 
 def reproject_raster(raster: Raster, crs: Union[pyproj.CRS, str, dict, int]) -> Raster:
     """
-    Reprojects a TINerator Raster object into the 
+    Reprojects a TINerator Raster object into the
     destination CRS.
 
     The CRS must be a ``pyproj.CRS`` object, a WKT string,
-    an EPSG code (in the style of "EPSG:1234"), or a 
+    an EPSG code (in the style of "EPSG:1234"), or a
     PyProj string.
 
     Args:
         raster (Raster): A TINerator Raster object to reproject.
         dst_crs (pyproj.CRS): The CRS to project into.
-    
+
     Returns:
         A reprojected Raster object.
-    
+
     Examples:
         >>> tin.gis.reproject_raster(dem, "EPSG:3857")
     """
-
 
     dst_crs = parse_crs(crs)
     log(f"Reprojecting from {raster.crs.name} into {dst_crs.name}")
@@ -258,7 +260,13 @@ def reproject_raster(raster: Raster, crs: Union[pyproj.CRS, str, dict, int]) -> 
 
         return load_raster(REPROJ_RASTER_OUT)
 
-def resample_raster(raster: Raster, new_res: tuple = None, new_shape: tuple = None, resampling_method:str="near") -> Raster:
+
+def resample_raster(
+    raster: Raster,
+    new_res: tuple = None,
+    new_shape: tuple = None,
+    resampling_method: str = "near",
+) -> Raster:
     """
     Resamples a raster into either/both of:
         * A new resolution in geospatial units, as (xRes, yRes)
@@ -272,10 +280,10 @@ def resample_raster(raster: Raster, new_res: tuple = None, new_shape: tuple = No
         raster (Raster): A TINerator Raster object.
         new_res (:obj:`Tuple[float, float]`, optional): The new resolution in geospatial coordinates.
         new_shape (:obj:`Tuple[int, int]`, optional): The new number of rows and columns for the raster.
-    
+
     Returns:
         A TINerator Raster object
-    
+
     Examples:
         >>> new_shape = (x//2 for x in dem.shape)
         >>> new_dem = tin.gis.resample_raster(dem, new_shape = new_shape)
@@ -298,11 +306,7 @@ def resample_raster(raster: Raster, new_res: tuple = None, new_shape: tuple = No
         raster.save(RASTER_OUT)
 
         args = gdal.WarpOptions(
-            xRes=xRes,
-            yRes=yRes,
-            width=cols,
-            height=rows,
-            resampleAlg=resampling_method
+            xRes=xRes, yRes=yRes, width=cols, height=rows, resampleAlg=resampling_method
         )
 
         gdal.Warp(RESAMPLED_RASTER_OUT, RASTER_OUT, options=args)

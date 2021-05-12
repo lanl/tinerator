@@ -29,9 +29,7 @@ def plot_facesets(dem_object, fs_list):
                 row[0].imshow(empty, extent=extent)
 
             if fs_object._metadata["sides"]:
-                row[1].scatter(
-                    dem_object.boundary[:, 0], dem_object.boundary[:, 1]
-                )
+                row[1].scatter(dem_object.boundary[:, 0], dem_object.boundary[:, 1])
                 row[1].set_aspect(dem_object.ratio)
                 row[1].set_xlim(extent[:2])
                 row[1].set_ylim(extent[2:])
@@ -99,9 +97,7 @@ def plot_facesets(dem_object, fs_list):
 
     rows, cols = len(fs_list), 3
 
-    f, axes = plt.subplots(
-        rows, cols, figsize=(12, 8), sharex=True, sharey=True
-    )
+    f, axes = plt.subplots(rows, cols, figsize=(12, 8), sharex=True, sharey=True)
 
     top_axes_row = axes[0] if rows > 1 else axes
 

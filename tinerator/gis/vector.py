@@ -14,10 +14,12 @@ from .geoutils import project_vector, parse_crs
 from ..visualize import plot as pl
 from ..logging import log, warn, debug, error
 
-class Geometry():
+
+class Geometry:
     def __init__(self):
         self.shapes = []
         self.crs = None
+
 
 class ShapeType(Enum):
     POINT = auto()
@@ -182,10 +184,10 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
         to_crs (:obj:`str`, optional): If provided, will reproject
             the shapefile object to the given CRS (can be an EPSG code,
             WKT string, or :obj:`pyproj.CRS` object).
-    
+
     Returns:
         A :obj:`tinerator.gis.Shape` object.
-    
+
     Examples:
         >>> boundary = tin.gis.load_shapefile("my_shapefile.shp", crs="EPSG:3114")
     """
@@ -195,7 +197,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
         shapefile.POLYGON: ShapeType.POLYGON,
         shapefile.POINT: ShapeType.POINT,
         shapefile.POLYLINE: ShapeType.POLYLINE,
-        11: ShapeType.POINT, # TODO: wrong!
+        11: ShapeType.POINT,  # TODO: wrong!
     }
 
     if to_crs is not None:
@@ -220,7 +222,7 @@ def load_shapefile(filename: str, to_crs: str = None) -> list:
             except KeyError:
                 import ipdb
 
-                #ipdb.set_trace()
+                # ipdb.set_trace()
                 warn(
                     f"WARNING: couldn't parse shape type {shape.shapeType}. Skipping shape."
                 )

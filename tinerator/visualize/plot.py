@@ -91,9 +91,7 @@ def __add_raster_obj(
     # cbar.set_label("Elevation (m)", rotation=270)
 
 
-def __add_vector_obj(
-    fig, ax, shape, zorder=10
-):
+def __add_vector_obj(fig, ax, shape, zorder=10):
 
     shape_type = shape.geometry_type
 
@@ -102,15 +100,16 @@ def __add_vector_obj(
     elif "LineString" in shape_type:
         for shp in shape.shapes:
             coords = np.array(shp.coords[:])
-            ax.plot(coords[:,0], coords[:,1], zorder=zorder, marker="o")
+            ax.plot(coords[:, 0], coords[:, 1], zorder=zorder, marker="o")
     elif "Polygon" in shape_type:
-        for shp in shape.shapes: 
+        for shp in shape.shapes:
             xs, ys = shp.exterior.xy
-            ax.fill(xs, ys, alpha=0.5, zorder=zorder, linewidth=1.2, fc='r', ec='black')
+            ax.fill(xs, ys, alpha=0.5, zorder=zorder, linewidth=1.2, fc="r", ec="black")
     elif "GeometryCollection" in shape_type:
         raise NotImplementedError
     else:
         raise ValueError(f"Unknown shape type: {shape_type}")
+
 
 def plot_objects(
     objects: list,
@@ -134,9 +133,7 @@ def plot_objects(
     fig, ax = __init_figure(title=title, xlabel=xlabel, ylabel=ylabel)
 
     if zorder is not None:
-        assert len(zorder) == len(
-            objects
-        ), "`zorder` and `objects` differ in length"
+        assert len(zorder) == len(objects), "`zorder` and `objects` differ in length"
 
     for obj in objects:
         if isinstance(obj, Geometry):

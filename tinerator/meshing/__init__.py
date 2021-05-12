@@ -8,7 +8,7 @@ from .layering import (
 )
 from .triangulation import triangulate
 from .facesets_lg import FacesetBasic, FacesetFromSides, FacesetFromElevations
-from .util import estimate_edge_lengths
+from .meshing_utils import estimate_edge_lengths
 from .metrics import *
 from .dump_exodus import (
     dump_exodus,

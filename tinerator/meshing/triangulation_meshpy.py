@@ -4,6 +4,7 @@ import random
 import os
 import tempfile
 from .mesh import load_mesh, Mesh, ElementType
+from .meshing_utils import get_linestring_connectivity
 from ..gis import map_elevation, Raster, Geometry, distance_map, unproject_vector
 from ..logging import log, warn, debug
 
@@ -74,11 +75,10 @@ def triangulation_meshpy(
 
     kwargs["refinement_func"] = refinement_callback
 
-    vertices = raster_boundary.points[:, :2]
-    segments = raster_boundary.connectivity - 1
-
-    # The boundary is not closed - close it
-    segments = np.vstack([segments, [[segments[-1][-1], 0]]]).astype(int)
+    #vertices, segments = raster_boundary
+    vertices = np.array(raster_boundary.shapes[0].coords[:])
+    segments = get_linestring_connectivity(vertices, closed=True, clockwise=True)
+    segments -= 1
 
     mesh_info = meshpy.triangle.MeshInfo()
     mesh_info.set_points(vertices)  # boundary points

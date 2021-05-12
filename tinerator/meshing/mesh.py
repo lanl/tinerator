@@ -353,23 +353,30 @@ class Mesh:
 
     def view(
         self,
-        attribute_name: str = None,
+        active_scalar: str = None,
         scale: tuple = (1, 1, 1),
         savefig: str = None,
+        show_bounds: bool = True,
+        show_edges: bool = True,
+        window_size: tuple = None,
         **kwargs,
     ):
         """
         Views the mesh object in an interactive VTK-rendered windowed environment.
+        In a Jupyter notebook, it will render the 3D mesh in a live cell.
 
-        `**kwargs` are passed through to pyvista.UnstructuredGrid.plot method. Some keyword args include:
+        Additional keyword arguments can be found in the PyVista documentation.
 
-        * full_screen (bool, default: False)
-        * window_size (tuple)
-        * notebook (bool, default: False)
-        * text (str, default: '')
+        https://docs.pyvista.org/plotting/plotting.html#pyvista.plot
 
-        See `help(pyvista.UnstructuredGrid.plot)` and `help(pyvista.Plotter.add_mesh)` for more
-        information on possible keyword arguments.
+        Args
+        ----
+            active_scalar (:obj:`str`, optional): The mesh attribute to visualize. Defaults to material ID.
+            scale (:obj:`tuple`, optional): Relative scale for the mesh in (X, Y, Z). Defaults to (1, 1, 1).
+            savefig (:obj:`str`, optional): Filepath to save a screenshot of the mesh.
+            show_bounds (:obj:`bool`, optional): If True, shows the bounding box of the mesh.
+            show_edges (:obj:`bool`, optional): If True, shows the mesh edges.
+            window_size (:obj:`bool`, optional): Adjusts the viewing window size or the Jupyter notebook cell size.
         """
 
         if self.element_type == ElementType.TRIANGLE:
@@ -385,11 +392,12 @@ class Mesh:
         node_arrays = None
 
         try:
-            if attribute_name:
-                attrb = self.get_attribute(attribute_name)
+            if active_scalar:
+                attrb = self.get_attribute(active_scalar)
+                attribute_name = active_scalar
             else:
                 attrb = self.material_id
-                attribute_name = "materialID"
+                attribute_name = "material-ID"
 
             if len(attrb) == self.n_nodes:
                 node_arrays = {attribute_name: attrb}
@@ -398,16 +406,20 @@ class Mesh:
             else:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
-            error(f"Could not find attribute {attribute_name}")
+            error(f"Could not find attribute \"{active_scalar}\"")
 
         v3d.plot_3d(
             self,
             etype,
+            active_scalar=attribute_name,
             cell_arrays=cell_arrays,
             node_arrays=node_arrays,
             scale=scale,
-            title=self.name,
-            savefig=savefig,
+            text=f"Nodes: {self.n_nodes}\nCells: {self.n_elements}",
+            screenshot=savefig,
+            show_edges=show_edges,
+            window_size=window_size,
+            show_bounds=show_bounds,
             **kwargs,
         )
 

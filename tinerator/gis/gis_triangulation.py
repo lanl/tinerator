@@ -47,10 +47,10 @@ def save_triangulation_to_shapefile(outfile: str, mesh):
         w.field("elementID", "N")
         w.field("elevation", "N", decimal=10)
 
-        z_values = mesh.get_cell_centroids()[:,2]
+        z_values = mesh.get_cell_centroids()[:, 2]
 
         for (i, triangle) in enumerate(triangles):
-            w.record(i+1, z_values[i])
+            w.record(i + 1, z_values[i])
             w.poly([triangle])
 
         w.balance()

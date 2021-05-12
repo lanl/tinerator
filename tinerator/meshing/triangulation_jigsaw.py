@@ -3,6 +3,7 @@ import random
 import os
 import tempfile
 from .mesh import load_mesh
+from .meshing_utils import get_linestring_connectivity
 from ..gis import map_elevation, Raster, Geometry, distance_map
 from ..logging import log, warn, debug
 
@@ -60,9 +61,13 @@ def triangulation_jigsaw(
 
     # TODO: does this respect nodes that aren't already ordered
     # clockwise?
-    verts = [((pt[0], pt[1]), 0) for pt in raster_boundary.points]
-    conn = [((i, i + 1), 0) for i in range(len(raster_boundary.points) - 1)]
-    conn += [((len(raster_boundary.points) - 1, 0), 0)]
+    # vertices, segments = raster_boundary
+    vertices = np.array(raster_boundary.shapes[0].coords[:])
+    segments = get_linestring_connectivity(vertices, closed=True, clockwise=True)
+
+    verts = [((pt[0], pt[1]), 0) for pt in vertices]
+    conn = [((i, i + 1), 0) for i in range(len(vertices) - 1)]
+    conn += [((len(vertices) - 1, 0), 0)]
 
     opts = jigsawpy.jigsaw_jig_t()
     geom = jigsawpy.jigsaw_msh_t()
