@@ -1,64 +1,51 @@
-import pyproj
-import shapefile
-import numpy as np
-import os
-
-# from ..meshing import Mesh, ElementType
+from shapely.geometry import Polygon
+from .geometry import Geometry
 from ..logging import log, warn, debug
 
-
-def save_triangulation_to_shapefile(outfile: str, mesh):
+def vectorize_triangulation(mesh):
     """
     Saves triangulated surface as an ESRI Shapefile.
     Contains additional fields of:
 
     - "elementID" - `int` - the integer ID of the triangle
+    - "materialID" - `int` - the material ID of each triangle
     - "elevation" - `float` - triangle centroid Z value
 
     Useful for importing into QGIS / ArcGIS to validate
     the triangulation relative to other GIS objects.
 
-    Args:
+    Args
+    ----
         outfile (str): The path to save the shapefile.
         mesh (tinerator.meshing.Mesh): The triangulated surface to save.
 
-    Note:
+    Note
+    ----
         Only triangulations will work with this function. Prism meshes
         and other mesh types will not.
 
-    Examples:
-        >>> tin.gis.save_triangulation_to_shapefile("triang.shp", triangulation)
+    Examples
+    --------
+        >>> surface_mesh = tin.meshing.triangulate(dem, min_edge_length=0.1)
+        >>> triang_geom = tin.gis.vectorize_triangulation(surface_mesh)
+        >>> triang_geom.save("triangulation.shp")
     """
 
-    # assert mesh.element_type == ElementType.TRIANGLE
     assert mesh.elements.shape[1] == 3
 
     crs = mesh.crs
 
     elems = mesh.elements - 1
-    elems = np.vstack([elems.T, elems[:, 0]]).T
     triangles = mesh.nodes[elems].tolist()
+    shapes = [Polygon(tri) for tri in triangles]
 
-    crs_outfile = os.path.splitext(outfile)[0] + ".prj"
+    element_ids = list(range(1,len(shapes)+1))
+    material_ids = mesh.material_id
+    elevations = mesh.get_cell_centroids()[:, 2]
 
-    with shapefile.Writer(outfile) as w:
-        debug(f"Attempting to save vector object to {outfile}")
+    triang = Geometry(shapes=shapes, crs=mesh.crs)
+    triang.add_property("elementID", element_ids, type="int")
+    triang.add_property("materialID", material_ids, type="int")
+    triang.add_property("elevation", elevations, type="float")
 
-        w.field("elementID", "N")
-        w.field("elevation", "N", decimal=10)
-
-        z_values = mesh.get_cell_centroids()[:, 2]
-
-        for (i, triangle) in enumerate(triangles):
-            w.record(i + 1, z_values[i])
-            w.poly([triangle])
-
-        w.balance()
-
-    log(f"Shapefile data written to {outfile}")
-
-    # CRS info must be written out manually. See the reader.
-    with open(crs_outfile, "w") as f:
-        f.write(crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_ESRI))
-
-    log(f"CRS information written to {crs_outfile}")
+    return triang

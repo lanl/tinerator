@@ -45,7 +45,7 @@ def parse_crs(crs: Union[str, int, dict]) -> CRS:
         try:
             return CRS.from_user_input(crs)
         except CRSError:
-            warn('Could not parse CRS. Defaulting to "{DEFAULT_PROJECTION}"')
+            warn(f'Could not parse CRS. Defaulting to "{DEFAULT_PROJECTION}"')
             return CRS.from_string(DEFAULT_PROJECTION)
 
 

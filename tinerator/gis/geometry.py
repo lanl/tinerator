@@ -33,7 +33,8 @@ class Geometry:
         self.shapes = shapes
 
         if properties is None:
-            self.properties = OrderedDict()
+            self.properties = {"properties": {}, "metadata": {}}
+            self.properties["metadata"]["schema"] = OrderedDict({})
         else:
             self.properties = properties
 
@@ -41,7 +42,8 @@ class Geometry:
         return len(self.shapes)
 
     def __str__(self):
-        return f'Geometry<"{self.geometry_type}", shapes={len(self)}, crs="{self.crs.name}">'
+        n_props = len(self.properties["metadata"]["schema"])
+        return f'Geometry<"{self.geometry_type}", shapes={len(self)}, crs="{self.crs.name}", properties={n_props}>'
 
     def __repr__(self):
         return str(self)
@@ -88,9 +90,40 @@ class Geometry:
         """Returns the (x, y) array of all shapes in the Geometry object."""
         return np.array([(x[0], x[1]) for x in shp.coords[:] for shp in self.shapes])
 
+    def add_property(self, name: str, data: list, type: str = None):
+        """
+        Adds a property to the Geometry object.
+
+        Args
+        ----
+            name (str): The name of the property.
+            data (:obj:`list`): A list containing the property data. Must be of length ``len(self.shapes)``.
+            type (:obj:`str`, optional): The type of the data. Must be `str`, `int`, `float`, or `date`.
+        """
+        assert len(data) == len(self.shapes), '`data` must be a list equal in length to self.shapes'
+        if type is None:
+            mapper = {
+                int: 'int',
+                float: 'float',
+                str: 'str'
+            }
+
+            try:
+                type = mapper[type(data[0])]
+            except KeyError:
+                raise AttributeError(f"Could not automatically parse type {type(data[0])}. Pass `type = ...` and try again.")
+        
+        self.properties["metadata"]["schema"][name] = type
+        self.properties["properties"][name] = data
+
     def plot(self, layers: list = None, outfile: str = None, **kwargs):
         """
-        Plots the Shape object.
+        Plots the Geometry object.
+
+        Args
+        ----
+            layer (:obj:`list`, optional): A set of additional Raster or Geometry objects to view.
+            outfile (:obj:`str`, optional): If not None, saves the figure to this filename.
         """
 
         objects = [self]
@@ -119,9 +152,6 @@ class Geometry:
         driver (:obj:`str`, optional): The file format driver. May be one of:
             ``['ESRI Shapefile', 'GeoJSON']``.
         """
-        attributes = [shp.properties.items() for shp in self.shapes]
-        # properties = OrderedDict(chain(*attributes))
-
         gtype = self.geometry_type
 
         if driver == "ESRI Shapefile":
@@ -131,7 +161,9 @@ class Geometry:
             elif "MultiPolygon" in gtype:
                 gtype = gtype.replace("MultiPolygon", "Polygon")
 
-        schema = {"geometry": gtype, "properties": self.properties}
+        properties = self.properties["properties"]
+        property_schema = self.properties["metadata"]["schema"]
+        schema = {"geometry": gtype, "properties": property_schema}
 
         if LooseVersion(fiona.__gdal_version__) < LooseVersion("3.0.0"):
             crs = self.crs.to_wkt(pyproj.enums.WktVersion.WKT1_GDAL)
@@ -143,10 +175,28 @@ class Geometry:
             outfile, "w", crs_wkt=crs, driver=driver, schema=schema
         ) as output:
             for (i, shape) in enumerate(self.shapes):
-                try:
-                    props = shape.properties
-                except AttributeError:
-                    props = OrderedDict()
+                
+                props = OrderedDict({})
+                for key in property_schema:
+                    value = properties[key][i]
+
+                    if value is None:
+                        props[key] = None
+                        continue
+
+                    prop_type = property_schema[key]
+                    if "int" in prop_type:
+                        value = int(value)
+                    elif "float" in prop_type:
+                        value = float(value)
+                    elif "date" in prop_type:
+                        value = str(value)
+                    elif "str" in prop_type:
+                        value = str(value)
+                    else:
+                        raise ValueError(f"Could not parse type of: {key}:{prop_type}")
+                    
+                    props[key] = value
 
                 output.write(
                     {
@@ -199,16 +249,12 @@ class Geometry:
             raise AttributeError(f"Incorrect shape type; Polygon required. {e}")
 
         if spacing is None:
-            # nodes = np.array(exterior.coords[:])
             exterior_interp = LineString(exterior)
         else:
             distances = np.arange(0, exterior.length, spacing)
             exterior_interp = LineString(
                 [exterior.interpolate(distance) for distance in distances]
             )
-            # nodes = np.array(LineString(nodes).coords[:])
-
-        # connectivity = np.array([(i, i+1) for i in range(1, len(nodes))] + [(len(nodes), 1)], dtype=int)
 
         return Geometry(shapes=[exterior_interp], crs=self.crs, properties=None)
 
@@ -230,18 +276,23 @@ def load_shapefile(filename: str) -> Geometry:
 
     with fiona.open(filename, "r") as c:
         shapes = []
+        
+        properties = {'properties': [], 'metadata': {}}
+        properties["metadata"]["schema"] = c.schema['properties']
+
+        properties['properties'] = {key: [] for key in c.schema['properties']}
+
         crs = CRS.from_wkt(c.crs_wkt)
 
         for next_shape in iter(c):
             shp_shapely = to_shapely_shape(next_shape["geometry"])
 
-            # TODO: properties should probably be global to the
-            # Geometry class
-            if "properties" in next_shape:
-                shp_shapely.properties = next_shape["properties"]
-            else:
-                shp_shapely.properties = None
+
+            shp_props = next_shape["properties"]
+
+            for key in shp_props:
+                properties['properties'][key].append(shp_props[key])
 
             shapes.append(shp_shapely)
 
-        return Geometry(shapes=shapes, crs=crs, properties=c.schema["properties"])
+        return Geometry(shapes=shapes, crs=crs, properties=properties)

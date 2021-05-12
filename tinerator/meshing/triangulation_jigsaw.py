@@ -130,8 +130,6 @@ def triangulation_jigsaw(
     jigsawpy.lib.jigsaw(opts, geom, mesh, hfun=hmat)
     debug("Finished triangulation")
 
-    # scr2 = jigsawpy.triscr2(mesh.point["coord"], mesh.tria3["index"])
-
     with tempfile.TemporaryDirectory() as tmp_dir:
         outfile = os.path.join(tmp_dir, "mesh.vtk")
 

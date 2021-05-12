@@ -12,4 +12,4 @@ from .geometry import Geometry, load_shapefile
 from .watershed_delin import watershed_delineation
 from .geoutils import parse_crs, map_elevation, project_vector, unproject_vector
 from .distance_maps import DistanceMap, import_refinement_features
-from .gis_triangulation import save_triangulation_to_shapefile
+from .gis_triangulation import vectorize_triangulation

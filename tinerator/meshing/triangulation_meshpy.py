@@ -75,8 +75,7 @@ def triangulation_meshpy(
 
     kwargs["refinement_func"] = refinement_callback
 
-    #vertices, segments = raster_boundary
-    vertices = np.array(raster_boundary.shapes[0].coords[:])
+    vertices = np.array(raster_boundary.shapes[0].coords[:])[:, :2]
     segments = get_linestring_connectivity(vertices, closed=True, clockwise=True)
     segments -= 1
 
@@ -85,13 +84,12 @@ def triangulation_meshpy(
     mesh_info.set_facets(segments)  # connectivity
     mesh = meshpy.triangle.build(mesh_info, verbose=verbose, **kwargs)
 
-    # ------------ #
-
     mesh_points = np.array(mesh.points).astype(float)
     mesh_points = np.hstack([mesh_points, np.zeros((mesh_points.shape[0], 1))])
     mesh_tris = np.array(mesh.elements).astype(int) + 1
 
     m = Mesh(nodes=mesh_points, elements=mesh_tris, etype=ElementType.TRIANGLE)
     m.nodes[:, 2] = map_elevation(raster, m.nodes)
+    mesh.crs = raster_boundary.crs
 
     return m
