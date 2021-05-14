@@ -3,13 +3,13 @@ from .layering import (
     ProportionalSublayering,
     UniformSublayering,
     TranslatedSublayering,
-    stack,
+    stack_layers,
     extrude_surface,
 )
 from .triangulation import triangulate
 from .facesets_lg import FacesetBasic, FacesetFromSides, FacesetFromElevations
 from .meshing_utils import estimate_edge_lengths
-from .metrics import *
+from .metrics import edge_lengths, triangle_area, triangle_quality, prism_volume, mesh_quality
 from .dump_exodus import (
     dump_exodus,
     check_mesh_diff,

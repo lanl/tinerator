@@ -1,9 +1,8 @@
 import numpy as np
 from copy import copy, deepcopy
 from enum import Enum, auto
+from collections import List
 from .mesh import Mesh, StackedMesh, ElementType
-
-DEBUG = False
 
 # TODO: what happens when the nodes on surface layer intersects a
 # flat sublayer? I.e., the prisms generated would have 0 volume.
@@ -161,8 +160,7 @@ def UniformSublayering(
         relative_z=relative_z,
     )
 
-
-def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
+def stack_layers(surfmesh: Mesh, layers: List[Layer], matids: list = None) -> Mesh:
     """
     Extrudes and layers a surface mesh into a volumetric mesh, given
     the contraints in the `layers` object.
@@ -242,9 +240,6 @@ def stack(surfmesh: Mesh, layers: list, matids: list = None) -> Mesh:
 
         # Append all nodes and elements from layers into the volumetric mesh
         for (j, l) in enumerate(all_layers):
-
-            if DEBUG:
-                l.save("DEBUG_layer_%d%d.inp" % (i, j))
 
             l.elements += vol_mesh.n_nodes
             # vol_mesh.nodes = np.vstack((vol_mesh.nodes, l.nodes))
@@ -331,4 +326,4 @@ def extrude_surface(
             layer_type(depth, subdivisions, matids=[matid], relative_z=True)
         )
 
-    return stack(surfmesh, layer_objs)
+    return stack_layers(surfmesh, layer_objs)
