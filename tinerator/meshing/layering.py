@@ -1,7 +1,7 @@
 import numpy as np
 from copy import copy, deepcopy
 from enum import Enum, auto
-from collections import List
+from typing import List
 from .mesh import Mesh, StackedMesh, ElementType
 
 # TODO: what happens when the nodes on surface layer intersects a
@@ -159,6 +159,7 @@ def UniformSublayering(
         matids=matids,
         relative_z=relative_z,
     )
+
 
 def stack_layers(surfmesh: Mesh, layers: List[Layer], matids: list = None) -> Mesh:
     """

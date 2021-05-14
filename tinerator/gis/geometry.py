@@ -100,19 +100,19 @@ class Geometry:
             data (:obj:`list`): A list containing the property data. Must be of length ``len(self.shapes)``.
             type (:obj:`str`, optional): The type of the data. Must be `str`, `int`, `float`, or `date`.
         """
-        assert len(data) == len(self.shapes), '`data` must be a list equal in length to self.shapes'
+        assert len(data) == len(
+            self.shapes
+        ), "`data` must be a list equal in length to self.shapes"
         if type is None:
-            mapper = {
-                int: 'int',
-                float: 'float',
-                str: 'str'
-            }
+            mapper = {int: "int", float: "float", str: "str"}
 
             try:
                 type = mapper[type(data[0])]
             except KeyError:
-                raise AttributeError(f"Could not automatically parse type {type(data[0])}. Pass `type = ...` and try again.")
-        
+                raise AttributeError(
+                    f"Could not automatically parse type {type(data[0])}. Pass `type = ...` and try again."
+                )
+
         self.properties["metadata"]["schema"][name] = type
         self.properties["properties"][name] = data
 
@@ -175,7 +175,7 @@ class Geometry:
             outfile, "w", crs_wkt=crs, driver=driver, schema=schema
         ) as output:
             for (i, shape) in enumerate(self.shapes):
-                
+
                 props = OrderedDict({})
                 for key in property_schema:
                     value = properties[key][i]
@@ -195,7 +195,7 @@ class Geometry:
                         value = str(value)
                     else:
                         raise ValueError(f"Could not parse type of: {key}:{prop_type}")
-                    
+
                     props[key] = value
 
                 output.write(
@@ -276,22 +276,21 @@ def load_shapefile(filename: str) -> Geometry:
 
     with fiona.open(filename, "r") as c:
         shapes = []
-        
-        properties = {'properties': [], 'metadata': {}}
-        properties["metadata"]["schema"] = c.schema['properties']
 
-        properties['properties'] = {key: [] for key in c.schema['properties']}
+        properties = {"properties": [], "metadata": {}}
+        properties["metadata"]["schema"] = c.schema["properties"]
+
+        properties["properties"] = {key: [] for key in c.schema["properties"]}
 
         crs = CRS.from_wkt(c.crs_wkt)
 
         for next_shape in iter(c):
             shp_shapely = to_shapely_shape(next_shape["geometry"])
 
-
             shp_props = next_shape["properties"]
 
             for key in shp_props:
-                properties['properties'][key].append(shp_props[key])
+                properties["properties"][key].append(shp_props[key])
 
             shapes.append(shp_shapely)
 

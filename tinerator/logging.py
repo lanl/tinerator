@@ -1,4 +1,6 @@
 from rich.console import Console
+from rich.table import Table
+import numpy as np
 from enum import Enum
 
 console = Console()
@@ -22,6 +24,23 @@ console_opts = {
     "error_format": "italic red",
     "log_level": LogLevel.LOG,
 }
+
+
+def print_histogram_table(counts: np.array, bins: np.array, title: str = None):
+    """
+    Prints histogram results to a Rich table.
+    """
+    table = Table(title=title)
+    table.add_column("Bins", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Count")
+
+    if isinstance(bins[0], (float, np.double, np.float)):
+        bins = [round(x, 5) for x in bins]
+
+    for i in range(len(counts)):
+        table.add_row(f"[{bins[i]}, {bins[i+1]}]", f"{counts[i]}")
+
+    console.print(table)
 
 
 def set_logging_verbosity(level: LogLevel):

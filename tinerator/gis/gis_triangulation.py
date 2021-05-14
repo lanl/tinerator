@@ -2,6 +2,7 @@ from shapely.geometry import Polygon
 from .geometry import Geometry
 from ..logging import log, warn, debug
 
+
 def vectorize_triangulation(mesh):
     """
     Saves triangulated surface as an ESRI Shapefile.
@@ -39,7 +40,7 @@ def vectorize_triangulation(mesh):
     triangles = mesh.nodes[elems].tolist()
     shapes = [Polygon(tri) for tri in triangles]
 
-    element_ids = list(range(1,len(shapes)+1))
+    element_ids = list(range(1, len(shapes) + 1))
     material_ids = mesh.material_id
     elevations = mesh.get_cell_centroids()[:, 2]
 

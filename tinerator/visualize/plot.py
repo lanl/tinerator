@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.colors import LightSource
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import os
 import json
@@ -19,6 +20,51 @@ with open(
 topocmap = mcolors.LinearSegmentedColormap(
     name="schwarzwald_topographie", segmentdata=cmap_data
 )
+
+
+def plot_triangulation(
+    nodes: np.array,
+    triangles: np.array,
+    face_attribute: np.array = None,
+    title: str = None,
+    histogram_bins: int = None,
+    histogram_range: tuple = None,
+):
+    """
+    Plots a triangulation using Matplotlib.
+    Optionally, can plot face color using some attribute along
+    with a histogram plot of that face attribute.
+    """
+    x = nodes[:, 0]
+    y = nodes[:, 1]
+
+    fig, ax_top = plt.subplots(figsize=(8, 10))
+
+    ax_top.set_aspect("equal")
+    tc = ax_top.tripcolor(x, y, triangles, facecolors=face_attribute, edgecolors="k")
+
+    if title is not None:
+        ax_top.set_title(title)
+
+    if face_attribute is not None and histogram_bins is not None:
+        divider = make_axes_locatable(ax_top)
+        ax_bot = divider.append_axes("bottom", size=0.8, pad=0.3)
+        cax = divider.append_axes("right", size=0.08, pad=0.1)
+
+        ax_bot.hist(
+            face_attribute,
+            bins=histogram_bins,
+            range=histogram_range,
+            histtype="bar",
+            orientation="vertical",
+            ec="w",
+            fc="gray",
+        )
+        cbar = fig.colorbar(tc, cax=cax)
+    else:
+        cbar = fig.colorbar(tc, cax=ax_top)
+
+    plt.show()
 
 
 def __apply_grid_to_axis(axis):
@@ -45,6 +91,7 @@ def __init_figure(
     return fig, ax
 
 
+# https://matplotlib.org/2.0.2/examples/specialty_plots/topographic_hillshading.html
 def __add_raster_obj(
     fig,
     ax,

@@ -4,7 +4,14 @@ import pyvista as pv
 from copy import deepcopy
 from ..constants import _in_notebook, JUPYTER_BACKEND_DEFAULT
 
-def _mesh_to_vtk_unstructured(mesh, element_type: str, scale: tuple = (1, 1, 1), cell_arrays = None, node_arrays = None):
+
+def _mesh_to_vtk_unstructured(
+    mesh,
+    element_type: str,
+    scale: tuple = (1, 1, 1),
+    cell_arrays=None,
+    node_arrays=None,
+):
     """
     Internal function.
     Converts a TINerator Mesh object into a VTK unstructured grid.
@@ -77,7 +84,7 @@ def plot_3d(
     screenshot: str = None,
     edge_color: tuple = (0.6, 0.6, 0.6),
     jupyter_notebook: bool = _in_notebook(),
-    **kwargs
+    **kwargs,
 ):
     """
     Uses PyVista and VTK to render an unstructured mesh
@@ -89,11 +96,11 @@ def plot_3d(
     # https://docs.pyvista.org/user-guide/jupyter/ipygany.html#returning-scenes
 
     grid = _mesh_to_vtk_unstructured(
-        mesh, 
-        element_type, 
-        scale=scale, 
-        cell_arrays=cell_arrays, 
-        node_arrays=node_arrays
+        mesh,
+        element_type,
+        scale=scale,
+        cell_arrays=cell_arrays,
+        node_arrays=node_arrays,
     )
 
     if jupyter_notebook:
@@ -112,5 +119,5 @@ def plot_3d(
         edge_color=edge_color,
         cmap=cmap,
         scalars=active_scalar,
-        **kwargs
+        **kwargs,
     )

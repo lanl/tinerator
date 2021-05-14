@@ -4,10 +4,12 @@ import shutil
 import numpy as np
 from pyproj import CRS
 from pylagrit import PyLaGriT
+from .mesh_metrics import triangle_quality
 from .facesets_lg import write_facesets
 from .readwrite import ElementType, read_avs, write_avs, read_mpas
 from ..visualize import view_3d as v3d
-from ..logging import error
+from ..visualize import plot_triangulation
+from ..logging import error, print_histogram_table
 
 
 def _get_driver(filename: str):
@@ -220,6 +222,36 @@ class Mesh:
 
         return centroids
 
+    def mesh_quality(self, plot=False, n_bins: int = None):
+        """
+        Displays the quality of the mesh.
+        """
+        if self.element_type != ElementType.TRIANGLE:
+            raise NotImplementedError(
+                "Currently only implemented for triangular meshes."
+            )
+
+        quality = triangle_quality(self)
+
+        if plot:
+            if n_bins is None:
+                n_bins = 30
+            plot_triangulation(
+                self.nodes,
+                self.elements - 1,
+                face_attribute=quality,
+                title="Triangle Quality",
+                histogram_bins=n_bins,
+                histogram_range=(0.0, 1.0),
+            )
+        else:
+            if n_bins is None:
+                n_bins = 11
+            q_hist, q_bins = np.histogram(
+                quality, bins=np.linspace(0.0, 1.0, num=n_bins, endpoint=True)
+            )
+            print_histogram_table(q_hist, q_bins, title="Triangle Quality")
+
     @property
     def material_id(self):
         """Material ID of mesh"""
@@ -406,7 +438,7 @@ class Mesh:
             else:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
-            error(f"Could not find attribute \"{active_scalar}\"")
+            error(f'Could not find attribute "{active_scalar}"')
 
         v3d.plot_3d(
             self,

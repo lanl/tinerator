@@ -11,31 +11,36 @@ LAYERING_FUNCS = {
     "raster": None,
 }
 
+
 def create_constant_layer(parent_layer, thickness):
     base_nodes = deepcopy(parent_layer.nodes)
-    base_nodes[:,2] -= thickness
+    base_nodes[:, 2] -= thickness
 
     return base_nodes
+
 
 def create_snapped_layer(parent_layer, depth):
     base_nodes = deepcopy(parent_layer.nodes)
-    base_nodes[:,2] = depth
+    base_nodes[:, 2] = depth
 
     return base_nodes
+
 
 def create_fnc_layer(parent_layer, fnc):
     base_nodes = deepcopy(parent_layer.nodes)
-    x_vec = deepcopy(parent_layer.nodes[:,0])
-    y_vec = deepcopy(parent_layer.nodes[:,1])
-    base_nodes[:,2] = fnc(x_vec, y_vec)
+    x_vec = deepcopy(parent_layer.nodes[:, 0])
+    y_vec = deepcopy(parent_layer.nodes[:, 1])
+    base_nodes[:, 2] = fnc(x_vec, y_vec)
 
     return base_nodes
+
 
 def create_raster_layer(parent_layer, raster):
     base_nodes = deepcopy(parent_layer.nodes)
-    base_nodes[:,2] = map_elevation(raster, base_nodes)
+    base_nodes[:, 2] = map_elevation(raster, base_nodes)
 
     return base_nodes
+
 
 def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list):
     """
@@ -49,7 +54,7 @@ def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list)
 
     for i in range(len(major_layers) - 1):
         local_top = major_layers[i]
-        local_bottom = major_layers[i+1]
+        local_bottom = major_layers[i + 1]
 
         local_layering = sublayers[i]
 
@@ -57,23 +62,31 @@ def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list)
             middle_layers = []
         else:
             if isinstance(local_layering, int):
-                local_layering = [(i+1)/(local_layering+1) for i in range(local_layering)]
-            
+                local_layering = [
+                    (i + 1) / (local_layering + 1) for i in range(local_layering)
+                ]
+
             local_layering = sorted(local_layering)
 
-            assert all([x < 1. and x > 0. for x in local_layering]), 'local_layers must be an int or between [0, 1]'
+            assert all(
+                [x < 1.0 and x > 0.0 for x in local_layering]
+            ), "local_layers must be an int or between [0, 1]"
 
-            middle_layers = [local_bottom + (local_top - local_bottom) * x for x in local_layering][::-1]
+            middle_layers = [
+                local_bottom + (local_top - local_bottom) * x for x in local_layering
+            ][::-1]
 
         all_layers.extend([local_top, *middle_layers])
         layer_stride.append(len(middle_layers) + 1)
-    
+
     all_layers.append(major_layers[-1])
 
     return all_layers, layer_stride
 
+
 def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: int):
     pass
+
 
 def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids: list):
     """
@@ -86,13 +99,17 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
     elif top_surface.element_type == ElementType.QUAD:
         volume_mesh_type = ElementType.HEX
     else:
-        raise ValueError(f"Could not create stacked mesh from {top_surface.element_type}")
-    
+        raise ValueError(
+            f"Could not create stacked mesh from {top_surface.element_type}"
+        )
+
     assert len(sublayers) == len(layer_nodes)
     assert len(mat_ids) == len(sublayers)
 
     # Use the sublayering list to compute the intermediate layers
-    volume_nodes, layer_stride = interpolate_sublayers(top_surface, layer_nodes, sublayers)
+    volume_nodes, layer_stride = interpolate_sublayers(
+        top_surface, layer_nodes, sublayers
+    )
 
     num_nodes_per_layer = top_surface.n_nodes
     num_cells_per_layer = top_surface.n_elements
@@ -100,8 +117,7 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
 
     # Translate local layer element connectivity and make it global
     volume_connectivity = [
-        top_surface.elements + i*num_nodes_per_layer
-        for i in range(num_total_layers)
+        top_surface.elements + i * num_nodes_per_layer for i in range(num_total_layers)
     ]
 
     volume_nodes = np.vstack(volume_nodes)
@@ -117,7 +133,7 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
             prisms[i] = np.hstack(
                 (volume_connectivity[i + num_cells_per_layer], volume_connectivity[i])
             )
-        
+
         volume_connectivity = prisms
     else:
         raise NotImplementedError(f"Only triangle->prism stacking is supported")
@@ -126,7 +142,9 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
     volume_mesh = StackedMesh(etype=volume_mesh_type)
     volume_mesh.nodes = volume_nodes
     volume_mesh.elements = volume_connectivity
-    volume_mesh.material_id = compute_material_id(mat_ids, layer_stride, num_cells_per_layer)
+    volume_mesh.material_id = compute_material_id(
+        mat_ids, layer_stride, num_cells_per_layer
+    )
 
     return volume_mesh
 
@@ -136,7 +154,7 @@ def extrude_mesh(
     layer_types: List[str],
     layer_data: List[Union[float, int, Callable]],
     sublayers: List[Union[int, float]],
-    mat_ids = None,
+    mat_ids=None,
 ):
     """
     Regularly extrude a 2D mesh to make a 3D mesh.
@@ -153,7 +171,7 @@ def extrude_mesh(
 
     if not isinstance(layer_types, list):
         layer_types = [layer_types]
-    
+
     if not isinstance(layer_data, list):
         layer_data = [layer_data]
 
@@ -162,7 +180,7 @@ def extrude_mesh(
 
     if not isinstance(mat_ids, list):
         mat_ids = [mat_ids]
-    
+
     assert len(layer_types) == len(layer_data)
     assert len(layer_types) == len(mat_ids)
 
@@ -171,7 +189,7 @@ def extrude_mesh(
         nodes=deepcopy(surface_mesh.nodes),
         elements=deepcopy(surface_mesh.elements),
         etype=surface_mesh.element_type,
-        crs=surface_mesh.element_type
+        crs=surface_mesh.element_type,
     )
 
     for (l_data, l_type) in zip(layer_data, layer_types):
@@ -179,14 +197,14 @@ def extrude_mesh(
             layer_fnc = LAYERING_FUNCS[l_type]
         except KeyError:
             raise ValueError(f"Unsupported layer type: {l_type}")
-        
+
         all_layers.append(layer_fnc(parent_layer, l_data))
 
         parent_layer = Mesh(
             nodes=deepcopy(all_layers[-1]),
             elements=deepcopy(surface_mesh.elements),
             etype=surface_mesh.element_type,
-            crs=surface_mesh.element_type
+            crs=surface_mesh.element_type,
         )
-    
+
     return stack_layers(surface_mesh, all_layers, sublayers, mat_ids)
