@@ -16,6 +16,12 @@ class ExampleData:
             DATA_DIR, "meshes", "Surfaces", "simple_volume_with_facesets.exo"
         )
 
+    class RadialMesh:
+        """A simple radial surface mesh."""
+        root_dir = os.path.join(DATA_DIR, "radial_mesh")
+
+        #layers = 
+
     class NewMexico:
         """GIS data for a HUC10 in New Mexico."""
 

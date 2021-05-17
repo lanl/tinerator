@@ -225,6 +225,20 @@ class Mesh:
     def mesh_quality(self, plot=False, n_bins: int = None):
         """
         Displays the quality of the mesh.
+        If ``plot = True``, will display a plot showing the triangle
+        quality and a histogram.
+        If ``plot = False``, will print out an ASCII table displaying
+        binned quality values.
+
+        Args
+        ----
+            plot (:obj:`bool`, optional): Whether to plot results or display as ASCII.
+            n_bins (:obj:`int`, optional): Overrides the default number of bins for histogram binning.
+        
+        Examples
+        --------
+            >>> triangle_mesh.mesh_quality(plot=False)
+            >>> triangle_mesh.mesh_quality(plot=True, n_bins=11)
         """
         if self.element_type != ElementType.TRIANGLE:
             raise NotImplementedError(

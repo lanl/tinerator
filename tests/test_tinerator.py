@@ -140,8 +140,28 @@ def test_triangulate():
             method=method,
             refinement_feature=flowline,
         )
-        surf.save("test_surf.vtk")
 
+        assert all([x > 0.5 for x in tin.meshing.triangle_quality(surf)])
+        assert all([x > 0. for x in tin.meshing.triangle_area(surf)])
+
+def test_save_mesh():
+    data = ExampleData.Simple
+
+    with TemporaryDirectory() as tmp_dir:
+        surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
+        volume_mesh = tin.meshing.load_mesh(data.volume_mesh)
+
+        surface_mesh.save("surf.vtk")
+        surface_mesh.save("surf.inp")
+
+        volume_mesh.save("vol.vtk")
+        volume_mesh.save("vol.inp")
+
+        volume_mesh.save("vol.exo")
+        # TODO: test faceset save
+        # TODO: test that reading == saving
+    
+    assert True
 
 def test_meshing_workflow():
     data = ExampleData.Simple

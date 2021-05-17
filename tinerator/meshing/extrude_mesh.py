@@ -3,13 +3,8 @@ import numpy as np
 from typing import List, Union, Callable, Any
 from .mesh import Mesh, StackedMesh, ElementType
 from ..gis import map_elevation
+from ..logging import log, warn, debug, error
 
-LAYERING_FUNCS = {
-    "constant": None,
-    "snapped": None,
-    "function": None,
-    "raster": None,
-}
 
 
 def create_constant_layer(parent_layer, thickness):
@@ -85,8 +80,22 @@ def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list)
 
 
 def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: int):
-    pass
 
+    mat_ids_all = []
+
+    for i in range(len(layering_stride)):
+        mat_id = mat_ids[i]
+        stride = layering_stride[i]
+
+        if mat_id is None:
+            mat_id = [i+1] * stride
+        elif isinstance(mat_id, (int, np.int)):
+            mat_id = [mat_id] * stride
+        
+        assert len(mat_id) == stride
+        mat_ids_all.extend(mat_id)
+
+    return np.repeat(mat_ids_all, cells_per_layer).astype(int)
 
 def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids: list):
     """
@@ -117,7 +126,7 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
 
     # Translate local layer element connectivity and make it global
     volume_connectivity = [
-        top_surface.elements + i * num_nodes_per_layer for i in range(num_total_layers)
+        top_surface.elements + i * num_nodes_per_layer for i in range(num_total_layers + 1)
     ]
 
     volume_nodes = np.vstack(volume_nodes)
@@ -146,18 +155,42 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
         mat_ids, layer_stride, num_cells_per_layer
     )
 
+    layertyp = np.zeros((volume_mesh.n_nodes,), dtype=int)
+    layertyp[:num_nodes_per_layer] = -2
+    layertyp[-num_nodes_per_layer:] = -1
+    volume_mesh.add_attribute("layertyp", layertyp)
+
     return volume_mesh
 
+LAYERING_FUNCS = {
+    "constant": create_constant_layer,
+    "snapped": create_snapped_layer,
+    "function": create_fnc_layer,
+    "raster": create_raster_layer,
+}
 
 def extrude_mesh(
     surface_mesh: Mesh,
-    layer_types: List[str],
-    layer_data: List[Union[float, int, Callable]],
-    sublayers: List[Union[int, float]],
-    mat_ids=None,
+    layers: List[List[Any]],
 ):
     """
     Regularly extrude a 2D mesh to make a 3D mesh.
+
+    ``layers`` should be a list containing tuples of attributes
+    for each layer to add, in the form:
+    
+        (layer_type, layer_data, sublayers, mat_ids)
+
+    where ``layer_type`` is one of:
+
+        - "constant"
+        - "snapped"
+        - "function"
+        - "raster"
+    
+    | ``layer_type`` | ``layer_data``   |
+    | -------------- | ---------------- |
+    | "constant"     | depth to extrude |
 
     Args
     ----
@@ -169,20 +202,23 @@ def extrude_mesh(
     --------
     """
 
-    if not isinstance(layer_types, list):
-        layer_types = [layer_types]
+    if not isinstance(layers, (tuple, list)):
+        raise ValueError(f"Cannot parse layers. View function help.")
+    
+    if not isinstance(layers[0], (list, tuple)):
+        layers = [layers]
 
-    if not isinstance(layer_data, list):
-        layer_data = [layer_data]
+    layer_types = []
+    layer_data = []
+    layer_sublayers = []
+    layer_material_ids = []
 
-    if mat_ids is None:
-        mat_ids = [None] * len(layer_types)
-
-    if not isinstance(mat_ids, list):
-        mat_ids = [mat_ids]
-
-    assert len(layer_types) == len(layer_data)
-    assert len(layer_types) == len(mat_ids)
+    for layer in layers:
+        assert len(layer) == 4, 'layer must be (layer_type, layer_data, sublayers, material_ids)'
+        layer_types.append(layer[0])
+        layer_data.append(layer[1])
+        layer_sublayers.append(layer[2] - 1)
+        layer_material_ids.append(layer[3])
 
     all_layers = []
     parent_layer = Mesh(
@@ -193,6 +229,8 @@ def extrude_mesh(
     )
 
     for (l_data, l_type) in zip(layer_data, layer_types):
+        debug(f"Generating layer \"{l_type}\" with data {l_data}")
+
         try:
             layer_fnc = LAYERING_FUNCS[l_type]
         except KeyError:
@@ -207,4 +245,4 @@ def extrude_mesh(
             crs=surface_mesh.element_type,
         )
 
-    return stack_layers(surface_mesh, all_layers, sublayers, mat_ids)
+    return stack_layers(surface_mesh, all_layers, layer_sublayers, layer_material_ids)

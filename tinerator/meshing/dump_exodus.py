@@ -1,5 +1,6 @@
 # https://gsjaardema.github.io/seacas-docs/exodusII-new.pdf
 # /Users/livingston/playground/lanl/tinerator/tpl/seacas/install/lib:
+# https://github.com/ecoon/watershed-workflow/blob/c1b593e79e96b8fe22685d38c8777df0d824b1f6/workflow/mesh.py
 
 """
 References:

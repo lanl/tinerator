@@ -165,6 +165,7 @@ def extract_surface_mesh(mesh):
         cmds = [
             # (1) Read in the volume mesh
             "read/avs/volmesh.inp/mo_vol",
+            "quality",
             # (2) Extract the external surface mesh
             "extract/surfmesh/1,0,0/mo_surf/mo_vol/external",
             # (3) Map the layertyp node attribute to elements:

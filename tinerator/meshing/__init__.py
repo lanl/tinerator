@@ -6,6 +6,7 @@ from .layering import (
     stack_layers,
     extrude_surface,
 )
+from .extrude_mesh import extrude_mesh
 from .triangulation import triangulate
 from .facesets_lg import FacesetBasic, FacesetFromSides, FacesetFromElevations
 from .meshing_utils import estimate_edge_lengths
@@ -14,7 +15,6 @@ from .mesh_metrics import (
     triangle_area,
     triangle_quality,
     prism_volume,
-    mesh_quality,
 )
 from .dump_exodus import (
     dump_exodus,

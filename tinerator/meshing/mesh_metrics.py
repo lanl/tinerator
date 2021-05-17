@@ -1,22 +1,4 @@
 import numpy as np
-from matplotlib import pyplot as plt
-
-
-def plot_mesh_quality(mesh):
-    elens = edge_lengths(mesh)
-
-    f, ax = plt.subplots(nrows=2, ncols=2)
-    f.suptitle("Mesh Quality Metrics")
-    ax[0, 0].hist(elens, bins=20)
-    ax[0, 0].set_title("Edge Lengths")
-    plt.show()
-
-
-def mesh_quality(mesh):
-    elens = edge_lengths(mesh)
-
-    return {"edge length": {"mean": np.mean(elens), "stdev": np.std(elens)}}
-
 
 def prism_volume(mesh):
     """
@@ -32,7 +14,7 @@ def prism_volume(mesh):
             each prism cell.
     """
     nodes = mesh.points
-    prisms = mesh.elements
+    prisms = mesh.elements - 1
 
     tris_bottom = prisms[:, :3]
     tris_top = prisms[:, 3:]
@@ -131,7 +113,7 @@ def triangle_area(mesh):
             of every triangle.
     """
     nodes = mesh.nodes[:, :2]
-    triangles = mesh.elements
+    triangles = mesh.elements - 1
 
     p1 = nodes[triangles[:, 0]]
     p2 = nodes[triangles[:, 1]]
