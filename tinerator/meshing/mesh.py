@@ -4,9 +4,11 @@ import shutil
 import numpy as np
 from pyproj import CRS
 from pylagrit import PyLaGriT
+from .dump_exodus import dump_exodus
 from .mesh_metrics import triangle_quality
 from .facesets_lg import write_facesets
 from .readwrite import ElementType, read_avs, write_avs, read_mpas
+from .surface_mesh import SurfaceMesh
 from ..visualize import view_3d as v3d
 from ..visualize import plot_triangulation
 from ..logging import error, print_histogram_table
@@ -222,6 +224,17 @@ class Mesh:
 
         return centroids
 
+    def surface_mesh(self):
+        """
+        Extracts the surface mesh: a mesh where all interior voxels
+        and faces are removed. For triangular meshes, this will
+        return a line mesh. For a prism (extruded) mesh, this will
+        return a mesh containing triangles and quads.
+
+        Returns in Meshio format.
+        """
+        return SurfaceMesh(self)
+
     def mesh_quality(self, plot=False, n_bins: int = None):
         """
         Displays the quality of the mesh.
@@ -234,7 +247,7 @@ class Mesh:
         ----
             plot (:obj:`bool`, optional): Whether to plot results or display as ASCII.
             n_bins (:obj:`int`, optional): Overrides the default number of bins for histogram binning.
-        
+
         Examples
         --------
             >>> triangle_mesh.mesh_quality(plot=False)
@@ -469,23 +482,38 @@ class Mesh:
             **kwargs,
         )
 
-    def save(self, outfile: str, facesets: list = None):
+    def save(
+        self,
+        outfile: str,
+        face_sets: list = None,
+        node_sets: list = None,
+        element_sets: list = None,
+    ):
         """
-        Writes out a Mesh object to file. Supports Exodus and AVS-UCD
-        natively. All other formats convert the mesh into a Meshio object
-        and uses its writer to handle saving.
+        Writes a mesh object to disk. Supports file formats like VTK, AVS-UCD, and Exodus.
 
-        # Arguments
-        outfile: Filepath to write mesh. Mesh filetype is assumed from the
-        extension.
+        For Exodus meshes, face sets, node sets, and elements sets can be written out with the mesh.
 
-        facesets: List of Faceset objects. Only valid for Exodus meshes.
+        Args
+        ----
+            outfile (str): The path to save the mesh. The file format of the mesh is automatically
+                inferred by the extension.
+            face_sets (:obj:`list`, optional): A list of face sets.
+            node_sets (:obj:`list`, optional): A list of node sets.
+            element_sets (:obj:`list`, optional): A list of element sets.
         """
 
         driver = _get_driver(outfile)
 
         if driver == "exodus":
-            self.save_exo(outfile, facesets=facesets)
+            dump_exodus(
+                outfile,
+                self.nodes,
+                self.elements,
+                side_sets=face_sets,
+                node_sets=node_sets,
+                element_sets=element_sets,
+            )
         elif driver == "avsucd":
             if self.element_type == ElementType.TRIANGLE:
                 cell_type = "tri"
@@ -564,57 +592,6 @@ class Mesh:
 
         return mesh
 
-    def save_exo(self, outfile: str, facesets: list = None):
-        """
-        Writes an Exodus file using PyLaGriT as the driver.
-        """
-
-        if facesets is not None and self.element_type == ElementType.TRIANGLE:
-            raise TypeError("Triangle meshes currently cannot support facesets")
-
-        if self.element_type == ElementType.TRIANGLE:
-            dims = 2
-        elif self.element_type == ElementType.PRISM:
-            dims = 3
-        else:
-            print("Warning: unsupported")
-            dims = 3
-
-        basename = os.path.basename(outfile)
-
-        # Save mesh as INP
-        tmp_file = "temp_stacked__00.inp"
-        self.save(tmp_file)
-
-        # Read into LaGriT
-        lg = PyLaGriT(verbose=False)
-        mo = lg.read(tmp_file)
-        os.remove(tmp_file)
-
-        cmd = f"dump/exo/{basename}/{mo.name}"
-
-        # Write out faceset files
-        if facesets is not None:
-            fs_list = write_facesets(lg, self, facesets)
-            cmd += "///facesets &\n"
-            cmd += " &\n".join(fs_list)
-
-        if dims == 2:
-            mo.setatt("ndimensions_geom", 3)
-            lg.sendline(cmd)
-            mo.setatt("ndimensions_geom", 2)
-        else:
-            lg.sendline(cmd)
-
-        # Move to actual path (LaGriT can only handle cur. dir)
-        if os.path.dirname(outfile).strip() != "":
-            shutil.move(basename, outfile)
-
-        # Remove faceset files used for mesh generation
-        if facesets is not None:
-            for fs in fs_list:
-                os.remove(fs)
-
 
 class StackedMesh(Mesh):
     def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
@@ -627,11 +604,3 @@ class StackedMesh(Mesh):
     def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
         raise NotImplementedError("Layering in progress")
         # return self._cell_layer_ids == layer
-
-
-# class TriangularMesh(Mesh):
-#    def __init__(self, **kwargs):
-#        super().__init__(etype=ElementType.TRIANGLE, **kwargs)#
-
-#    def stack(self):
-#        pass

@@ -90,6 +90,7 @@ def __init_figure(
 
     return fig, ax
 
+
 # https://matplotlib.org/2.0.2/examples/specialty_plots/topographic_hillshading.html
 def __add_raster_obj(
     fig,

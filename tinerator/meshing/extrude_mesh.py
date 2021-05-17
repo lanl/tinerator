@@ -6,7 +6,6 @@ from ..gis import map_elevation
 from ..logging import log, warn, debug, error
 
 
-
 def create_constant_layer(parent_layer, thickness):
     base_nodes = deepcopy(parent_layer.nodes)
     base_nodes[:, 2] -= thickness
@@ -53,6 +52,9 @@ def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list)
 
         local_layering = sublayers[i]
 
+        if isinstance(local_layering, int):
+            local_layering -= 1
+
         if local_layering is None or local_layering == 0:
             middle_layers = []
         else:
@@ -80,6 +82,9 @@ def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list)
 
 
 def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: int):
+    """
+    Computes the material ID for generated sublayers.
+    """
 
     mat_ids_all = []
 
@@ -88,14 +93,15 @@ def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: i
         stride = layering_stride[i]
 
         if mat_id is None:
-            mat_id = [i+1] * stride
+            mat_id = [i + 1] * stride
         elif isinstance(mat_id, (int, np.int)):
             mat_id = [mat_id] * stride
-        
+
         assert len(mat_id) == stride
         mat_ids_all.extend(mat_id)
 
     return np.repeat(mat_ids_all, cells_per_layer).astype(int)
+
 
 def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids: list):
     """
@@ -126,7 +132,8 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
 
     # Translate local layer element connectivity and make it global
     volume_connectivity = [
-        top_surface.elements + i * num_nodes_per_layer for i in range(num_total_layers + 1)
+        top_surface.elements + i * num_nodes_per_layer
+        for i in range(num_total_layers + 1)
     ]
 
     volume_nodes = np.vstack(volume_nodes)
@@ -162,12 +169,14 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
 
     return volume_mesh
 
+
 LAYERING_FUNCS = {
     "constant": create_constant_layer,
     "snapped": create_snapped_layer,
     "function": create_fnc_layer,
     "raster": create_raster_layer,
 }
+
 
 def extrude_mesh(
     surface_mesh: Mesh,
@@ -178,33 +187,49 @@ def extrude_mesh(
 
     ``layers`` should be a list containing tuples of attributes
     for each layer to add, in the form:
-    
+
         (layer_type, layer_data, sublayers, mat_ids)
 
     where ``layer_type`` is one of:
 
-        - "constant"
-        - "snapped"
-        - "function"
-        - "raster"
-    
-    | ``layer_type`` | ``layer_data``   |
-    | -------------- | ---------------- |
-    | "constant"     | depth to extrude |
+        - "constant": a layer translated in -Z
+        - "snapped": a layer where all nodes are set to Z
+        - "function": a layer where the Z value of nodes are set from ``f(x, y) -> z``
+        - "raster": a layer where the Z values of nodes are set from the closest raster cell
+
+    | ``layer_type`` | ``layer_data``                                   |
+    | -------------- | ------------------------------------------------ |
+    | "constant"     | depth to extrude                                 |
+    | "snapped"      | value to set layer node Z values to              |
+    | "function"     | a Python function of the form ``f(x,y) -> z``    |
+    | "raster"       | a TINerator Raster object                        |
 
     Args
     ----
+        surface_mesh (tinerator.meshing.Mesh): A triangular surface mesh to extrude.
+        layers (List[List[Any]]): A list of layer schemas, in the
+            form ``(type, data, sublayers, material_id)``
 
     Returns
     -------
+        tinerator.meshing.Mesh: A prism mesh formed from stacked layers
 
     Examples
     --------
+        >>> fnc = lambda x, y: x**2. + y**2.
+        >>> subsurface = tin.gis.load_raster("subsurface.tif")
+        >>> layers = [
+                ("constant", 50., 2, 1),
+                ("snapped", 12.5, [0.25, 0.25, 0.5], 3),
+                ("function", fnc, 2, [4,5]),
+                ("raster", subsurface, 1, 6),
+            ]
+        >>> vol_mesh = tin.meshing.extrude_mesh(triangulation, layers)
     """
 
     if not isinstance(layers, (tuple, list)):
         raise ValueError(f"Cannot parse layers. View function help.")
-    
+
     if not isinstance(layers[0], (list, tuple)):
         layers = [layers]
 
@@ -214,10 +239,12 @@ def extrude_mesh(
     layer_material_ids = []
 
     for layer in layers:
-        assert len(layer) == 4, 'layer must be (layer_type, layer_data, sublayers, material_ids)'
+        assert (
+            len(layer) == 4
+        ), "layer must be (layer_type, layer_data, sublayers, material_ids)"
         layer_types.append(layer[0])
         layer_data.append(layer[1])
-        layer_sublayers.append(layer[2] - 1)
+        layer_sublayers.append(layer[2])
         layer_material_ids.append(layer[3])
 
     all_layers = []
@@ -229,7 +256,7 @@ def extrude_mesh(
     )
 
     for (l_data, l_type) in zip(layer_data, layer_types):
-        debug(f"Generating layer \"{l_type}\" with data {l_data}")
+        debug(f'Generating layer "{l_type}" with data {l_data}')
 
         try:
             layer_fnc = LAYERING_FUNCS[l_type]

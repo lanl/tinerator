@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def prism_volume(mesh):
     """
     Computes the volume of each cell of a prism mesh.

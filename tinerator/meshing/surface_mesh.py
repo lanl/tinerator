@@ -3,9 +3,6 @@ import numpy as np
 import tempfile
 import meshio
 from pylagrit import PyLaGriT
-from copy import copy, deepcopy
-from enum import Enum, auto
-from .mesh import Mesh, StackedMesh, ElementType, load_mesh
 from ..logging import log, warn, debug, _pylagrit_verbosity
 
 # https://www.attrs.org/en/stable/overview.html
@@ -50,7 +47,7 @@ class SurfaceMesh:
     PRISM_FACE_RIGHT = 5
     PRISM_FACE_BACK = 4
 
-    def __init__(self, volume_mesh: Mesh):
+    def __init__(self, volume_mesh):
         """Extracts the surface mesh from a volume mesh."""
         self._mesh = extract_surface_mesh(volume_mesh)
         self._layertyp = self._mesh.point_data["layertyp"].astype(int)
@@ -165,7 +162,6 @@ def extract_surface_mesh(mesh):
         cmds = [
             # (1) Read in the volume mesh
             "read/avs/volmesh.inp/mo_vol",
-            "quality",
             # (2) Extract the external surface mesh
             "extract/surfmesh/1,0,0/mo_surf/mo_vol/external",
             # (3) Map the layertyp node attribute to elements:

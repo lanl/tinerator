@@ -142,7 +142,8 @@ def test_triangulate():
         )
 
         assert all([x > 0.5 for x in tin.meshing.triangle_quality(surf)])
-        assert all([x > 0. for x in tin.meshing.triangle_area(surf)])
+        assert all([x > 0.0 for x in tin.meshing.triangle_area(surf)])
+
 
 def test_save_mesh():
     data = ExampleData.Simple
@@ -160,8 +161,9 @@ def test_save_mesh():
         volume_mesh.save("vol.exo")
         # TODO: test faceset save
         # TODO: test that reading == saving
-    
+
     assert True
+
 
 def test_meshing_workflow():
     data = ExampleData.Simple

@@ -18,9 +18,10 @@ class ExampleData:
 
     class RadialMesh:
         """A simple radial surface mesh."""
+
         root_dir = os.path.join(DATA_DIR, "radial_mesh")
 
-        #layers = 
+        # layers =
 
     class NewMexico:
         """GIS data for a HUC10 in New Mexico."""
