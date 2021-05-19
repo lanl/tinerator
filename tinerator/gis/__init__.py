@@ -4,6 +4,7 @@ from .gis_tools import (
     clip_raster,
     rasterize_geometry,
     distance_map,
+    resample_raster,
 )
 from .raster import Raster, load_raster
 

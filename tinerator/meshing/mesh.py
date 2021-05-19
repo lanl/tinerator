@@ -494,13 +494,17 @@ class Mesh:
 
         For Exodus meshes, face sets, node sets, and elements sets can be written out with the mesh.
 
-        Args
-        ----
-            outfile (str): The path to save the mesh. The file format of the mesh is automatically
-                inferred by the extension.
+        Args:
+            outfile (str): The path to save the mesh. The file format of the mesh is automatically inferred by the extension.
             face_sets (:obj:`list`, optional): A list of face sets.
             node_sets (:obj:`list`, optional): A list of node sets.
             element_sets (:obj:`list`, optional): A list of element sets.
+
+        Examples:
+            >>> tri = tin.meshing.triangulate(my_dem, min_edge_length=0.005)
+            >>> tri.save("my_triangulation.vtk")
+            >>> tri.save("my_triangulation.inp")
+            >>> tri.save("my_triangulation.exo", face_sets = face_sets)
         """
 
         driver = _get_driver(outfile)

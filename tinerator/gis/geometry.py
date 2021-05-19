@@ -94,8 +94,7 @@ class Geometry:
         """
         Adds a property to the Geometry object.
 
-        Args
-        ----
+        Args:
             name (str): The name of the property.
             data (:obj:`list`): A list containing the property data. Must be of length ``len(self.shapes)``.
             type (:obj:`str`, optional): The type of the data. Must be `str`, `int`, `float`, or `date`.
@@ -120,8 +119,7 @@ class Geometry:
         """
         Plots the Geometry object.
 
-        Args
-        ----
+        Args:
             layer (:obj:`list`, optional): A set of additional Raster or Geometry objects to view.
             outfile (:obj:`str`, optional): If not None, saves the figure to this filename.
         """
@@ -145,12 +143,9 @@ class Geometry:
         """
         Saves the Geometry object to a shapefile.
 
-        Arguments
-        ---------
-
-        outfile (str): The path to save the Geometry object.
-        driver (:obj:`str`, optional): The file format driver. May be one of:
-            ``['ESRI Shapefile', 'GeoJSON']``.
+        Args:
+            outfile (str): The path to save the Geometry object.
+            driver (:obj:`str`, optional): The file format driver. May be one of: ``['ESRI Shapefile', 'GeoJSON']``.
         """
         gtype = self.geometry_type
 
