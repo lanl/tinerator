@@ -28,3 +28,4 @@ mkdocs
 Sphinx
 furo
 sphinxcontrib-napoleon
+panel

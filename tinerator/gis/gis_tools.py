@@ -1,15 +1,8 @@
 import pyproj
 import os
-import fiona
-import rasterio
-import rasterio.mask
-import shutil
-import geopandas
 import numpy as np
 import tempfile
 import snowy
-from osgeo import ogr
-import osr
 from shapely.ops import transform
 from .geoutils import parse_crs
 from ..logging import log, warn, debug, error
@@ -23,6 +16,15 @@ try:
 except ImportError:
     import gdal
 
+try:
+    from osgeo import osr
+except ImportError:
+    import osr
+
+try:
+    from osgeo import ogr
+except ImportError:
+    import ogr
 
 def reproject_geometry(
     shape: Geometry, crs: Union[pyproj.CRS, str, int, dict]

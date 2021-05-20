@@ -3,7 +3,7 @@
 
 FROM ubuntu:20.04
 LABEL maintainer="Daniel Livingston <livingston@lanl.gov>"
-WORKDIR /tinerator
+WORKDIR /tinerator-install
 
 # Expose the Jupyter notebook port
 EXPOSE 8888
@@ -18,7 +18,7 @@ RUN apt-get update -y && \
     apt-get install -y \
     build-essential openssl vim gfortran cmake git \
     wget libz-dev m4 bison r-base  \
-    software-properties-common curl \
+    software-properties-common curl libgl1-mesa-glx xvfb \
     python3 python3-pip python3-setuptools && \
     \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 && \
@@ -42,16 +42,21 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
 
 # Build all TPLs
-RUN ./tpls/build-tpls.sh -A -M
+RUN ./tpls/build-tpls.sh -A -M && \
+    export PYTHONPATH=/tinerator-install/:$PYTHONPATH
 
 # Test TINerator
-#RUN cd /tinerator/tests && \
+#RUN cd /tinerator-install/tests && \
 #    pytest
 
-RUN cd /tinerator/docs/ && \
-    make html
+# Generate the documentation, and copy it (+ examples) to user-facing location
+RUN cd /tinerator-install/docs/ && \
+    make html && \
+    mkdir -p /tinerator/ && \
+    cp -r /tinerator-install/docs/_build/html /tinerator/docs && \
+    cp -r /tinerator-install/examples /tinerator/examples
 
-WORKDIR /tinerator/playground/
+WORKDIR /tinerator/
 
 # Launch Jupyter Lab on start
 CMD jupyter lab --port=8888

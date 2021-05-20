@@ -66,7 +66,8 @@ html_theme_options = {
 }
 
 
-pygments_style = "sphinx"
+#pygments_style = "sphinx"
+pygments_style = "monokai"
 pygments_dark_style = "monokai"
 
 # Add any paths that contain custom static files (such as style sheets) here,

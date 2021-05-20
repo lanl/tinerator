@@ -7,31 +7,22 @@ on:
     branches: [ master ]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-18.04
+  docs:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - 
+        name: Checkout
+        uses: actions/checkout@v1
+      - 
+        name: Build Documentation
+        uses: ammaraskar/sphinx-action@master
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+          docs-folder: "docs/"
+          pre-build-command: "pwd && export PYTHONPATH=$(pwd):$PYTHONPATH"
+          build-command: "make html"
+      -
+        name: Deploy to GH Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          hugo-version: '0.81.0'
-          # extended: true
-      
-      - name: Setup Python
-        run: |
-          apt-get update -y && \
-          apt-get install -y python3 python3-pip && \
-          pip3 install pydoc-markdown
-
-      - name: Build docs
-        run: pydoc-markdown --build
-
-#      - name: Deploy
-#        uses: peaceiris/actions-gh-pages@v3
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          publish_dir: ./public
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
