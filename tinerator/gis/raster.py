@@ -2,7 +2,6 @@ import richdem as rd
 import numpy as np
 import io
 import os
-import rasterio
 import pyproj
 import tempfile
 from contextlib import redirect_stdout

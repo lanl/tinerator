@@ -6,10 +6,8 @@ h5py
 netCDF4
 pexpect>=4.8.0
 Pillow
-scikit-image
 rich
 rpy2
-rasterio
 vtk
 Shapely
 snowy
@@ -17,14 +15,11 @@ scipy
 pyvista
 pyshp
 pyproj
-mkdocs
 MeshPy
 GDAL
 fiona
-geopandas
 richdem
 setuptools>=56.0.0
-mkdocs
 Sphinx
 furo
 sphinxcontrib-napoleon

@@ -18,7 +18,7 @@ jobs:
         uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
-          pre-build-command: "pwd && export PYTHONPATH=$(pwd):$PYTHONPATH"
+          pre-build-command: "pip install furo && pwd && export PYTHONPATH=$(pwd):$PYTHONPATH && echo $PYTHONPATH"
           build-command: "make html"
       -
         name: Deploy to GH Pages
