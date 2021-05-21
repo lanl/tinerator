@@ -21,29 +21,35 @@ RUN apt-get update -y && \
     software-properties-common curl libgl1-mesa-glx xvfb \
     python3 python3-pip python3-setuptools && \
     \
+    # Make Python 3 the default Python
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
     \
+    # Install GDAL and the Python bindings for GDAL
     add-apt-repository -y ppa:ubuntugis/ppa && apt-get update -y && \
     apt-get install -y gdal-bin libgdal-dev && \ 
     export CPLUS_INCLUDE_PATH=/usr/include/gdal && export C_INCLUDE_PATH=/usr/include/gdal && \
-    pip install GDAL==`gdal-config --version`
+    pip install GDAL==`gdal-config --version` && \
+    \
+    # Change the default shell to bash
+    chsh -s /bin/bash $(whoami)
 
 # Build Python packages
 RUN pip install -r requirements.txt
 
-# Configure Jupyter Notebook/Jupyter Lab
+# Configure Jupyter Notebook/Jupyter Lab settings
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
     echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
     echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
+    echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
 
 # Build all TPLs
 RUN ./tpls/build-tpls.sh -A -M && \
-    export PYTHONPATH=/tinerator-install/:$PYTHONPATH
+    echo "export PYTHONPATH=/tinerator-install/:$PYTHONPATH" >> ~/.bashrc
 
 # Test TINerator
 #RUN cd /tinerator-install/tests && \
