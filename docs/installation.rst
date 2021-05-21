@@ -5,15 +5,17 @@ Docker
 ------
 
 The easiest way of using TINerator is through
-`docker <https://www.docker.com/>`_, where you can 
+`Docker <https://www.docker.com/>`_, where you can 
 ``pull`` a `pre-built image of TINerator <https://hub.docker.com/r/ees16/tinerator/>`_ from
-dockerhub::
+DockerHub::
 
-    $ docker run -it --publish 8888:8888 --volume $(pwd):/tinerator/playground/work ees16/tinerator
+    $ docker run -it --publish 8888:8888 --volume $(pwd):/tinerator/work ees16/tinerator:latest
 
 When run, the Docker container initializes a Jupyter Lab instance.
 
 You will see some output similar to this:
+
+.. code-block:: text
 
     [I 2021-05-20 22:48:24.778 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
     [I 2021-05-20 22:48:24.782 ServerApp] jupyterlab | extension was successfully loaded.
@@ -31,14 +33,24 @@ Clarifying the Docker command
 
 The above `docker run` command requires a lot of flags. They are:
 
-- `-it`: short for `--interactive` + `--tty`
-- `--publish 8888:8888`: Maps the network port 8888 within the Docker container
+- ``-it``: short for ``--interactive`` + ``--tty``
+- ``--publish 8888:8888``: Maps the network port 8888 within the Docker container
   to the network port 8888 on your computer. This is what allows you to 
   access the Jupyter Lab that is contained within Docker from your internet 
   browser.
-- `--volume $(pwd):/tinerator/playground/work`: Docker cannot view files or folders on your machine
+- ``--volume $(pwd):/tinerator/playground/work``: Docker cannot view files or folders on your machine
   unless it's explicitly allowed to via this command. This takes your current working directory
-  `$(pwd)` and makes it visible from within the Docker container, at the location `/tinerator/playground/work`.
+  ``$(pwd)`` and makes it visible from within the Docker container, at the location ``/tinerator/playground/work``.
+
+Interfacing with Docker via Bash instead of Jupyter Lab
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can bypass Jupyter Lab and use TINerator through a Bash shell, if desired, by appending the Docker command with ``/bin/bash/``:
+
+    $ docker run -it --volume $(pwd):/tinerator/work ees16/tinerator:latest /bin/bash
+
+Note that the ``--publish`` flag is not needed if bypassing Jupyter, as there is no need for the host machine
+to communicate with Docker over networking ports.
 
 Download the Source
 -------------------
@@ -71,60 +83,8 @@ Environment Variables
 Building TINerator
 ------------------
 
-Setuptools builds both the main PyMesh module as well as all third party
-dependencies. To build PyMesh::
-
-    ./setup.py build
-
-
-Build with CMake
-~~~~~~~~~~~~~~~~
-
-If you are familiar with C++ and CMake, there is an alternative way of building
-PyMesh.  First compile and install all of the third party dependencies::
-
-    cd $PYMESH_PATH/third_party
-    ./build.py all
-
-Third party dependencies will be installed in
-``$PYMESH_PATH/python/pymesh/third_party`` directory.
-
-It is recommended to build out of source, use the following commands setup building
-environment::
-
-    cd $PYMESH_PATH
-    mkdir build
-    cd build
-    cmake ..
-
-PyMesh consists of several modules.  To build all modules and their
-corresponding unit tests::
-
-    make
-    make tests
-
-PyMesh libraries are all located in ``$PYMESH_PATH/python/pymesh/lib``
-directory.
-
-
-Install PyMesh
-~~~~~~~~~~~~~~
-
-To install PyMesh in your system::
-
-    ./setup.py install  # May require root privilege
-
-Alternatively, one can install PyMesh locally::
-
-    ./setup.py install --user
-
+Install TINerator
+~~~~~~~~~~~~~~~~~
 
 Post-installation check
 ~~~~~~~~~~~~~~~~~~~~~~~
-
-To check PyMesh is installed correctly, one can run the unit tests::
-
-    python -c "import pymesh; pymesh.test()"
-
-Please make sure all unit tests are passed, and report any unit test
-failures.
