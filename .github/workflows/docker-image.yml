@@ -37,7 +37,6 @@ jobs:
         name: Copy documentation from Docker container
         run: |
           docker run \
-                 -it \
                  -v $(pwd)/doc_deploy/:/tin-docs/ \
                  ees16/tinerator:latest \
                  /bin/bash -c "cp -r docs/* /tin-docs/"
