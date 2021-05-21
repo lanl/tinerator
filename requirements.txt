@@ -7,7 +7,7 @@ netCDF4
 pexpect>=4.8.0
 Pillow
 rich
-rpy2
+#rpy2
 vtk
 Shapely
 snowy
