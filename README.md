@@ -31,4 +31,4 @@ To build TINerator from source, refer to the [documentation](https://daniellivin
 
 ### Contributing
 
-Pull requests of all manner are welcomed! Please read the [contributing guidelines](#) before submitting a pull request.
+Pull requests of all manner are welcomed! Please read the [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
