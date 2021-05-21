@@ -25,7 +25,7 @@ You will see some output similar to this:
     [I 2021-05-20 22:48:24.783 ServerApp]     http://127.0.0.1:8888/lab
     [I 2021-05-20 22:48:24.784 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
 
-Open an internet browser on your machine and navigate to `http://127.0.0.1:8888/lab`. If all is successful, 
+Open an internet browser on your machine and navigate to `http://127.0.0.1:8888/lab <http://127.0.0.1:8888/lab>`_. If all is successful, 
 the Jupyter Lab logo should appear, along with a side panel showing `docs` and `examples` folders.
 
 Clarifying the Docker command

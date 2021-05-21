@@ -267,8 +267,71 @@ for each layer to add, in the form:</p>
 <h2>Generating a triangulation from a raster<a class="headerlink" href="#generating-a-triangulation-from-a-raster" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="tinerator.meshing.triangulate">
-<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">triangulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="api_gis_raster.html#tinerator.gis.Raster" title="tinerator.gis.raster.Raster"><span class="pre">tinerator.gis.raster.Raster</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_edge_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edge_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refinement_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'relative'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.triangulate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Triangulate a raster.</p>
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">triangulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="api_gis_raster.html#tinerator.gis.Raster" title="tinerator.gis.raster.Raster"><span class="pre">tinerator.gis.raster.Raster</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_edge_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edge_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refinement_feature</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="api_gis_geometry.html#tinerator.gis.Geometry" title="tinerator.gis.geometry.Geometry"><span class="pre">tinerator.gis.geometry.Geometry</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'relative'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> → <a class="reference internal" href="api_meshing_mesh.html#tinerator.meshing.Mesh" title="tinerator.meshing.mesh.Mesh"><span class="pre">tinerator.meshing.mesh.Mesh</span></a><a class="headerlink" href="#tinerator.meshing.triangulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a quality triangulation of a raster.</p>
+<p>The core of the triangulation algorithm are the parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min_edge_length</span></code>: The minimum edge length for created triangles.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_edge_length</span></code>: The maximum edge length for created triangles.</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">scaling_type</span></code>: Can be “relative” or “absolute”. If absolute, then the edge</dt><dd><p>length parameters will interpreted as meters (or whatever the units of
+the DEM are). If “relative”, then the edge length parameters will be considered
+percent of the DEM extent.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Recall that the refinement feature create a distance field internally. That distance
+field is normalized to [0., 1.].</p>
+<p>Where the distance field is 0., triangles will have an edge length of <code class="docutils literal notranslate"><span class="pre">min_edge_length</span></code>.
+Where the distance field is 1., triangles will have an edge length of <code class="docutils literal notranslate"><span class="pre">max_edge_length</span></code>.</p>
+<p>Distance field values between [0., 1.] will linearly interpolate the edge lengths.</p>
+<p>Available options for the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">"jigsaw"</span></code>: Uses <a class="reference external" href="https://github.com/dengwirda/jigsaw-python">JIGSAW</a> to generate a triangulation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">"meshpy"</span></code>: Uses <a class="reference external" href="https://documen.tician.de/meshpy/index.html">MeshPy</a> to generate a triangulation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">"gmsh"</span></code>: (in progress; not available yet). Uses <a class="reference external" href="https://gmsh.info">Gmsh</a> to generate a triangulation.</p></li>
+</ul>
+<p>The default is <code class="docutils literal notranslate"><span class="pre">"jigsaw"</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>Raster</strong><strong>)</strong> (<em>raster</em>) – </p>
+</dd>
+</dl>
+<p>:param min_edge_length (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>:
+:type min_edge_length (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>: The minimum triangle edge length to generate.
+:param optional):
+:type optional): The minimum triangle edge length to generate.
+:param max_edge_length (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>:
+:type max_edge_length (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>: The maximum triangle edge length to generate.
+:param optional):
+:type optional): The maximum triangle edge length to generate.
+:param refinement_feature (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Geometry</span></code>:
+:type refinement_feature (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Geometry</span></code>: The Geometry object used to refine the triangulation around.
+:param optional):
+:type optional): The Geometry object used to refine the triangulation around.
+:param method (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type method (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: The triangulation kernel to use. Defaults to <code class="docutils literal notranslate"><span class="pre">"jigsaw"</span></code>.
+:param optional):
+:type optional): The triangulation kernel to use. Defaults to <code class="docutils literal notranslate"><span class="pre">"jigsaw"</span></code>.
+:param scaling_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type scaling_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: Defines how to interpret the provided edge lengths, as “relative” or “absolute”.
+:param optional):
+:type optional): Defines how to interpret the provided edge lengths, as “relative” or “absolute”.
+:param **kwargs:
+:type **kwargs: Optional parameters to pass into the triangulation kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Mesh</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A TINerator triangulation surface mesh.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">surf_mesh</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">meshing</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">min_edge_length</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">scaling_type</span><span class="o">=</span><span class="s2">"relative"</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 </section>
 <section id="converting-a-triangulation-into-a-geometry-object">
