@@ -147,38 +147,47 @@
 <section id="docker">
 <h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way of using TINerator is through
-<a class="reference external" href="https://www.docker.com/">docker</a>, where you can
+<a class="reference external" href="https://www.docker.com/">Docker</a>, where you can
 <code class="docutils literal notranslate"><span class="pre">pull</span></code> a <a class="reference external" href="https://hub.docker.com/r/ees16/tinerator/">pre-built image of TINerator</a> from
-dockerhub:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -it --publish 8888:8888 --volume $(pwd):/tinerator/playground/work ees16/tinerator
+DockerHub:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -it --publish 8888:8888 --volume $(pwd):/tinerator/work ees16/tinerator:latest
 </pre></div>
 </div>
 <p>When run, the Docker container initializes a Jupyter Lab instance.</p>
 <p>You will see some output similar to this:</p>
-<blockquote>
-<div><p>[I 2021-05-20 22:48:24.778 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[I 2021-05-20 22:48:24.778 LabApp] JupyterLab application directory is /usr/local/share/jupyter/lab
 [I 2021-05-20 22:48:24.782 ServerApp] jupyterlab | extension was successfully loaded.
 [I 2021-05-20 22:48:24.783 ServerApp] Serving notebooks from local directory: /tinerator/playground
 [I 2021-05-20 22:48:24.783 ServerApp] Jupyter Server 1.8.0 is running at:
-[I 2021-05-20 22:48:24.783 ServerApp] <a class="reference external" href="http://dae7d8d45c90:8888/lab">http://dae7d8d45c90:8888/lab</a>
-[I 2021-05-20 22:48:24.783 ServerApp]     <a class="reference external" href="http://127.0.0.1:8888/lab">http://127.0.0.1:8888/lab</a>
-[I 2021-05-20 22:48:24.784 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).</p>
-</div></blockquote>
+[I 2021-05-20 22:48:24.783 ServerApp] http://dae7d8d45c90:8888/lab
+[I 2021-05-20 22:48:24.783 ServerApp]     http://127.0.0.1:8888/lab
+[I 2021-05-20 22:48:24.784 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+</pre></div>
+</div>
 <p>Open an internet browser on your machine and navigate to <cite>http://127.0.0.1:8888/lab</cite>. If all is successful,
 the Jupyter Lab logo should appear, along with a side panel showing <cite>docs</cite> and <cite>examples</cite> folders.</p>
 <section id="clarifying-the-docker-command">
 <h3>Clarifying the Docker command<a class="headerlink" href="#clarifying-the-docker-command" title="Permalink to this headline">¶</a></h3>
 <p>The above <cite>docker run</cite> command requires a lot of flags. They are:</p>
 <ul class="simple">
-<li><p><cite>-it</cite>: short for <cite>–interactive</cite> + <cite>–tty</cite></p></li>
-<li><p><cite>–publish 8888:8888</cite>: Maps the network port 8888 within the Docker container
+<li><p><code class="docutils literal notranslate"><span class="pre">-it</span></code>: short for <code class="docutils literal notranslate"><span class="pre">--interactive</span></code> + <code class="docutils literal notranslate"><span class="pre">--tty</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--publish</span> <span class="pre">8888:8888</span></code>: Maps the network port 8888 within the Docker container
 to the network port 8888 on your computer. This is what allows you to
 access the Jupyter Lab that is contained within Docker from your internet
 browser.</p></li>
-<li><p><cite>–volume $(pwd):/tinerator/playground/work</cite>: Docker cannot view files or folders on your machine
+<li><p><code class="docutils literal notranslate"><span class="pre">--volume</span> <span class="pre">$(pwd):/tinerator/playground/work</span></code>: Docker cannot view files or folders on your machine
 unless it’s explicitly allowed to via this command. This takes your current working directory
-<cite>$(pwd)</cite> and makes it visible from within the Docker container, at the location <cite>/tinerator/playground/work</cite>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">$(pwd)</span></code> and makes it visible from within the Docker container, at the location <code class="docutils literal notranslate"><span class="pre">/tinerator/playground/work</span></code>.</p></li>
 </ul>
+</section>
+<section id="interfacing-with-docker-via-bash-instead-of-jupyter-lab">
+<h3>Interfacing with Docker via Bash instead of Jupyter Lab<a class="headerlink" href="#interfacing-with-docker-via-bash-instead-of-jupyter-lab" title="Permalink to this headline">¶</a></h3>
+<p>You can bypass Jupyter Lab and use TINerator through a Bash shell, if desired, by appending the Docker command with <code class="docutils literal notranslate"><span class="pre">/bin/bash/</span></code>:</p>
+<blockquote>
+<div><p>$ docker run -it –volume $(pwd):/tinerator/work ees16/tinerator:latest /bin/bash</p>
+</div></blockquote>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">--publish</span></code> flag is not needed if bypassing Jupyter, as there is no need for the host machine
+to communicate with Docker over networking ports.</p>
 </section>
 </section>
 <section id="download-the-source">
@@ -210,57 +219,11 @@ $ cd tinerator-core/
 </section>
 <section id="building-tinerator">
 <span id="id2"></span><h2>Building TINerator<a class="headerlink" href="#building-tinerator" title="Permalink to this headline">¶</a></h2>
-<p>Setuptools builds both the main PyMesh module as well as all third party
-dependencies. To build PyMesh:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
-</pre></div>
-</div>
-<section id="build-with-cmake">
-<h3>Build with CMake<a class="headerlink" href="#build-with-cmake" title="Permalink to this headline">¶</a></h3>
-<p>If you are familiar with C++ and CMake, there is an alternative way of building
-PyMesh.  First compile and install all of the third party dependencies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $PYMESH_PATH/third_party
-./build.py all
-</pre></div>
-</div>
-<p>Third party dependencies will be installed in
-<code class="docutils literal notranslate"><span class="pre">$PYMESH_PATH/python/pymesh/third_party</span></code> directory.</p>
-<p>It is recommended to build out of source, use the following commands setup building
-environment:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $PYMESH_PATH
-mkdir build
-cd build
-cmake ..
-</pre></div>
-</div>
-<p>PyMesh consists of several modules.  To build all modules and their
-corresponding unit tests:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span>
-<span class="n">make</span> <span class="n">tests</span>
-</pre></div>
-</div>
-<p>PyMesh libraries are all located in <code class="docutils literal notranslate"><span class="pre">$PYMESH_PATH/python/pymesh/lib</span></code>
-directory.</p>
-</section>
-<section id="install-pymesh">
-<h3>Install PyMesh<a class="headerlink" href="#install-pymesh" title="Permalink to this headline">¶</a></h3>
-<p>To install PyMesh in your system:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>  <span class="c1"># May require root privilege</span>
-</pre></div>
-</div>
-<p>Alternatively, one can install PyMesh locally:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span>
-</pre></div>
-</div>
+<section id="install-tinerator">
+<h3>Install TINerator<a class="headerlink" href="#install-tinerator" title="Permalink to this headline">¶</a></h3>
 </section>
 <section id="post-installation-check">
 <h3>Post-installation check<a class="headerlink" href="#post-installation-check" title="Permalink to this headline">¶</a></h3>
-<p>To check PyMesh is installed correctly, one can run the unit tests:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s2">"import pymesh; pymesh.test()"</span>
-</pre></div>
-</div>
-<p>Please make sure all unit tests are passed, and report any unit test
-failures.</p>
 </section>
 </section>
 </section>
@@ -322,6 +285,7 @@ failures.</p>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#docker">Docker</a><ul>
 <li><a class="reference internal" href="#clarifying-the-docker-command">Clarifying the Docker command</a></li>
+<li><a class="reference internal" href="#interfacing-with-docker-via-bash-instead-of-jupyter-lab">Interfacing with Docker via Bash instead of Jupyter Lab</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#download-the-source">Download the Source</a></li>
@@ -333,8 +297,7 @@ failures.</p>
 </li>
 <li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
 <li><a class="reference internal" href="#building-tinerator">Building TINerator</a><ul>
-<li><a class="reference internal" href="#build-with-cmake">Build with CMake</a></li>
-<li><a class="reference internal" href="#install-pymesh">Install PyMesh</a></li>
+<li><a class="reference internal" href="#install-tinerator">Install TINerator</a></li>
 <li><a class="reference internal" href="#post-installation-check">Post-installation check</a></li>
 </ul>
 </li>
