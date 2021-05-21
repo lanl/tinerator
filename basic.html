@@ -2,9 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="TINerator API Reference" href="api.html" /><link rel="prev" title="Installation" href="installation.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="TINerator API Reference" href="api.html" /><link rel="prev" title="Installation" href="installation.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.0.2, furo 2021.04.11.beta34"/>
         <title>Basic Usage - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
@@ -37,7 +38,9 @@
   --color-code-foreground: #f8f8f2;
   
   }
-</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -139,26 +142,26 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="basic-usage">
+        <section id="basic-usage">
 <h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="importing-tinerator">
+<section id="importing-tinerator">
 <h2>Importing TINerator<a class="headerlink" href="#importing-tinerator" title="Permalink to this headline">¶</a></h2>
 <p>For brevity’s sake, TINerator is usually imported as:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tinerator</span> <span class="k">as</span> <span class="nn">tin</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="primary-data-structures">
+</section>
+<section id="primary-data-structures">
 <h2>Primary Data Structures<a class="headerlink" href="#primary-data-structures" title="Permalink to this headline">¶</a></h2>
 <p>Within TINerator, there are three main classes:</p>
 <ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Raster</span></code> - A representation of a GIS raster object</p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Geometry</span></code> - A representation of a GIS shapefile object</p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.meshing.Mesh</span></code> - The mesh class; typically with triangular or prism elements</p></li>
+<li><p><a class="reference internal" href="api_gis_raster.html#tinerator.gis.Raster" title="tinerator.gis.Raster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Raster</span></code></a> - A representation of a GIS raster object</p></li>
+<li><p><a class="reference internal" href="api_gis_geometry.html#tinerator.gis.Geometry" title="tinerator.gis.Geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Geometry</span></code></a> - A representation of a GIS shapefile object</p></li>
+<li><p><a class="reference internal" href="api_meshing_mesh.html#tinerator.meshing.Mesh" title="tinerator.meshing.Mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.meshing.Mesh</span></code></a> - The mesh class; typically with triangular or prism elements</p></li>
 </ul>
 <p>The core of TINerator is the translation from <code class="docutils literal notranslate"><span class="pre">Raster</span> <span class="pre">-&gt;</span> <span class="pre">Mesh</span></code> or <code class="docutils literal notranslate"><span class="pre">Raster</span> <span class="pre">+</span> <span class="pre">Geometry</span> <span class="pre">-&gt;</span> <span class="pre">Mesh</span></code>.</p>
-</div>
-<div class="section" id="loading-gis-data">
+</section>
+<section id="loading-gis-data">
 <h2>Loading GIS data<a class="headerlink" href="#loading-gis-data" title="Permalink to this headline">¶</a></h2>
 <p>A raster can be loaded from disk using:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dem</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">gis</span><span class="o">.</span><span class="n">load_raster</span><span class="p">(</span><span class="s2">"dem.tif"</span><span class="p">)</span>
@@ -171,8 +174,8 @@
 </div>
 <p>TINerator uses <a class="reference external" href="https://fiona.readthedocs.io">Fiona</a> as the file reader, and supports all
 file formats that Fiona does.</p>
-</div>
-<div class="section" id="visualizing-gis-data">
+</section>
+<section id="visualizing-gis-data">
 <h2>Visualizing GIS data<a class="headerlink" href="#visualizing-gis-data" title="Permalink to this headline">¶</a></h2>
 <p>Both <cite>Raster</cite> and <cite>Geometry</cite> have a <cite>plot()</cite> method:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dem</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -184,8 +187,8 @@ command:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dem</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">layers</span><span class="o">=</span><span class="p">[</span><span class="n">geom</span><span class="p">,</span> <span class="n">raster2</span><span class="p">,</span> <span class="n">geom2</span><span class="p">,</span> <span class="n">geom3</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="saving-gis-objects">
+</section>
+<section id="saving-gis-objects">
 <h2>Saving GIS objects<a class="headerlink" href="#saving-gis-objects" title="Permalink to this headline">¶</a></h2>
 <p>Both Rasters and Geometry objects can be saved with the <cite>save()</cite> method:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dem</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"my_dem.tif"</span><span class="p">)</span>
@@ -194,8 +197,8 @@ command:</p>
 </div>
 <p>This can be convenient for saving objects after performing operations on them (like clipping,
 reprojecting, etc.).</p>
-</div>
-<div class="section" id="reprojecting-gis-objects">
+</section>
+<section id="reprojecting-gis-objects">
 <h2>Reprojecting GIS objects<a class="headerlink" href="#reprojecting-gis-objects" title="Permalink to this headline">¶</a></h2>
 <p>Both Raster and Geometry objects can be reprojected with a given coordinate reference system (CRS).
 The CRS can take the form of an EPSG code, a WKT string, a Pyproj4 string, or a pyproj4 dict.</p>
@@ -205,8 +208,8 @@ The CRS can take the form of an EPSG code, a WKT string, a Pyproj4 string, or a 
 </div>
 <p>Under the hood, TINerator uses <a class="reference external" href="https://pyproj4.github.io/pyproj/stable/examples.html">pyproj</a> for
 parsing and managing CRS’.</p>
-</div>
-<div class="section" id="clipping-a-raster-with-a-geometry-object">
+</section>
+<section id="clipping-a-raster-with-a-geometry-object">
 <h2>Clipping a Raster with a Geometry object<a class="headerlink" href="#clipping-a-raster-with-a-geometry-object" title="Permalink to this headline">¶</a></h2>
 <p>If the Geometry object is a type of <code class="docutils literal notranslate"><span class="pre">Polygon</span></code>, you can clip a Raster object with it.
 Everything in the Raster contained within the Geometry polygon will be kept, and everything else
@@ -219,8 +222,8 @@ will be discarded or set to <cite>no_data_value</cite>.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">clipped_dem</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
       </article>
       <footer>
@@ -297,6 +300,7 @@ will be discarded or set to <cite>no_data_value</cite>.</p>
   </main>
 </div>
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>

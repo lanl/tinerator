@@ -2,9 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Mesh object" href="api_meshing_mesh.html" /><link rel="prev" title="Geometry object" href="api_gis_geometry.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Mesh object" href="api_meshing_mesh.html" /><link rel="prev" title="Geometry object" href="api_gis_geometry.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.0.2, furo 2021.04.11.beta34"/>
         <title>Meshing Module Functions - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
@@ -37,7 +38,9 @@
   --color-code-foreground: #f8f8f2;
   
   }
-</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -139,30 +142,199 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="meshing-module-functions">
+        <section id="meshing-module-functions">
 <h1>Meshing Module Functions<a class="headerlink" href="#meshing-module-functions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="loading-a-mesh-from-disk">
+<section id="loading-a-mesh-from-disk">
 <h2>Loading a mesh from disk<a class="headerlink" href="#loading-a-mesh-from-disk" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="mesh-quality-statistics">
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">load_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_dual_mesh</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Loads a Mesh object from a mesh file on disk. Supports AVS-UCD, VTK, Exodus, and MPAS.</p>
+</dd></dl>
+</section>
+<section id="mesh-quality-statistics">
 <h2>Mesh quality statistics<a class="headerlink" href="#mesh-quality-statistics" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="extruding-a-surface-mesh-into-a-volume-mesh">
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.triangle_quality">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">triangle_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.triangle_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the quality of each triangle in the surface mesh,
+where quality is defined as twice the ratio of circumcircle
+and incircle radius.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>tinerator.meshing.Mesh</strong><strong>)</strong> (<em>mesh</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>An array of length <code class="docutils literal notranslate"><span class="pre">n_elements</span></code>, with quality value for</p></li>
+<li><p><em>each tri.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.triangle_area">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">triangle_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.triangle_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the signed area for all triangles in
+the mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>tinerator.meshing.Mesh</strong><strong>)</strong> (<em>mesh</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>of every triangle.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An array of length <code class="docutils literal notranslate"><span class="pre">n_elements</span></code> containing the signed area</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.prism_volume">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">prism_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.prism_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the volume of each cell of a prism mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>tinerator.meshing.Mesh</strong><strong>)</strong> (<em>mesh</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>each prism cell.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An array of length <code class="docutils literal notranslate"><span class="pre">n_elements</span></code> containing the volume of</p>
+</dd>
+</dl>
+</dd></dl>
+</section>
+<section id="extruding-a-surface-mesh-into-a-volume-mesh">
 <h2>Extruding a surface mesh into a volume mesh<a class="headerlink" href="#extruding-a-surface-mesh-into-a-volume-mesh" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.extrude_mesh">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">extrude_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface_mesh</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="api_meshing_mesh.html#tinerator.meshing.Mesh" title="tinerator.meshing.mesh.Mesh"><span class="pre">tinerator.meshing.mesh.Mesh</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.extrude_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regularly extrude a 2D mesh to make a 3D mesh.</p>
+<p><code class="docutils literal notranslate"><span class="pre">layers</span></code> should be a list containing tuples of attributes
+for each layer to add, in the form:</p>
+<blockquote>
+<div><p>(layer_type, layer_data, sublayers, mat_ids)</p>
+</div></blockquote>
+<p>where <code class="docutils literal notranslate"><span class="pre">layer_type</span></code> is one of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“constant”: a layer translated in -Z</p></li>
+<li><p>“snapped”: a layer where all nodes are set to Z</p></li>
+<li><p>“function”: a layer where the Z value of nodes are set from <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">y)</span> <span class="pre">-&gt;</span> <span class="pre">z</span></code></p></li>
+<li><p>“raster”: a layer where the Z values of nodes are set from the closest raster cell</p></li>
+</ul>
+</div></blockquote>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">layer_type</span></code> | <code class="docutils literal notranslate"><span class="pre">layer_data</span></code>                                   |</div>
+<div class="line">————– | ———————————————— |</div>
+<div class="line">“constant”     | depth to extrude                                 |</div>
+<div class="line">“snapped”      | value to set layer node Z values to              |</div>
+<div class="line">“function”     | a Python function of the form <code class="docutils literal notranslate"><span class="pre">f(x,y)</span> <span class="pre">-&gt;</span> <span class="pre">z</span></code>    |</div>
+<div class="line">“raster”       | a TINerator Raster object                        |</div>
 </div>
-<div class="section" id="generating-a-triangulation-from-a-raster">
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>tinerator.meshing.Mesh</strong><strong>)</strong> (<em>surface_mesh</em>) – </p></li>
+<li><p><strong>(</strong><strong>List</strong><strong>[</strong><strong>List</strong><strong>[</strong><strong>Any</strong><strong>]</strong><strong>]</strong><strong>)</strong> (<em>layers</em>) – form <code class="docutils literal notranslate"><span class="pre">(type,</span> <span class="pre">data,</span> <span class="pre">sublayers,</span> <span class="pre">material_id)</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tinerator.meshing.Mesh</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A prism mesh formed from stacked layers</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fnc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mf">2.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subsurface</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">gis</span><span class="o">.</span><span class="n">load_raster</span><span class="p">(</span><span class="s2">"subsurface.tif"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span>
+<span class="go">        ("constant", 50., 2, 1),</span>
+<span class="go">        ("snapped", 12.5, [0.25, 0.25, 0.5], 3),</span>
+<span class="go">        ("function", fnc, 2, [4,5]),</span>
+<span class="go">        ("raster", subsurface, 1, 6),</span>
+<span class="go">    ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vol_mesh</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">meshing</span><span class="o">.</span><span class="n">extrude_mesh</span><span class="p">(</span><span class="n">triangulation</span><span class="p">,</span> <span class="n">layers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+</section>
+<section id="generating-a-triangulation-from-a-raster">
 <h2>Generating a triangulation from a raster<a class="headerlink" href="#generating-a-triangulation-from-a-raster" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="converting-a-triangulation-into-a-geometry-object">
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.triangulate">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">triangulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="api_gis_raster.html#tinerator.gis.Raster" title="tinerator.gis.raster.Raster"><span class="pre">tinerator.gis.raster.Raster</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_edge_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_edge_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refinement_feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'relative'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.triangulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate a raster.</p>
+</dd></dl>
+</section>
+<section id="converting-a-triangulation-into-a-geometry-object">
 <h2>Converting a triangulation into a Geometry object<a class="headerlink" href="#converting-a-triangulation-into-a-geometry-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">tinerator.gis.</span></span><span class="sig-name descname"><span class="pre">vectorize_triangulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Saves triangulated surface as an ESRI Shapefile.
+Contains additional fields of:</p>
+<ul class="simple">
+<li><p>“elementID” - <cite>int</cite> - the integer ID of the triangle</p></li>
+<li><p>“materialID” - <cite>int</cite> - the material ID of each triangle</p></li>
+<li><p>“elevation” - <cite>float</cite> - triangle centroid Z value</p></li>
+</ul>
+<p>Useful for importing into QGIS / ArcGIS to validate
+the triangulation relative to other GIS objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>outfile</em>) – </p></li>
+<li><p><strong>(</strong><strong>tinerator.meshing.Mesh</strong><strong>)</strong> (<em>mesh</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only triangulations will work with this function. Prism meshes
+and other mesh types will not.</p>
 </div>
-<div class="section" id="estimate-edge-length-size-from-triangle-count">
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">surface_mesh</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">meshing</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">min_edge_length</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">triang_geom</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">gis</span><span class="o">.</span><span class="n">vectorize_triangulation</span><span class="p">(</span><span class="n">surface_mesh</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">triang_geom</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"triangulation.shp"</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+</section>
+<section id="estimate-edge-length-size-from-triangle-count">
 <h2>Estimate edge length size from triangle count<a class="headerlink" href="#estimate-edge-length-size-from-triangle-count" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="extracting-a-surface-mesh-and-defining-sets">
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.estimate_edge_lengths">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">estimate_edge_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="api_gis_raster.html#tinerator.gis.Raster" title="tinerator.gis.raster.Raster"><span class="pre">tinerator.gis.raster.Raster</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_tris</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> → <span class="pre">float</span><a class="headerlink" href="#tinerator.meshing.estimate_edge_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the edge lengths of <cite>n_tris</cite> amount of equilateral triangles
+that would fit into <cite>raster</cite>.</p>
+</dd></dl>
+</section>
+<section id="extracting-a-surface-mesh-and-defining-sets">
 <h2>Extracting a surface mesh and defining sets<a class="headerlink" href="#extracting-a-surface-mesh-and-defining-sets" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.SurfaceMesh">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">SurfaceMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume_mesh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SurfaceMesh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.NodeSet">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">NodeSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.NodeSet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.ElemSet">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">ElemSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.ElemSet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">SideSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elem_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">side_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SideSet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</section>
+</section>
 
       </article>
       <footer>
@@ -239,6 +411,7 @@
   </main>
 </div>
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>

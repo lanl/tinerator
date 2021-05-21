@@ -2,9 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Basic Usage" href="basic.html" /><link rel="prev" title="User Guide" href="user_guide.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Basic Usage" href="basic.html" /><link rel="prev" title="User Guide" href="user_guide.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.0.2, furo 2021.04.11.beta34"/>
         <title>Installation - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
@@ -37,7 +38,9 @@
   --color-code-foreground: #f8f8f2;
   
   }
-</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -139,9 +142,9 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="installation">
+        <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="docker">
+<section id="docker">
 <h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way of using TINerator is through
 <a class="reference external" href="https://www.docker.com/">docker</a>, where you can
@@ -163,7 +166,7 @@ dockerhub:</p>
 </div></blockquote>
 <p>Open an internet browser on your machine and navigate to <cite>http://127.0.0.1:8888/lab</cite>. If all is successful,
 the Jupyter Lab logo should appear, along with a side panel showing <cite>docs</cite> and <cite>examples</cite> folders.</p>
-<div class="section" id="clarifying-the-docker-command">
+<section id="clarifying-the-docker-command">
 <h3>Clarifying the Docker command<a class="headerlink" href="#clarifying-the-docker-command" title="Permalink to this headline">¶</a></h3>
 <p>The above <cite>docker run</cite> command requires a lot of flags. They are:</p>
 <ul class="simple">
@@ -176,9 +179,9 @@ browser.</p></li>
 unless it’s explicitly allowed to via this command. This takes your current working directory
 <cite>$(pwd)</cite> and makes it visible from within the Docker container, at the location <cite>/tinerator/playground/work</cite>.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="download-the-source">
+</section>
+</section>
+<section id="download-the-source">
 <h2>Download the Source<a class="headerlink" href="#download-the-source" title="Permalink to this headline">¶</a></h2>
 <p>The source code can be checked out from
 <a class="reference external" href="https://github.com/daniellivingston/tinerator">GitHub</a>:</p>
@@ -186,33 +189,33 @@ unless it’s explicitly allowed to via this command. This takes your current wo
 $ cd tinerator-core/
 </pre></div>
 </div>
-</div>
-<div class="section" id="dependencies">
+</section>
+<section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="python-module-dependencies">
+<section id="python-module-dependencies">
 <h3>Python module dependencies<a class="headerlink" href="#python-module-dependencies" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="third-party-programs">
+</section>
+<section id="third-party-programs">
 <h3>Third-party programs<a class="headerlink" href="#third-party-programs" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="system-dependencies">
+</section>
+<section id="system-dependencies">
 <h3>System dependencies<a class="headerlink" href="#system-dependencies" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="environment-variables">
+</section>
+</section>
+<section id="environment-variables">
 <h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">EXODUS_DIR</span></code>: path to the Exodus library.</p></li>
 </ul>
-</div>
-<div class="section" id="building-tinerator">
+</section>
+<section id="building-tinerator">
 <span id="id2"></span><h2>Building TINerator<a class="headerlink" href="#building-tinerator" title="Permalink to this headline">¶</a></h2>
 <p>Setuptools builds both the main PyMesh module as well as all third party
 dependencies. To build PyMesh:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
 </pre></div>
 </div>
-<div class="section" id="build-with-cmake">
+<section id="build-with-cmake">
 <h3>Build with CMake<a class="headerlink" href="#build-with-cmake" title="Permalink to this headline">¶</a></h3>
 <p>If you are familiar with C++ and CMake, there is an alternative way of building
 PyMesh.  First compile and install all of the third party dependencies:</p>
@@ -238,8 +241,8 @@ corresponding unit tests:</p>
 </div>
 <p>PyMesh libraries are all located in <code class="docutils literal notranslate"><span class="pre">$PYMESH_PATH/python/pymesh/lib</span></code>
 directory.</p>
-</div>
-<div class="section" id="install-pymesh">
+</section>
+<section id="install-pymesh">
 <h3>Install PyMesh<a class="headerlink" href="#install-pymesh" title="Permalink to this headline">¶</a></h3>
 <p>To install PyMesh in your system:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>  <span class="c1"># May require root privilege</span>
@@ -249,8 +252,8 @@ directory.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="post-installation-check">
+</section>
+<section id="post-installation-check">
 <h3>Post-installation check<a class="headerlink" href="#post-installation-check" title="Permalink to this headline">¶</a></h3>
 <p>To check PyMesh is installed correctly, one can run the unit tests:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s2">"import pymesh; pymesh.test()"</span>
@@ -258,9 +261,9 @@ directory.</p>
 </div>
 <p>Please make sure all unit tests are passed, and report any unit test
 failures.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
       </article>
       <footer>
@@ -348,6 +351,7 @@ failures.</p>
   </main>
 </div>
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>

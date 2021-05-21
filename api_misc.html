@@ -2,9 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Mesh object" href="api_meshing_mesh.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Mesh object" href="api_meshing_mesh.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.0.2, furo 2021.04.11.beta34"/>
         <title>Misc. Functions - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
@@ -37,7 +38,9 @@
   --color-code-foreground: #f8f8f2;
   
   }
-</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -139,15 +142,52 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="misc-functions">
+        <section id="misc-functions">
 <h1>Misc. Functions<a class="headerlink" href="#misc-functions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="logging-and-debug-mode">
+<section id="logging-and-debug-mode">
 <h2>Logging and debug mode<a class="headerlink" href="#logging-and-debug-mode" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="example-datasets">
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.debug_mode">
+<span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">debug_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.debug_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns on debug mode.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.set_logging_verbosity">
+<span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">set_logging_verbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#tinerator.LogLevel" title="tinerator.logging.LogLevel"><span class="pre">tinerator.logging.LogLevel</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.set_logging_verbosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the level of verbosity for the logger.
+Use the <cite>LogLevel</cite> class to set.</p>
+<blockquote>
+<div><p>DEBUG &lt; LOG &lt; WARN &lt; ERROR</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.LogLevel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><a class="headerlink" href="#tinerator.LogLevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</section>
+<section id="example-datasets">
 <h2>Example datasets<a class="headerlink" href="#example-datasets" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">ExampleData</span></span><a class="headerlink" href="#tinerator.ExampleData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.NewMexico">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NewMexico</span></span><a class="headerlink" href="#tinerator.ExampleData.NewMexico" title="Permalink to this definition">¶</a></dt>
+<dd><p>GIS data for a HUC10 in New Mexico.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.RadialMesh">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">RadialMesh</span></span><a class="headerlink" href="#tinerator.ExampleData.RadialMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple radial surface mesh.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.Simple">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Simple</span></span><a class="headerlink" href="#tinerator.ExampleData.Simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>A very simple collection of meshes, used primarily for testing.</p>
+</dd></dl>
+</dd></dl>
+</section>
+</section>
 
       </article>
       <footer>
@@ -211,6 +251,7 @@
   </main>
 </div>
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>

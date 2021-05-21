@@ -2,9 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Misc. Functions" href="api_misc.html" /><link rel="prev" title="Meshing Module Functions" href="api_meshing.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Misc. Functions" href="api_misc.html" /><link rel="prev" title="Meshing Module Functions" href="api_meshing.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.0.2, furo 2021.04.11.beta34"/>
         <title>Mesh object - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
@@ -37,7 +38,9 @@
   --color-code-foreground: #f8f8f2;
   
   }
-</style><link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -139,18 +142,194 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="mesh-object">
+        <section id="mesh-object">
 <h1>Mesh object<a class="headerlink" href="#mesh-object" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="loading-a-mesh-from-a-file">
+<section id="loading-a-mesh-from-a-file">
 <h2>Loading a mesh from a file<a class="headerlink" href="#loading-a-mesh-from-a-file" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="mesh-element-types">
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.meshing.load_mesh">
+<span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">load_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_dual_mesh</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.load_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a Mesh object from a mesh file on disk. Supports AVS-UCD, VTK, Exodus, and MPAS.</p>
+</dd></dl>
+</section>
+<section id="mesh-element-types">
 <h2>Mesh element types<a class="headerlink" href="#mesh-element-types" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="mesh-class-member-functions">
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.meshing.ElementType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">ElementType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.ElementType" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enumeration.</p>
+</dd></dl>
+</section>
+<section id="mesh-class-member-functions">
 <h2>Mesh class member functions<a class="headerlink" href="#mesh-class-member-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">Mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'mesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#tinerator.meshing.ElementType" title="tinerator.meshing.readwrite.ElementType"><span class="pre">tinerator.meshing.readwrite.ElementType</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pyproj.crs.crs.CRS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.add_empty_attribute">
+<span class="sig-name descname"><span class="pre">add_empty_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrb_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.add_empty_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an empty cell or node attribute with an optional given fill value.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.as_meshio">
+<span class="sig-name descname"><span class="pre">as_meshio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">material_id_as_cell_blocks</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> → <span class="pre">meshio._mesh.Mesh</span><a class="headerlink" href="#tinerator.meshing.Mesh.as_meshio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a Mesh object into a meshio.Mesh object.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.centroid">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">centroid</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mesh centroid</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.edges">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all unique edges in the mesh.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.element_attributes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">element_attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.element_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns available element (cell) attributes</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.extent">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">extent</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the extent of the mesh:
+[ (x_min, x_max), (y_min, y_max), (z_min, z_max) ]</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.get_cell_centroids">
+<span class="sig-name descname"><span class="pre">get_cell_centroids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.get_cell_centroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the centroids of every cell</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.map_raster_to_attribute">
+<span class="sig-name descname"><span class="pre">map_raster_to_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'material_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.map_raster_to_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps a Raster object to a mesh attribute.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.material_id">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">material_id</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.material_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Material ID of mesh</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.mesh_quality">
+<span class="sig-name descname"><span class="pre">mesh_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.mesh_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the quality of the mesh.
+If <code class="docutils literal notranslate"><span class="pre">plot</span> <span class="pre">=</span> <span class="pre">True</span></code>, will display a plot showing the triangle
+quality and a histogram.
+If <code class="docutils literal notranslate"><span class="pre">plot</span> <span class="pre">=</span> <span class="pre">False</span></code>, will print out an ASCII table displaying
+binned quality values.</p>
+<p>:param plot (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type plot (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: Whether to plot results or display as ASCII.
+:param optional):
+:type optional): Whether to plot results or display as ASCII.
+:param n_bins (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>:
+:type n_bins (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>: Overrides the default number of bins for histogram binning.
+:param optional):
+:type optional): Overrides the default number of bins for histogram binning.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">triangle_mesh</span><span class="o">.</span><span class="n">mesh_quality</span><span class="p">(</span><span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">triangle_mesh</span><span class="o">.</span><span class="n">mesh_quality</span><span class="p">(</span><span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+</pre></div>
 </div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.n_elements">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_elements</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.n_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of elements in mesh</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.n_nodes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_nodes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.n_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of nodes in mesh</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.node_attributes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">node_attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.node_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns available node attributes</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">face_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a mesh object to disk. Supports file formats like VTK, AVS-UCD, and Exodus.</p>
+<p>For Exodus meshes, face sets, node sets, and elements sets can be written out with the mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outfile</strong> (<em>str</em>) – The path to save the mesh. The file format of the mesh is automatically inferred by the extension.</p></li>
+<li><p><strong>face_sets</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>, optional) – A list of face sets.</p></li>
+<li><p><strong>node_sets</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>, optional) – A list of node sets.</p></li>
+<li><p><strong>element_sets</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>, optional) – A list of element sets.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tri</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">meshing</span><span class="o">.</span><span class="n">triangulate</span><span class="p">(</span><span class="n">my_dem</span><span class="p">,</span> <span class="n">min_edge_length</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tri</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"my_triangulation.vtk"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tri</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"my_triangulation.inp"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tri</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"my_triangulation.exo"</span><span class="p">,</span> <span class="n">face_sets</span> <span class="o">=</span> <span class="n">face_sets</span><span class="p">)</span>
+</pre></div>
 </div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.surface_mesh">
+<span class="sig-name descname"><span class="pre">surface_mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.surface_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the surface mesh: a mesh where all interior voxels
+and faces are removed. For triangular meshes, this will
+return a line mesh. For a prism (extruded) mesh, this will
+return a mesh containing triangles and quads.</p>
+<p>Returns in Meshio format.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.view">
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_scalar</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_bounds</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_edges</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Views the mesh object in an interactive VTK-rendered windowed environment.
+In a Jupyter notebook, it will render the 3D mesh in a live cell.</p>
+<p>Additional keyword arguments can be found in the PyVista documentation.</p>
+<p><a class="reference external" href="https://docs.pyvista.org/plotting/plotting.html#pyvista.plot">https://docs.pyvista.org/plotting/plotting.html#pyvista.plot</a></p>
+<p>:param active_scalar (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type active_scalar (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: The mesh attribute to visualize. Defaults to material ID.
+:param optional):
+:type optional): The mesh attribute to visualize. Defaults to material ID.
+:param scale (<code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code>:
+:type scale (<code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code>: Relative scale for the mesh in (X, Y, Z). Defaults to (1, 1, 1).
+:param optional):
+:type optional): Relative scale for the mesh in (X, Y, Z). Defaults to (1, 1, 1).
+:param savefig (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type savefig (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: Filepath to save a screenshot of the mesh.
+:param optional):
+:type optional): Filepath to save a screenshot of the mesh.
+:param show_bounds (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type show_bounds (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: If True, shows the bounding box of the mesh.
+:param optional):
+:type optional): If True, shows the bounding box of the mesh.
+:param show_edges (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type show_edges (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: If True, shows the mesh edges.
+:param optional):
+:type optional): If True, shows the mesh edges.
+:param window_size (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type window_size (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: Adjusts the viewing window size or the Jupyter notebook cell size.
+:param optional):
+:type optional): Adjusts the viewing window size or the Jupyter notebook cell size.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.x">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>X vector of mesh nodes</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.y">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y vector of mesh nodes</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.z">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Z vector of mesh nodes</p>
+</dd></dl>
+</dd></dl>
+</section>
+</section>
 
       </article>
       <footer>
@@ -223,6 +402,7 @@
   </main>
 </div>
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
