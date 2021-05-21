@@ -33,3 +33,17 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+      -
+        name: Copy documentation from Docker container
+        run: |
+          docker run \
+                 -it \
+                 -v $(pwd)/doc_deploy/:/tin-docs/ \
+                 ees16/tinerator:latest \
+                 /bin/bash -c "cp -r docs/* /tin-docs/"
+      -
+        name: Deploy to GH Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./doc_deploy
