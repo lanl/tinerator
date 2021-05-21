@@ -27,7 +27,7 @@ Further, all functions should be annotated with [type hints](https://docs.python
 As an example of proper formatting,
 
 ```python
-def example_function(param1: int, param2:str = None, *args, **kwargs) -> bool:
+def example_function(param1: int, param2: str = None, *args, **kwargs) -> bool:
     """
     This is an example of proper docstring formatting.
 
