@@ -62,6 +62,9 @@ RUN cd /tinerator-install/docs/ && \
     cp -r /tinerator-install/docs/_build/html /tinerator/docs && \
     cp -r /tinerator-install/examples /tinerator/examples
 
+# Generate the PYTHONPATH so that it's visible to Jupyter on launch
+ENV PYTHONPATH "/tinerator-install/:/tinerator-install/tpls/seacas/install/lib/:${PYTHONPATH}"
+
 WORKDIR /tinerator/
 
 # Launch Jupyter Lab on start
