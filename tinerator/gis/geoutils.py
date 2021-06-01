@@ -33,20 +33,20 @@ def parse_crs(crs: Union[str, int, dict]) -> CRS:
         >>> tin.gis.parse_crs("EPSG:26915")
         >>> tin.gis.parse_crs("+proj=geocent +datum=WGS84 +towgs84=0,0,0")
     """
-    if isinstance(crs, CRS):
-        return crs
-    elif isinstance(crs, str):
-        return CRS.from_string(crs)
-    elif isinstance(crs, int):
-        return CRS.from_epsg(crs)
-    elif isinstance(crs, dict):
-        return CRS.from_dict(crs)
-    else:
-        try:
+    try:
+        if isinstance(crs, CRS):
+            return crs
+        elif isinstance(crs, str):
+            return CRS.from_string(crs)
+        elif isinstance(crs, int):
+            return CRS.from_epsg(crs)
+        elif isinstance(crs, dict):
+            return CRS.from_dict(crs)
+        else:
             return CRS.from_user_input(crs)
-        except CRSError:
-            warn(f'Could not parse CRS. Defaulting to "{DEFAULT_PROJECTION}"')
-            return CRS.from_string(DEFAULT_PROJECTION)
+    except CRSError:
+        warn(f'Could not parse CRS \"{crs}\". Defaulting to "{DEFAULT_PROJECTION}"')
+        return CRS.from_string(DEFAULT_PROJECTION)
 
 
 def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:

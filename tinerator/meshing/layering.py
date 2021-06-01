@@ -282,7 +282,7 @@ def stack_layers(surfmesh: Mesh, layers: List[Layer], matids: list = None) -> Me
     vol_mesh.add_attribute(
         "material_id",
         np.repeat(np.array(mat_ids[::-1], dtype=int), elems_per_layer),
-        attrb_type="cell",
+        type="cell",
     )
 
     # Each element in a layer will get its own integer value

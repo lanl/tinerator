@@ -16,11 +16,11 @@ class ExampleData:
             DATA_DIR, "meshes", "Surfaces", "simple_volume_with_facesets.exo"
         )
 
-    class BordonDEM:
-        """Simple DEM example - Bordon dataset."""
-        root_dir = os.path.join(DATA_DIR, "BordenDEM")
+    class Borden:
+        """Very simple DEM used for comparative analysis - Bordon dataset."""
+        root_dir = os.path.join(DATA_DIR, "Borden")
         dem_1m = os.path.join(root_dir, "dem1m.dat")
-        dem_05m = os.path.join(root_dir, "dem0.5m.dat")
+        dem_50cm = os.path.join(root_dir, "dem0.5m.dat")
 
     class RadialMesh:
         """A simple radial surface mesh."""

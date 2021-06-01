@@ -1,11 +1,11 @@
 import meshio
 import os
-import shutil
 import numpy as np
 from pyproj import CRS
-from pylagrit import PyLaGriT
+from typing import Union
 from .dump_exodus import dump_exodus
 from .mesh_metrics import triangle_quality
+from .mesh_attributes import MeshAttribute
 from .facesets_lg import write_facesets
 from .readwrite import ElementType, read_avs, write_avs, read_mpas
 from .surface_mesh import SurfaceMesh
@@ -72,11 +72,11 @@ def load_mesh(
 
         if node_atts is not None:
             for att in node_atts.keys():
-                mesh_object.add_attribute(att, node_atts[att], attrb_type="node")
+                mesh_object.add_attribute(att, node_atts[att], type="node")
 
         if cell_atts is not None:
             for att in cell_atts.keys():
-                mesh_object.add_attribute(att, cell_atts[att], attrb_type="cell")
+                mesh_object.add_attribute(att, cell_atts[att], type="cell")
     else:
         mesh = meshio.read(filename, file_format=driver)
         mesh_object.nodes = mesh.points
@@ -98,26 +98,70 @@ def load_mesh(
 
 # TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
 
-
 class Mesh:
     def __init__(
         self,
-        name: str = "mesh",
         nodes: np.ndarray = None,
         elements: np.ndarray = None,
         etype: ElementType = None,
         crs: CRS = None,
     ):
-        self.name = name
+        if nodes is not None:
+            nodes = np.array(nodes)
+        
+        if elements is not None:
+            elements = np.array(elements)
+
         self.nodes = nodes
         self.elements = elements
         self.element_type = etype
         self.crs = crs
         self.metadata = {}
         self.attributes = {}
+        self._attributes = []
 
     def __repr__(self):
-        return f'Mesh<name: "{self.name}", nodes: {self.n_nodes}, elements({self.element_type}): {self.n_elements}>'
+        return f'Mesh<nodes: {self.n_nodes}, elements({self.element_type}): {self.n_elements}>'
+
+    def add_attribute(self, name: str, value: Union[np.array, list, int, float], type: str = None):
+        pass
+
+    def get_attribute(self, name: str):
+        pass
+
+    def set_attribute(self, value, at_layer: tuple = None):
+        pass
+    
+    def delete_attribute(self, name: str):
+        pass
+    
+    @property
+    def attributes(self):
+        pass
+
+    @property
+    def node_attributes(self):
+        pass
+
+    @property
+    def cell_attributes(self):
+        pass
+
+    @property
+    def material_id(self):
+        pass
+
+    @material_id.setter
+    def material_id(self):
+        pass
+
+    def add_attribute_from_raster(self, name: str, raster, type: str = None, fill_value: Union[int, float] = 0., at_layer: tuple = None):
+        pass
+
+
+
+
+    # ============================= #
 
     def get_attribute(self, name: str):
         try:
@@ -162,23 +206,23 @@ class Mesh:
 
         self.attributes[name]["data"][start:end] = vector
 
-    def add_empty_attribute(self, name: str, attrb_type: str, fill_value: float = 0.0):
+    def add_empty_attribute(self, name: str, type: str, fill_value: float = 0.0):
         """
         Creates an empty cell or node attribute with an optional given fill value.
         """
 
-        if attrb_type.lower().strip() == "cell":
+        if type.lower().strip() == "cell":
             sz = self.n_elements
-        elif attrb_type.lower().strip() == "node":
+        elif type.lower().strip() == "node":
             sz = self.n_nodes
         else:
-            raise ValueError(f"Unknown attrb_type: {attrb_type}")
+            raise ValueError(f"Unknown type: {type}")
 
         vector = np.full((sz,), fill_value)
 
-        self.add_attribute(name, vector, attrb_type=attrb_type)
+        self.add_attribute(name, vector, type=type)
 
-    def add_attribute(self, name: str, vector: np.ndarray, attrb_type: str = None):
+    def add_attribute(self, name: str, vector: np.ndarray, type: str = None):
         # TODO: change 'cell' to 'elem' for consistency or vice versa
         # TODO: auto-add attribute as cell or node based on array length
         if name in self.attributes:
@@ -188,21 +232,21 @@ class Mesh:
             vector = np.array(vector)
 
         # Take a guess at the attribute type
-        if attrb_type is None:
+        if type is None:
             if vector.shape[0] == self.n_elements:
-                attrb_type = "cell"
+                type = "cell"
             elif vector.shape[0] == self.n_nodes:
-                attrb_type = "node"
+                type = "node"
 
-        attrb_type = attrb_type.lower().strip()
+        type = type.lower().strip()
 
-        if attrb_type not in ["cell", "node"]:
-            raise ValueError("`attrb_type` must be either 'cell' or 'node'")
+        if type not in ["cell", "node"]:
+            raise ValueError("`type` must be either 'cell' or 'node'")
 
-        sz = self.n_elements if attrb_type == "cell" else self.n_nodes
+        sz = self.n_elements if type == "cell" else self.n_nodes
         vector = np.reshape(vector, (sz,))
 
-        self.attributes[name] = {"type": attrb_type, "data": vector}
+        self.attributes[name] = {"type": type, "data": vector}
 
     def rm_attribute(self, name: str):
         try:
@@ -214,15 +258,9 @@ class Mesh:
         self.attributes = {}
 
     def get_cell_centroids(self):
-        """Compute the centroids of every cell"""
+        """Returns the centroids of every cell"""
 
-        # TODO: optimize function
-        centroids = np.zeros((self.n_elements, 3), dtype=float)
-
-        for (i, elem) in enumerate(self.elements):
-            centroids[i] = np.mean(self.nodes[elem - 1], axis=0)
-
-        return centroids
+        return np.mean(self.nodes[self.elements - 1], axis=1)
 
     def surface_mesh(self):
         """
@@ -291,7 +329,7 @@ class Mesh:
 
     @material_id.setter
     def material_id(self, v):
-        self.add_attribute("material_id", np.array(v, dtype=int), attrb_type="cell")
+        self.add_attribute("material_id", np.array(v, dtype=int), type="cell")
 
     @property
     def node_attributes(self):
@@ -322,7 +360,7 @@ class Mesh:
             points = self.nodes
 
         vector = raster.values_at(points)
-        self.add_attribute(attribute_name, vector, attrb_type=attribute_type)
+        self.add_attribute(attribute_name, vector, type=attribute_type)
 
     @property
     def x(self):
@@ -371,12 +409,11 @@ class Mesh:
             return self.elements.shape[0]
         return 0
 
+
     @property
     def centroid(self):
-        """Mesh centroid"""
-        if self.nodes is not None:
-            return (np.mean(self.x), np.mean(self.y), np.mean(self.z))
-        return None
+        """Returns the centroid of the mesh"""
+        return np.mean(self.get_cell_centroids(), axis=0)
 
     @property
     def extent(self):
