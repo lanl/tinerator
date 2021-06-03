@@ -149,7 +149,9 @@
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.add_empty_attribute">add_empty_attribute() (tinerator.meshing.Mesh method)</a>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.add_attribute">add_attribute() (tinerator.meshing.Mesh method)</a>
+</li>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.add_attribute_from_raster">add_attribute_from_raster() (tinerator.meshing.Mesh method)</a>
 </li>
         <li><a href="api_gis_geometry.html#tinerator.gis.Geometry.add_property">add_property() (tinerator.gis.Geometry method)</a>
 </li>
@@ -159,6 +161,8 @@
 </li>
         <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.as_meshio">as_meshio() (tinerator.meshing.Mesh method)</a>
 </li>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.attributes">attributes (tinerator.meshing.Mesh property)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -167,6 +171,8 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.cell_attributes">cell_attributes (tinerator.meshing.Mesh property)</a>
+</li>
         <li><a href="api_gis_geometry.html#tinerator.gis.Geometry.centroid">centroid (tinerator.gis.Geometry property)</a>
 
         <ul>
@@ -193,6 +199,8 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.delete_attribute">delete_attribute() (tinerator.meshing.Mesh method)</a>
+</li>
         <li><a href="api_gis.html#tinerator.gis.distance_map">distance_map() (in module tinerator.gis)</a>
 </li>
     </ul></td>
@@ -209,13 +217,11 @@
 </li>
         <li><a href="api_meshing_mesh.html#tinerator.meshing.ElementType">ElementType (class in tinerator.meshing)</a>
 </li>
-        <li><a href="api_meshing.html#tinerator.meshing.ElemSet">ElemSet() (in module tinerator.meshing)</a>
-</li>
         <li><a href="api_meshing.html#tinerator.meshing.estimate_edge_lengths">estimate_edge_lengths() (in module tinerator.meshing)</a>
 </li>
         <li><a href="api_misc.html#tinerator.ExampleData">ExampleData (class in tinerator)</a>
 </li>
-        <li><a href="api_misc.html#tinerator.ExampleData.BordonDEM">ExampleData.BordonDEM (class in tinerator)</a>
+        <li><a href="api_misc.html#tinerator.ExampleData.Borden">ExampleData.Borden (class in tinerator)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -257,9 +263,11 @@
 </li>
         <li><a href="api_gis_geometry.html#tinerator.gis.Geometry.geometry_type">geometry_type (tinerator.gis.Geometry property)</a>
 </li>
+        <li><a href="api_gis_raster.html#tinerator.gis.Raster.geotransform">geotransform (tinerator.gis.Raster property)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api_gis_raster.html#tinerator.gis.Raster.geotransform">geotransform (tinerator.gis.Raster property)</a>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.get_attribute">get_attribute() (tinerator.meshing.Mesh method)</a>
 </li>
         <li><a href="api_gis_raster.html#tinerator.gis.Raster.get_boundary">get_boundary() (tinerator.gis.Raster method)</a>
 </li>
@@ -291,19 +299,19 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.map_raster_to_attribute">map_raster_to_attribute() (tinerator.meshing.Mesh method)</a>
-</li>
         <li><a href="api_gis_raster.html#tinerator.gis.Raster.mask">mask (tinerator.gis.Raster property)</a>
 </li>
         <li><a href="api_gis_raster.html#tinerator.gis.Raster.masked_data">masked_data() (tinerator.gis.Raster method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.material_id">material_id (tinerator.meshing.Mesh property)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh">Mesh (class in tinerator.meshing)</a>
 </li>
         <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.mesh_quality">mesh_quality() (tinerator.meshing.Mesh method)</a>
+</li>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.metadata">metadata (tinerator.meshing.Mesh property)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -322,8 +330,6 @@
         <li><a href="api_gis_geometry.html#tinerator.gis.Geometry.ndim">ndim (tinerator.gis.Geometry property)</a>
 </li>
         <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.node_attributes">node_attributes (tinerator.meshing.Mesh property)</a>
-</li>
-        <li><a href="api_meshing.html#tinerator.meshing.NodeSet">NodeSet() (in module tinerator.meshing)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -357,6 +363,8 @@
 </li>
         <li><a href="api_meshing.html#tinerator.meshing.prism_volume">prism_volume() (in module tinerator.meshing)</a>
 </li>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.private_attributes">private_attributes (tinerator.meshing.Mesh property)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -368,6 +376,8 @@
         <li><a href="api_gis_raster.html#tinerator.gis.Raster">Raster (class in tinerator.gis)</a>
 </li>
         <li><a href="api_gis.html#tinerator.gis.rasterize_geometry">rasterize_geometry() (in module tinerator.gis)</a>
+</li>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.remap_attribute">remap_attribute() (tinerator.meshing.Mesh method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -393,6 +403,8 @@
           <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.save">(tinerator.meshing.Mesh method)</a>
 </li>
         </ul></li>
+        <li><a href="api_meshing_mesh.html#tinerator.meshing.Mesh.set_attribute">set_attribute() (tinerator.meshing.Mesh method)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api_misc.html#tinerator.set_logging_verbosity">set_logging_verbosity() (in module tinerator)</a>

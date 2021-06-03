@@ -164,11 +164,82 @@
 <h2>Mesh class member functions<a class="headerlink" href="#mesh-class-member-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">Mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'mesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#tinerator.meshing.ElementType" title="tinerator.meshing.readwrite.ElementType"><span class="pre">tinerator.meshing.readwrite.ElementType</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pyproj.crs.crs.CRS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">Mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#tinerator.meshing.ElementType" title="tinerator.meshing.readwrite.ElementType"><span class="pre">tinerator.meshing.readwrite.ElementType</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pyproj.crs.crs.CRS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
-<dt class="sig sig-object py" id="tinerator.meshing.Mesh.add_empty_attribute">
-<span class="sig-name descname"><span class="pre">add_empty_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrb_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.add_empty_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates an empty cell or node attribute with an optional given fill value.</p>
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.add_attribute">
+<span class="sig-name descname"><span class="pre">add_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span> </span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.add_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new attribute to the mesh. The <code class="docutils literal notranslate"><span class="pre">name</span></code> argument gives the attribute a name, and must
+be a string.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">value</span></code> argument can be a float (<code class="docutils literal notranslate"><span class="pre">3.14159</span></code>), an integer (<code class="docutils literal notranslate"><span class="pre">1</span></code>), or a vector (list/tuple/Numpy)
+of floats or integers. If <code class="docutils literal notranslate"><span class="pre">value</span></code> is a vector, then the length of the vector must match exactly
+to the number of nodes in the mesh (<code class="docutils literal notranslate"><span class="pre">self.num_nodes</span></code>) or to the number of cells in the mesh (<code class="docutils literal notranslate"><span class="pre">self.num_cells</span></code>).</p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">type</span></code> argument explicitly defines the type of attribute it should be:</p>
+<ul class="simple">
+<li><p>“cell”: The attribute is a cell (a.k.a. element or voxel) attribute.</p></li>
+<li><p>“node”: The attribute is a node (a.k.a. point or vertex) attribute.</p></li>
+<li><p>“scalar”: The attribute is a single value, which might be used for book-keeping (i.e., the filename of a mesh loaded from disk).</p></li>
+</ul>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">data_type</span></code> argument specifies what the attribute type should be. It can be a literal
+Python type (like <cite>int</cite> or <cite>float</cite>), or a string representation of that type (like <code class="docutils literal notranslate"><span class="pre">"float"</span></code> or <code class="docutils literal notranslate"><span class="pre">"integer"</span></code>).
+If <code class="docutils literal notranslate"><span class="pre">type</span></code> is <code class="docutils literal notranslate"><span class="pre">"scalar"</span></code>, then <code class="docutils literal notranslate"><span class="pre">data_type</span></code> is ignored: this only matters for cell and node attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>name</em>) – </p></li>
+<li><p><strong>(</strong><strong>Union</strong><strong>[</strong><strong>np.array</strong> (<em>value</em>) – </p></li>
+<li><p><strong>list</strong> (<em>The value</em><em>(</em><em>s</em><em>) </em><em>to fill the attribute with.</em>) – </p></li>
+<li><p><strong>int</strong> (<em>The value</em><em>(</em><em>s</em><em>) </em><em>to fill the attribute with.</em>) – </p></li>
+<li><p><strong>float</strong><strong>]</strong><strong>)</strong> (<em>The value</em><em>(</em><em>s</em><em>) </em><em>to fill the attribute with.</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>:param type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: The type of attribute to create. Choose <code class="docutils literal notranslate"><span class="pre">"cell"</span></code> or <code class="docutils literal notranslate"><span class="pre">"node"</span></code>.
+:param optional):
+:type optional): The type of attribute to create. Choose <code class="docutils literal notranslate"><span class="pre">"cell"</span></code> or <code class="docutils literal notranslate"><span class="pre">"node"</span></code>.
+:param data_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Union[type:</span>
+<span class="pre">:type</span> <span class="pre">data_type</span> <span class="pre">(:obj:`Union[type:</span> <span class="pre">The</span> <span class="pre">data</span> <span class="pre">type</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">attribute</span> <span class="pre">-</span> <span class="pre">``float`</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>.
+:param str]`:
+:type str]`: The data type of the attribute - <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>.
+:param optional):
+:type optional): The data type of the attribute - <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code>.
+:param overwrite (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type overwrite (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: If True, it will overwrite an existing attribute. If False, it will fail if the attribute exists.
+:param optional):
+:type optional): If True, it will overwrite an existing attribute. If False, it will fail if the attribute exists.</p>
+<blockquote>
+<div><p>AttributeError: if the attribute already exists.</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.add_attribute_from_raster">
+<span class="sig-name descname"><span class="pre">add_attribute_from_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.add_attribute_from_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new attribute from raster data.
+If <code class="docutils literal notranslate"><span class="pre">attribute_type</span> <span class="pre">=</span> <span class="pre">"cell"</span></code>, then every mesh cell will be filled with the values
+of the raster at the cell centroids of the mesh.
+If <code class="docutils literal notranslate"><span class="pre">attribute_type</span> <span class="pre">=</span> <span class="pre">"node"</span></code>, then every mesh node will be filled with the values
+of the raster at the mesh nodes.
+The code does not currently support <code class="docutils literal notranslate"><span class="pre">attribute_type</span> <span class="pre">=</span> <span class="pre">"scalar"</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>attribute_name</em>) – </p></li>
+<li><p><strong>(</strong><strong>tinerator.gis.Raster</strong><strong>)</strong> (<em>raster</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>:param attribute_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type attribute_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: The type of attribute to create. “cell”, “node”, or “scalar.
+:param optional):
+:type optional): The type of attribute to create. “cell”, “node”, or “scalar.
+:param data_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Union[type:</span>
+<span class="pre">:type</span> <span class="pre">data_type</span> <span class="pre">(:obj:`Union[type:</span> <span class="pre">Specifies</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">type</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">attribute.</span> <span class="pre">"int"</span> <span class="pre">or</span> <span class="pre">"float".</span>
+<span class="pre">:param</span> <span class="pre">str]</span></code>:
+:type str]`: Specifies the data type for the attribute. “int” or “float”.
+:param optional):
+:type optional): Specifies the data type for the attribute. “int” or “float”.
+:param **kwargs:
+:type **kwargs: Other keyword arguments for <a class="reference internal" href="#tinerator.meshing.Mesh.add_attribute" title="tinerator.meshing.Mesh.add_attribute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mesh.add_attribute</span></code></a>.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.as_meshio">
@@ -176,9 +247,36 @@
 <dd><p>Converts a Mesh object into a meshio.Mesh object.</p>
 </dd></dl>
 <dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.attributes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of all non-private attributes.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.cell_attributes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cell_attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.cell_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of all non-private attributes with a cell type.</p>
+</dd></dl>
+<dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.centroid">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">centroid</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.centroid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mesh centroid</p>
+<dd><p>Returns the centroid of the mesh</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.delete_attribute">
+<span class="sig-name descname"><span class="pre">delete_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.delete_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a mesh attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>name</em>) – </p>
+</dd>
+</dl>
+<p>:param force (<code class="xref py py-obj docutils literal notranslate"><span class="pre">force</span></code>:
+:type force (<code class="xref py py-obj docutils literal notranslate"><span class="pre">force</span></code>: Required when attempting to delete internal attributes.
+:param optional):
+:type optional): Required when attempting to delete internal attributes.</p>
+<blockquote>
+<div><p>AttributeError: when the requested attribute cannot be found.</p>
+</div></blockquote>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.edges">
@@ -188,7 +286,7 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.element_attributes">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">element_attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.element_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns available element (cell) attributes</p>
+<dd><p>Alias for self.cell_attributes.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.extent">
@@ -197,19 +295,34 @@
 [ (x_min, x_max), (y_min, y_max), (z_min, z_max) ]</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="tinerator.meshing.Mesh.get_cell_centroids">
-<span class="sig-name descname"><span class="pre">get_cell_centroids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.get_cell_centroids" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the centroids of every cell</p>
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.get_attribute">
+<span class="sig-name descname"><span class="pre">get_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.get_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the data associated with the mesh attribute with name <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>name</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Any</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>the value of the attribute.</p>
+</dd>
+</dl>
+<blockquote>
+<div><p>AttributeError: if the requested attribute doesn’t exist.</p>
+</div></blockquote>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="tinerator.meshing.Mesh.map_raster_to_attribute">
-<span class="sig-name descname"><span class="pre">map_raster_to_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'material_id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cell'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.map_raster_to_attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maps a Raster object to a mesh attribute.</p>
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.get_cell_centroids">
+<span class="sig-name descname"><span class="pre">get_cell_centroids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.get_cell_centroids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the centroids of every cell</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.material_id">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">material_id</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.material_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Material ID of mesh</p>
+<dd><p>Returns the material ID of each cell. The material ID
+is an integer number representing a unique material type.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.mesh_quality">
@@ -234,6 +347,12 @@ binned quality values.</p>
 </div>
 </dd></dl>
 <dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.metadata">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the metadata of the mesh (a.k.a, mesh attributes with a scalar type) in
+a dictionary format.</p>
+</dd></dl>
+<dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.n_elements">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">n_elements</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.n_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of elements in mesh</p>
@@ -246,7 +365,47 @@ binned quality values.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.node_attributes">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">node_attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.node_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns available node attributes</p>
+<dd><p>Returns the names of all non-private attributes with a node type.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.private_attributes">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">private_attributes</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.private_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of all private attributes. Private attributes are
+used for internal functionality.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.remap_attribute">
+<span class="sig-name descname"><span class="pre">remap_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_attribute_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.remap_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>target_type</em>) – </p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p>:param target_attribute_name (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
+:type target_attribute_name (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: If not None, creates a new attribute with this name. If the same value as <code class="docutils literal notranslate"><span class="pre">attribute_name</span></code>, then overwrites the existing attribute.
+:param optional):
+:type optional): If not None, creates a new attribute with this name. If the same value as <code class="docutils literal notranslate"><span class="pre">attribute_name</span></code>, then overwrites the existing attribute.
+:param target_data_type (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Union[type:</span>
+<span class="pre">:type</span> <span class="pre">target_data_type</span> <span class="pre">(:obj:`Union[type:</span> <span class="pre">Changes</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">type</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">attribute</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">one</span> <span class="pre">provided.</span> <span class="pre">One</span> <span class="pre">of</span> <span class="pre">"float",</span> <span class="pre">"int",</span> <span class="pre">or</span> <span class="pre">``None`</span></code>.
+:param str]`:
+:type str]`: Changes the data type of the attribute to the one provided. One of “float”, “int”, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+:param optional):
+:type optional): Changes the data type of the attribute to the one provided. One of “float”, “int”, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+:param categorical_data (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type categorical_data (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: For <code class="docutils literal notranslate"><span class="pre">target_type</span> <span class="pre">=</span> <span class="pre">"cell"</span></code> only. If True, then uses histogram binning to assign cell data values. If False, uses the average node value.
+:param optional):
+:type optional): For <code class="docutils literal notranslate"><span class="pre">target_type</span> <span class="pre">=</span> <span class="pre">"cell"</span></code> only. If True, then uses histogram binning to assign cell data values. If False, uses the average node value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>data</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>the remapped attribute.</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.save">
@@ -270,6 +429,11 @@ binned quality values.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tri</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"my_triangulation.exo"</span><span class="p">,</span> <span class="n">face_sets</span> <span class="o">=</span> <span class="n">face_sets</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.set_attribute">
+<span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.set_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets an existing attribute.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.surface_mesh">
