@@ -18,6 +18,7 @@ class ExampleData:
 
     class Borden:
         """Very simple DEM used for comparative analysis - Bordon dataset."""
+
         root_dir = os.path.join(DATA_DIR, "Borden")
         dem_1m = os.path.join(root_dir, "dem1m.dat")
         dem_50cm = os.path.join(root_dir, "dem0.5m.dat")

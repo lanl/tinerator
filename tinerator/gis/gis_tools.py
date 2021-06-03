@@ -26,6 +26,7 @@ try:
 except ImportError:
     import ogr
 
+
 def reproject_geometry(
     shape: Geometry, crs: Union[pyproj.CRS, str, int, dict]
 ) -> Geometry:

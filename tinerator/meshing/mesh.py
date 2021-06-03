@@ -99,6 +99,7 @@ def load_mesh(
 
 # TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
 
+
 class Mesh:
     def __init__(
         self,
@@ -109,7 +110,7 @@ class Mesh:
     ):
         if nodes is not None:
             nodes = np.array(nodes)
-        
+
         if elements is not None:
             elements = np.array(elements)
 
@@ -120,9 +121,18 @@ class Mesh:
         self._attributes = []
 
     def __repr__(self):
-        return f'Mesh<nodes: {self.n_nodes}, elements({self.element_type}): {self.n_elements}>'
+        return f"Mesh<nodes: {self.n_nodes}, elements({self.element_type}): {self.n_elements}>"
 
-    def add_attribute(self, name: str, value: Union[np.array, list, int, float], type: str = None, data_type: Union[type, str] = None, overwrite: bool = False, **kwargs):
+    def add_attribute(
+        self,
+        name: str,
+        value: Union[np.array, list, int, float],
+        type: str = None,
+        data_type: Union[type, str] = None,
+        overwrite: bool = False,
+        force: bool = False,
+        **kwargs,
+    ):
         """
         Adds a new attribute to the mesh. The ``name`` argument gives the attribute a name, and must
         be a string.
@@ -148,7 +158,7 @@ class Mesh:
             type (:obj:`str`, optional): The type of attribute to create. Choose ``"cell"`` or ``"node"``.
             data_type (:obj:`Union[type, str]`, optional): The data type of the attribute - ``float`` or ``int``.
             overwrite (:obj:`bool`, optional): If True, it will overwrite an existing attribute. If False, it will fail if the attribute exists.
-        
+
         Throws
         ------
             AttributeError: if the attribute already exists.
@@ -158,11 +168,19 @@ class Mesh:
             if overwrite:
                 self.delete_attribute(name)
             else:
-                raise AttributeError(f"Attribute \"{name}\" already exists.")
-        
-        is_private = kwargs['private'] if 'private' in kwargs else False
-        
-        att = MeshAttribute(name=name, data=value, attribute_type=type, data_type=data_type, num_mesh_nodes=self.n_nodes, num_mesh_cells=self.n_elements, is_private=is_private)
+                raise AttributeError(f'Attribute "{name}" already exists.')
+
+        is_private = kwargs["private"] if "private" in kwargs else False
+
+        att = MeshAttribute(
+            name=name,
+            data=value,
+            attribute_type=type,
+            data_type=data_type,
+            num_mesh_nodes=self.n_nodes,
+            num_mesh_cells=self.n_elements,
+            is_private=is_private,
+        )
         self._attributes.append(att)
 
     def get_attribute(self, name: str):
@@ -172,7 +190,7 @@ class Mesh:
         Args
         ----
             name (str): The name of the attribute.
-        
+
         Returns
         -------
             Any: the value of the attribute.
@@ -186,7 +204,7 @@ class Mesh:
             if attribute.name == name:
                 return attribute.data
 
-        raise AttributeError(f"Attribute \"{name}\" does not exist.")
+        raise AttributeError(f'Attribute "{name}" does not exist.')
 
     def set_attribute(self, name: str, value, at_layer: tuple = None):
         """
@@ -196,8 +214,8 @@ class Mesh:
             if attribute.name == name:
                 attribute.set_data(value)
                 return
-        
-        raise AttributeError("Attribute \"{name}\" does not exist")
+
+        raise AttributeError('Attribute "{name}" does not exist')
 
     def delete_attribute(self, name: str, force: bool = False):
         """
@@ -207,7 +225,7 @@ class Mesh:
         ----
             name (str): The name of the attribute to delete.
             force (:obj:`force`, optional): Required when attempting to delete internal attributes.
-        
+
         Throws
         ------
             AttributeError: when the requested attribute cannot be found.
@@ -218,10 +236,16 @@ class Mesh:
                     self._attributes.pop(i)
                     return
 
-        raise AttributeError(f"Attribute \"{name}\" does not exist")
+        raise AttributeError(f'Attribute "{name}" does not exist')
 
-
-    def remap_attribute(self, attribute_name: str, target_type: str, target_attribute_name: str = None, categorical_data: bool = False, target_data_type = None):
+    def remap_attribute(
+        self,
+        attribute_name: str,
+        target_type: str,
+        target_attribute_name: str = None,
+        categorical_data: bool = False,
+        target_data_type=None,
+    ):
         """
 
         Args
@@ -245,7 +269,9 @@ class Mesh:
 
         if categorical_data:
             median = np.median(node_att, axis=1)
-            idx = (node_att - median[:, None]).argmin(axis=1) # TODO: should allow argmax too
+            idx = (node_att - median[:, None]).argmin(
+                axis=1
+            )  # TODO: should allow argmax too
             new_data = node_att[np.arange(len(node_att)), idx]
         else:
             new_data = np.mean(node_att, axis=1)
@@ -259,7 +285,7 @@ class Mesh:
         used for internal functionality.
         """
         return [att.name for att in self._attributes if att.is_private]
-    
+
     @property
     def attributes(self):
         """
@@ -272,15 +298,23 @@ class Mesh:
         """
         Returns the names of all non-private attributes with a node type.
         """
-        return [att.name for att in self._attributes if att.is_node_attribute and not att.is_private]
+        return [
+            att.name
+            for att in self._attributes
+            if att.is_node_attribute and not att.is_private
+        ]
 
     @property
     def cell_attributes(self):
         """
         Returns the names of all non-private attributes with a cell type.
         """
-        return [att.name for att in self._attributes if att.is_cell_attribute and not att.is_private]
-    
+        return [
+            att.name
+            for att in self._attributes
+            if att.is_cell_attribute and not att.is_private
+        ]
+
     @property
     def element_attributes(self):
         """Alias for self.cell_attributes."""
@@ -307,9 +341,18 @@ class Mesh:
         try:
             self.set_attribute("material_id", value)
         except AttributeError:
-            self.add_attribute("material_id", value, type="cell", data_type=int, is_private=True)
+            self.add_attribute(
+                "material_id", value, type="cell", data_type=int, is_private=True
+            )
 
-    def add_attribute_from_raster(self, attribute_name: str, raster, attribute_type: str = "cell", data_type: Union[type, str] = None, **kwargs):
+    def add_attribute_from_raster(
+        self,
+        attribute_name: str,
+        raster,
+        attribute_type: str = "cell",
+        data_type: Union[type, str] = None,
+        **kwargs,
+    ):
         """
         Creates a new attribute from raster data.
         If ``attribute_type = "cell"``, then every mesh cell will be filled with the values
@@ -333,17 +376,21 @@ class Mesh:
             points = self.nodes
         elif attribute_type in MeshAttribute.SCALAR_TYPE_ALIAS:
             raise NotImplementedError("Scalars are not yet implemented.")
-        
+
         data = raster.values_at(points)
-        self.add_attribute(attribute_name, data, type=attribute_type, data_type=data_type)
-    
+        self.add_attribute(
+            attribute_name, data, type=attribute_type, data_type=data_type
+        )
+
     @property
     def metadata(self):
         """
         Returns the metadata of the mesh (a.k.a, mesh attributes with a scalar type) in
         a dictionary format.
         """
-        return [{att.name: att.data} for att in self._attributes if att.is_scalar_attribute]
+        return [
+            {att.name: att.data} for att in self._attributes if att.is_scalar_attribute
+        ]
 
     def get_cell_centroids(self):
         """Returns the centroids of every cell"""
@@ -352,7 +399,27 @@ class Mesh:
 
     def view_sets(self, surf_mesh, sets, **kwargs):
         from .surface_mesh import plot_sets
+
         plot_sets(surf_mesh.parent_mesh, sets, **kwargs)
+
+    def to_vtk_mesh(self, material_id_alias: str = None):
+        """
+        Returns the mesh in VTK/PyVista format.
+
+        Args
+        ----
+            material_id_alias (:obj:`str`, optional): Renames the default PyVista name from "Material Id" to this.
+        """
+        import pyvista as pv
+
+        with TemporaryDirectory() as tmp_dir:
+            self.save(os.path.join(tmp_dir, "mesh.inp"))
+            mesh = pv.read(os.path.join(tmp_dir, "mesh.inp"))
+
+        if material_id_alias is not None:
+            mesh[material_id_alias] = mesh["Material Id"]
+
+        return mesh
 
     def surface_mesh(self):
         """
@@ -361,19 +428,19 @@ class Mesh:
         return a line mesh. For a prism (extruded) mesh, this will
         return a mesh containing triangles and quads.
 
-        Returns in Meshio format.
-        """
-        if 'layertyp' in self.attributes:
-            layertyp_cell = self.remap_attribute("layertyp", "cell", categorical_data=True)
-            self.add_attribute("layertyp_cell", layertyp_cell, type="cell", data_type=int)
-        
-        import pyvista as pv
+        Returns in VTK/PyVista format.
 
-        with TemporaryDirectory() as tmp_dir:
-            self.save(os.path.join(tmp_dir, "mesh.inp"))
-            mesh = pv.read(os.path.join(tmp_dir, "mesh.inp"))
-        
-        return SurfaceMesh(mesh)
+        Returns
+        -------
+            surface_mesh: The surface (exterior) mesh.
+        """
+
+        surf_mesh = SurfaceMesh(self.to_vtk_mesh(material_id_alias="material_id"))
+
+        if "layertyp" in self.attributes:
+            surf_mesh.point_data_to_cell_data("layertyp", "layertyp_cell")
+
+        return surf_mesh
 
     def mesh_quality(self, plot=False, n_bins: int = None):
         """
@@ -466,7 +533,6 @@ class Mesh:
             return self.elements.shape[0]
         return 0
 
-
     @property
     def centroid(self):
         """Returns the centroid of the mesh"""
@@ -552,7 +618,7 @@ class Mesh:
             else:
                 attrb = self.get_attribute(active_scalar)
                 attribute_name = active_scalar
-            
+
             if len(attrb) == self.n_nodes:
                 node_arrays = {attribute_name: attrb}
             elif len(attrb) == self.n_elements:
@@ -561,7 +627,7 @@ class Mesh:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
             error(f'Could not find attribute "{active_scalar}"')
-        
+
         v3d.plot_3d(
             self,
             etype,

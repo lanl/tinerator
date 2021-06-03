@@ -325,7 +325,7 @@ class Raster:
         connect_ends = True
 
         if distance is None:
-            distance = self.cell_size * 2.
+            distance = self.cell_size * 2.0
 
         distance /= self.cell_size
         vertices, connectivity = st_boundary(

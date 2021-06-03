@@ -144,7 +144,7 @@ def __add_vector_obj(fig, ax, shape, zorder=10):
 
     if "Point" in shape_type:
         pts = np.array([(p.x, p.y) for p in shape.shapes])
-        ax.scatter(pts[:,0], pts[:,1], zorder=zorder, fc='r', ec='black')
+        ax.scatter(pts[:, 0], pts[:, 1], zorder=zorder, fc="r", ec="black")
     elif "LineString" in shape_type:
         for shp in shape.shapes:
             coords = np.array(shp.coords[:])

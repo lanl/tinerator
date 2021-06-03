@@ -6,7 +6,7 @@ from ..logging import warn, debug, log
 from ..gis import Raster, Geometry
 
 TRIANGULATION_METHODS = {
-    "default": triangulation_jigsaw, 
+    "default": triangulation_jigsaw,
     "meshpy": triangulation_meshpy,
     "jigsaw": triangulation_jigsaw,
 }
@@ -21,7 +21,7 @@ def triangulate(
     raster: Raster,
     min_edge_length: float = None,
     max_edge_length: float = None,
-    refinement_feature: Geometry =None,
+    refinement_feature: Geometry = None,
     method: str = "default",
     scaling_type: str = "relative",
     **kwargs,
@@ -63,20 +63,22 @@ def triangulate(
         method (:obj:`str`, optional): The triangulation kernel to use. Defaults to ``"jigsaw"``.
         scaling_type (:obj:`str`, optional): Defines how to interpret the provided edge lengths, as "relative" or "absolute".
         **kwargs: Optional parameters to pass into the triangulation kernel.
-    
+
     Returns
     -------
         Mesh: A TINerator triangulation surface mesh.
-    
+
     Examples
     --------
         >>> surf_mesh = tin.meshing.triangulate(dem, min_edge_length=0.001, scaling_type="relative")
     """
 
-    if raster.units.lower() == 'degree':
-        warn("IMPORTANT: The CRS of the raster is in degrees. "
+    if raster.units.lower() == "degree":
+        warn(
+            "IMPORTANT: The CRS of the raster is in degrees. "
             "This will cause problems with some triangulation kernels. "
-            "Reproject into a meter- or feet- based CRS.")
+            "Reproject into a meter- or feet- based CRS."
+        )
 
     valid_callbacks = list(TRIANGULATION_METHODS.keys())
 

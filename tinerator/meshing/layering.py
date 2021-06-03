@@ -279,13 +279,15 @@ def stack_layers(surfmesh: Mesh, layers: List[Layer], matids: list = None) -> Me
     vol_mesh.elements = prisms
 
     # This should probably be in its own method
-    #vol_mesh.add_attribute(
+    # vol_mesh.add_attribute(
     #    "material_id",
     #    np.repeat(np.array(mat_ids[::-1], dtype=int), elems_per_layer),
     #    type="cell",
-    #)
+    # )
 
-    vol_mesh.material_id = np.repeat(np.array(mat_ids[::-1], dtype=int), elems_per_layer)
+    vol_mesh.material_id = np.repeat(
+        np.array(mat_ids[::-1], dtype=int), elems_per_layer
+    )
 
     # Each element in a layer will get its own integer value
     # This can then be used to 'mask' cells belonging to different layers
