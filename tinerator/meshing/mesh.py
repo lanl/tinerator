@@ -116,146 +116,196 @@ class Mesh:
         self.elements = elements
         self.element_type = etype
         self.crs = crs
-        self.metadata = {}
-        self.attributes = {}
         self._attributes = []
 
     def __repr__(self):
         return f'Mesh<nodes: {self.n_nodes}, elements({self.element_type}): {self.n_elements}>'
 
-    def add_attribute(self, name: str, value: Union[np.array, list, int, float], type: str = None):
-        pass
+    def add_attribute(self, name: str, value: Union[np.array, list, int, float], type: str = None, data_type: Union[type, str] = None, overwrite: bool = False, **kwargs):
+        """
+        Adds a new attribute to the mesh. The ``name`` argument gives the attribute a name, and must
+        be a string.
+
+        The ``value`` argument can be a float (``3.14159``), an integer (``1``), or a vector (list/tuple/Numpy)
+        of floats or integers. If ``value`` is a vector, then the length of the vector must match exactly
+        to the number of nodes in the mesh (``self.num_nodes``) or to the number of cells in the mesh (``self.num_cells``).
+
+        The optional ``type`` argument explicitly defines the type of attribute it should be:
+
+        - "cell": The attribute is a cell (a.k.a. element or voxel) attribute.
+        - "node": The attribute is a node (a.k.a. point or vertex) attribute.
+        - "scalar": The attribute is a single value, which might be used for book-keeping (i.e., the filename of a mesh loaded from disk).
+
+        The optional ``data_type`` argument specifies what the attribute type should be. It can be a literal
+        Python type (like `int` or `float`), or a string representation of that type (like ``"float"`` or ``"integer"``).
+        If ``type`` is ``"scalar"``, then ``data_type`` is ignored: this only matters for cell and node attributes.
+
+        Args
+        ----
+            name (str): The name of the attribute to create.
+            value (Union[np.array, list, int, float]): The value(s) to fill the attribute with.
+            type (:obj:`str`, optional): The type of attribute to create. Choose ``"cell"`` or ``"node"``.
+            data_type (:obj:`Union[type, str]`, optional): The data type of the attribute - ``float`` or ``int``.
+            overwrite (:obj:`bool`, optional): If True, it will overwrite an existing attribute. If False, it will fail if the attribute exists.
+        
+        Throws
+        ------
+            AttributeError: if the attribute already exists.
+        """
+
+        if name in [*self.attributes, *self.private_attributes]:
+            if overwrite:
+                self.delete_attribute(name)
+            else:
+                raise AttributeError(f"Attribute \"{name}\" already exists.")
+        
+        is_private = kwargs['private'] if 'private' in kwargs else False
+        
+        att = MeshAttribute(name=name, data=value, attribute_type=type, data_type=data_type, num_mesh_nodes=self.n_nodes, num_mesh_cells=self.n_elements, is_private=is_private)
+        self._attributes.append(att)
 
     def get_attribute(self, name: str):
-        pass
+        """
+        Returns the data associated with the mesh attribute with name ``name``.
 
-    def set_attribute(self, value, at_layer: tuple = None):
-        pass
-    
-    def delete_attribute(self, name: str):
-        pass
+        Args
+        ----
+            name (str): The name of the attribute.
+        
+        Returns
+        -------
+            Any: the value of the attribute.
+
+        Throws
+        ------
+            AttributeError: if the requested attribute doesn't exist.
+        """
+
+        for attribute in self._attributes:
+            if attribute.name == name:
+                return attribute.data
+
+        raise AttributeError(f"Attribute \"{name}\" does not exist.")
+
+    def set_attribute(self, name: str, value, at_layer: tuple = None):
+        """
+        Sets an existing attribute.
+        """
+        for attribute in self._attributes:
+            if attribute.name == name:
+                attribute.set_data(value)
+                return
+        
+        raise AttributeError("Attribute \"{name}\" does not exist")
+
+    def delete_attribute(self, name: str, force: bool = False):
+        """
+        Deletes a mesh attribute.
+
+        Args
+        ----
+            name (str): The name of the attribute to delete.
+            force (:obj:`force`, optional): Required when attempting to delete internal attributes.
+        
+        Throws
+        ------
+            AttributeError: when the requested attribute cannot be found.
+        """
+        for (i, attribute) in enumerate(self._attributes):
+            if attribute.name == name:
+                if (force) or (not attribute.is_private):
+                    self._attributes.pop(i)
+                    return
+
+        raise AttributeError(f"Attribute \"{name}\" does not exist")
+
+    @property
+    def private_attributes(self):
+        """
+        Returns the names of all private attributes. Private attributes are
+        used for internal functionality.
+        """
+        return [att.name for att in self._attributes if att.is_private]
     
     @property
     def attributes(self):
-        pass
+        """
+        Returns the names of all non-private attributes.
+        """
+        return [att.name for att in self._attributes if not att.is_private]
 
     @property
     def node_attributes(self):
-        pass
+        """
+        Returns the names of all non-private attributes with a node type.
+        """
+        return [att.name for att in self._attributes if att.is_node_attribute and not att.is_private]
 
     @property
     def cell_attributes(self):
-        pass
+        """
+        Returns the names of all non-private attributes with a cell type.
+        """
+        return [att.name for att in self._attributes if att.is_cell_attribute and not att.is_private]
 
     @property
     def material_id(self):
-        pass
+        """
+        Returns the material ID of each cell. The material ID
+        is an integer number representing a unique material type.
+        """
+        try:
+            return self.get_attribute("material_id")
+        except AttributeError:
+            self.material_id = 1
+            return self.get_attribute("material_id")
 
     @material_id.setter
-    def material_id(self):
-        pass
-
-    def add_attribute_from_raster(self, name: str, raster, type: str = None, fill_value: Union[int, float] = 0., at_layer: tuple = None):
-        pass
-
-
-
-
-    # ============================= #
-
-    def get_attribute(self, name: str):
-        try:
-            return self.attributes[name]["data"]
-        except KeyError:
-            raise KeyError("Attribute '%s' does not exist" % name)
-
-    def set_attribute(self, name: str, vector: np.ndarray, at_layer: int = None):
-        if at_layer is not None:
-            if self.element_type != ElementType.PRISM:
-                raise ValueError(f"`at_layer` not supported for {self.element_type}.")
-
-            if at_layer < 0:
-                at_layer = self._num_layers + at_layer + 1
-
-            if self.attributes[name]["type"] == "cell":
-                ln = self._elems_per_layer
-                ln_full = self.n_elements
-            elif self.attributes[name]["type"] == "node":
-                ln = self._nodes_per_layer
-                ln_full = self.n_nodes
-            else:
-                raise ValueError("Unknown attribute type.")
-
-            if isinstance(vector, np.ndarray):
-                vector = vector.flatten()
-
-                if vector.shape[0] != ln:
-                    raise ValueError(
-                        f"Requires a vector of length {ln}. Was given length {vector.shape[0]}."
-                    )
-            elif isinstance(vector, (int, float)):
-                vector = np.full((ln,), vector)
-
-            end = ln_full - at_layer * ln
-            start = ln_full - (at_layer + 1) * ln
-
-            assert end - start == ln
-        else:
-            start = 0
-            end = ln
-
-        self.attributes[name]["data"][start:end] = vector
-
-    def add_empty_attribute(self, name: str, type: str, fill_value: float = 0.0):
+    def material_id(self, value):
         """
-        Creates an empty cell or node attribute with an optional given fill value.
+        Sets material ID to ``value``. For more complex functionality, use
+        ``Mesh.set_attribute("material_id", *args, **kwargs)``.
+        """
+        try:
+            self.set_attribute("material_id", value)
+        except AttributeError:
+            self.add_attribute("material_id", value, type="cell", data_type=int, is_private=True)
+
+    def add_attribute_from_raster(self, attribute_name: str, raster, attribute_type: str = "cell", data_type: Union[type, str] = None, **kwargs):
+        """
+        Creates a new attribute from raster data.
+        If ``attribute_type = "cell"``, then every mesh cell will be filled with the values
+        of the raster at the cell centroids of the mesh.
+        If ``attribute_type = "node"``, then every mesh node will be filled with the values
+        of the raster at the mesh nodes.
+        The code does not currently support ``attribute_type = "scalar"``.
+
+        Args
+        ----
+            attribute_name (str): The name of the attribute to create.
+            raster (tinerator.gis.Raster): The Raster object to source attribute data from.
+            attribute_type (:obj:`str`, optional): The type of attribute to create. "cell", "node", or "scalar.
+            data_type (:obj:`Union[type, str]`, optional): Specifies the data type for the attribute. "int" or "float".
+            **kwargs: Other keyword arguments for :obj:`Mesh.add_attribute`.
         """
 
-        if type.lower().strip() == "cell":
-            sz = self.n_elements
-        elif type.lower().strip() == "node":
-            sz = self.n_nodes
-        else:
-            raise ValueError(f"Unknown type: {type}")
-
-        vector = np.full((sz,), fill_value)
-
-        self.add_attribute(name, vector, type=type)
-
-    def add_attribute(self, name: str, vector: np.ndarray, type: str = None):
-        # TODO: change 'cell' to 'elem' for consistency or vice versa
-        # TODO: auto-add attribute as cell or node based on array length
-        if name in self.attributes:
-            raise KeyError("Attribute %s already exists" % name)
-
-        if not isinstance(vector, np.ndarray):
-            vector = np.array(vector)
-
-        # Take a guess at the attribute type
-        if type is None:
-            if vector.shape[0] == self.n_elements:
-                type = "cell"
-            elif vector.shape[0] == self.n_nodes:
-                type = "node"
-
-        type = type.lower().strip()
-
-        if type not in ["cell", "node"]:
-            raise ValueError("`type` must be either 'cell' or 'node'")
-
-        sz = self.n_elements if type == "cell" else self.n_nodes
-        vector = np.reshape(vector, (sz,))
-
-        self.attributes[name] = {"type": type, "data": vector}
-
-    def rm_attribute(self, name: str):
-        try:
-            del self.attributes[name]
-        except KeyError:
-            raise KeyError("Attribute '%s' does not exist" % name)
-
-    def reset_attributes(self):
-        self.attributes = {}
+        if attribute_type in MeshAttribute.CELL_TYPE_ALIAS:
+            points = self.get_cell_centroids()
+        elif attribute_type in MeshAttribute.NODE_TYPE_ALIAS:
+            points = self.nodes
+        elif attribute_type in MeshAttribute.SCALAR_TYPE_ALIAS:
+            raise NotImplementedError("Scalars are not yet implemented.")
+        
+        data = raster.values_at(points)
+        self.add_attribute(attribute_name, data, type=attribute_type, data_type=data_type)
+    
+    @property
+    def metadata(self):
+        """
+        Returns the metadata of the mesh (a.k.a, mesh attributes with a scalar type) in
+        a dictionary format.
+        """
+        return [{att.name: att.data} for att in self._attributes if att.is_scalar_attribute]
 
     def get_cell_centroids(self):
         """Returns the centroids of every cell"""
@@ -316,51 +366,6 @@ class Mesh:
                 quality, bins=np.linspace(0.0, 1.0, num=n_bins, endpoint=True)
             )
             print_histogram_table(q_hist, q_bins, title="Triangle Quality")
-
-    @property
-    def material_id(self):
-        """Material ID of mesh"""
-        try:
-            return self.get_attribute("material_id")
-        except KeyError:
-            v = np.ones((self.n_elements,), dtype=int)
-            self.material_id = v
-            return self.get_attribute("material_id")
-
-    @material_id.setter
-    def material_id(self, v):
-        self.add_attribute("material_id", np.array(v, dtype=int), type="cell")
-
-    @property
-    def node_attributes(self):
-        """Returns available node attributes"""
-        atts = self.attributes
-        return [x for x in atts if atts[x]["type"] == "node"]
-
-    @property
-    def element_attributes(self):
-        """Returns available element (cell) attributes"""
-        atts = self.attributes
-        return [x for x in atts if atts[x]["type"] == "cell"]
-
-    def map_raster_to_attribute(
-        self,
-        raster,
-        attribute_name: str = "material_id",
-        attribute_type: str = "cell",
-    ):
-        """
-        Maps a Raster object to a mesh attribute.
-        """
-
-        # This *only* works for surfaces
-        if attribute_type == "cell":
-            points = self.get_cell_centroids()
-        elif attribute_type == "node":
-            points = self.nodes
-
-        vector = raster.values_at(points)
-        self.add_attribute(attribute_name, vector, type=attribute_type)
 
     @property
     def x(self):
@@ -488,13 +493,14 @@ class Mesh:
         node_arrays = None
 
         try:
-            if active_scalar:
-                attrb = self.get_attribute(active_scalar)
+            if active_scalar is None:
+                active_scalar = "material_id"
+                attrb = self.material_id
                 attribute_name = active_scalar
             else:
-                attrb = self.material_id
-                attribute_name = "material-ID"
-
+                attrb = self.get_attribute(active_scalar)
+                attribute_name = active_scalar
+            
             if len(attrb) == self.n_nodes:
                 node_arrays = {attribute_name: attrb}
             elif len(attrb) == self.n_elements:
@@ -503,7 +509,7 @@ class Mesh:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
             error(f'Could not find attribute "{active_scalar}"')
-
+        
         v3d.plot_3d(
             self,
             etype,
@@ -635,8 +641,8 @@ class Mesh:
 
 
 class StackedMesh(Mesh):
-    def __init__(self, name: str = "stacked_mesh", etype: ElementType = None):
-        super().__init__(name=name, etype=etype)
+    def __init__(self, etype: ElementType = None):
+        super().__init__(etype=etype)
         self._cell_layer_ids = None
         self._num_layers = None
         self._nodes_per_layer = None

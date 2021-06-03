@@ -140,5 +140,6 @@ def triangulation_jigsaw(
 
     mesh.nodes[:, 2] = map_elevation(raster, mesh.nodes)
     mesh.crs = raster_boundary.crs
+    mesh.material_id = 1
 
     return mesh
