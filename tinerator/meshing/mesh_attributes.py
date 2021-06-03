@@ -11,7 +11,7 @@ class MeshAttribute:
     INTEGER_TYPE = int
     FLOAT_TYPE = float
 
-    INTEGER_TYPE_ALIAS = ("integer", "int", int, np.int)
+    INTEGER_TYPE_ALIAS = ("integer", "int", int, np.int, np.int64)
     FLOAT_TYPE_ALIAS = ("float", "double", "real", float, np.double)
 
     NODE_TYPE = "node"

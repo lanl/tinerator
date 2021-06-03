@@ -165,7 +165,7 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
     layertyp = np.zeros((volume_mesh.n_nodes,), dtype=int)
     layertyp[:num_nodes_per_layer] = -2
     layertyp[-num_nodes_per_layer:] = -1
-    volume_mesh.add_attribute("layertyp", layertyp)
+    volume_mesh.add_attribute("layertyp", layertyp, type="node")
 
     return volume_mesh
 

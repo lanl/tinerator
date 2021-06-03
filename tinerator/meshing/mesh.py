@@ -1,3 +1,4 @@
+from tempfile import TemporaryDirectory
 import meshio
 import os
 import numpy as np
@@ -219,6 +220,38 @@ class Mesh:
 
         raise AttributeError(f"Attribute \"{name}\" does not exist")
 
+
+    def remap_attribute(self, attribute_name: str, target_type: str, target_attribute_name: str = None, categorical_data: bool = False, target_data_type = None):
+        """
+
+        Args
+        ----
+            attribute_name (str): The attribute to remap.
+            target_type (str): The type to map to. One of "cell", "node", or "scalar".
+            target_attribute_name (:obj:`str`, optional): If not None, creates a new attribute with this name. If the same value as ``attribute_name``, then overwrites the existing attribute.
+            target_data_type (:obj:`Union[type, str]`, optional): Changes the data type of the attribute to the one provided. One of "float", "int", or ``None``.
+            categorical_data (:obj:`bool`, optional): For ``target_type = "cell"`` only. If True, then uses histogram binning to assign cell data values. If False, uses the average node value.
+
+        Returns
+        -------
+            data: the remapped attribute.
+        """
+        cells = self.elements - 1
+
+        if target_type != "cell":
+            raise NotImplementedError()
+
+        node_att = self.get_attribute(attribute_name)[cells]
+
+        if categorical_data:
+            median = np.median(node_att, axis=1)
+            idx = (node_att - median[:, None]).argmin(axis=1) # TODO: should allow argmax too
+            new_data = node_att[np.arange(len(node_att)), idx]
+        else:
+            new_data = np.mean(node_att, axis=1)
+
+        return new_data
+
     @property
     def private_attributes(self):
         """
@@ -247,6 +280,11 @@ class Mesh:
         Returns the names of all non-private attributes with a cell type.
         """
         return [att.name for att in self._attributes if att.is_cell_attribute and not att.is_private]
+    
+    @property
+    def element_attributes(self):
+        """Alias for self.cell_attributes."""
+        return self.cell_attributes
 
     @property
     def material_id(self):
@@ -312,6 +350,10 @@ class Mesh:
 
         return np.mean(self.nodes[self.elements - 1], axis=1)
 
+    def view_sets(self, surf_mesh, sets, **kwargs):
+        from .surface_mesh import plot_sets
+        plot_sets(surf_mesh.parent_mesh, sets, **kwargs)
+
     def surface_mesh(self):
         """
         Extracts the surface mesh: a mesh where all interior voxels
@@ -321,7 +363,17 @@ class Mesh:
 
         Returns in Meshio format.
         """
-        return SurfaceMesh(self)
+        if 'layertyp' in self.attributes:
+            layertyp_cell = self.remap_attribute("layertyp", "cell", categorical_data=True)
+            self.add_attribute("layertyp_cell", layertyp_cell, type="cell", data_type=int)
+        
+        import pyvista as pv
+
+        with TemporaryDirectory() as tmp_dir:
+            self.save(os.path.join(tmp_dir, "mesh.inp"))
+            mesh = pv.read(os.path.join(tmp_dir, "mesh.inp"))
+        
+        return SurfaceMesh(mesh)
 
     def mesh_quality(self, plot=False, n_bins: int = None):
         """

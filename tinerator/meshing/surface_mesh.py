@@ -2,36 +2,99 @@ import os
 import numpy as np
 import tempfile
 import meshio
-from pylagrit import PyLaGriT
+import pyvista as pv
 from ..logging import log, warn, debug, _pylagrit_verbosity
 
-# https://www.attrs.org/en/stable/overview.html
-# https://github.com/ecoon/watershed-workflow/blob/c1b593e79e96b8fe22685d38c8777df0d824b1f6/workflow/mesh.py#L71
+def plot_sets(mesh, sets, num_cols: int = 3, link_views: bool = True):
+    """
+    Plots the mesh along with element sets, side (face) sets, and
+    point sets.
+    """
+    if not isinstance(sets, (list, tuple, np.ndarray)):
+        sets = [sets]
+    
+    num_subplots = len(sets) + 1
+    if num_subplots <= 3:
+        num_rows = 1
+        num_cols = num_subplots
+    else:
+        num_rows = int(np.ceil(num_subplots / num_cols))
+    
+    p = pv.Plotter(shape=(num_rows, num_cols))
+
+    for (i, mesh_obj) in enumerate([mesh, *sets]):
+        kwargs = {}
+        p.subplot(i // num_cols, i % 3)
+
+        if isinstance(mesh_obj, PointSet):
+            mesh_name = f"(\"{mesh_obj.name}\")" if mesh_obj.name is not None else ""
+            mesh_name = f"Point Set {mesh_name}".strip()
+            mesh_obj = mesh_obj.to_vtk_mesh()
+            kwargs['color'] = 'red'
+            kwargs['render_points_as_spheres'] = True
+        elif isinstance(mesh_obj, SideSet):
+            mesh_name = f"(\"{mesh_obj.name}\")" if mesh_obj.name is not None else ""
+            mesh_name = f"Side Set {mesh_name}".strip()
+            mesh_obj = mesh_obj.to_vtk_mesh()
+        else:
+            mesh_name = "Primary Mesh"
+            kwargs['show_edges'] = True
+
+        p.add_text(mesh_name, font_size=12)
+        p.add_mesh(mesh_obj, **kwargs)
+    
+    if link_views:
+        p.link_views()
+    
+    p.show()
+
 class SideSet(object):
-    def __init__(self, name: str, elem_list: list, side_list: list, setid: int = None):
+    def __init__(self, primary_mesh, primary_cells, primary_faces, name: str = None):
+        """
+        ``primary_faces`` should take the form of:
+
+            (primary_element_id, primary_element_face_id)
+        """
         self.name = name
-        self.elem_list = elem_list
-        self.side_list = side_list
-        self.setid = setid
+        self.primary_mesh = primary_mesh
+        self.primary_cells = primary_cells
+        self.primary_faces = primary_faces
 
-    def __repr__(self):
-        return f'SideSet(name="{self.name}", setid={self.setid})'
+    def save(self, outfile: str):
+        self.to_vtk_mesh().save(outfile)
+    
+    def to_vtk_mesh(self):
+        pts = self.primary_mesh.points
+        faces = self.primary_faces
+        return pv.PolyData(pts, faces)
 
-
-class NodeSet(object):
-    def __init__(self, name: str, nodes_list: int, setid: int = None):
+class PointSet(object):
+    def __init__(self, primary_mesh, primary_mesh_nodes, surface_mesh = None, surface_mesh_nodes: int = None, name: str = None):
         self.name = name
-        self.nodes_list = nodes_list
-        self.setid = setid
+        self.primary_mesh = primary_mesh
+        self.primary_nodes = primary_mesh_nodes
+        self.surface_mesh = surface_mesh
+        self.surface_nodes = surface_mesh_nodes
+    
+    def save(self, outfile: str):
+        self.to_vtk_mesh().save(outfile)
+    
+    def to_vtk_mesh(self):
+        pts = self.primary_mesh.points[self.primary_nodes]
+        return pv.PolyData(pts)
 
-    def __repr__(self):
-        return f'NodeSet(name="{self.name}", setid={self.setid})'
+class ElementSet(object):
+    def __init__(self, primary_mesh, primary_mesh_elements, name: str = None):
+        self.name = name
+        self.primary_mesh = primary_mesh
+        self.primary_elements = primary_mesh_elements
 
-
-class ElemSet(object):
-    def __init__(self, name):
-        raise NotImplementedError()
-
+    def save(self, outfile: str):
+        self.to_vtk_mesh().save(outfile)
+    
+    def to_vtk_mesh(self):
+        pts = self.primary_mesh.points[self.primary_nodes]
+        return pv.PolyData(pts)
 
 class SurfaceMesh:
 
@@ -47,21 +110,17 @@ class SurfaceMesh:
     PRISM_FACE_RIGHT = 5
     PRISM_FACE_BACK = 4
 
-    def __init__(self, volume_mesh):
+    def __init__(self, mesh):
         """Extracts the surface mesh from a volume mesh."""
-        self._mesh = extract_surface_mesh(volume_mesh)
-        self._layertyp = self._mesh.point_data["layertyp"].astype(int)
-        self._layertyp_elem = np.hstack(self._mesh.cell_data["layertypelem"]).astype(
-            int
-        )
+        self.parent_mesh = mesh
+        self._mesh = mesh.extract_surface(pass_pointid=True, pass_cellid=True, nonlinear_subdivision=0)
 
-    def save(self, outfile: str, file_format: str = None, **kwargs):
+    def save(self, outfile: str, **kwargs):
         """Writes the mesh to disk. Uses Meshio as a file writer."""
-        if file_format is None:
-            if os.path.splitext(outfile)[-1].lower() == ".inp":
-                file_format = "avsucd"
-
-        self._mesh.write(outfile, file_format=file_format)
+        self._mesh.save(outfile, **kwargs)
+    
+    def view(self, **kwargs):
+        self._mesh.plot(**kwargs)
 
     def __repr__(self):
         return f"SurfaceMesh<nodes={len(self.nodes)}, cells={len(self.cells)}>"
@@ -74,120 +133,140 @@ class SurfaceMesh:
     def cells(self):
         return self._mesh.cells
 
-    @property
-    def node_id(self):
-        """The original node IDs of the parent mesh."""
-        return self._mesh.point_data["idnode0"].astype(int)
+    #@property
+    #def node_id(self):
+    #    """The original node IDs of the parent mesh."""
+    #    return self._mesh.point_data["idnode0"].astype(int)
+
+    #@property
+    #def cell_id(self):
+    #    """The original cell IDs of the parent mesh."""
+    #    return np.hstack(self._mesh.cell_data["idelem1"]).astype(int)
+
+    #@property
+    #def material_id(self):
+    #    """Returns the equivalent material ID of the parent mesh."""
+    #    return np.hstack(self._mesh.cell_data["itetclr1"])
+
+    #@property
+    #def face_id(self):
+    #    """The original face IDs of the parent mesh."""
+    #    return np.hstack(self._mesh.cell_data["idface1"]).astype(int)
+
+    #@property
+    #def top_faces(self):
+    #    """Returns a SideSet object of all top-layer faces."""
+    #    eset = np.argwhere(self._layertyp_elem == SurfaceMesh.LAYER_TOP).T[0]
+    #    return SideSet("TopFaces", self.cell_id[eset], self.face_id[eset])
+
+    #@property
+    #def top_points(self):
+    #    """Returns a NodeSet object of all top-layer points."""
+    #    pset = np.argwhere(self._layertyp == SurfaceMesh.LAYER_TOP).T[0]
+    #    return NodeSet("TopNodes", self.node_id[pset])
+
+    #@property
+    #def bottom_faces(self):
+    #    """Returns a SideSet object of all bottom-layer faces."""
+    #    eset = np.argwhere(self._layertyp_elem == SurfaceMesh.LAYER_BOTTOM).T[0]
+    #    return SideSet("BottomFaces", self.cell_id[eset], self.face_id[eset])
+
+    #@property
+    #def side_faces(self):
+    #    """Returns a SideSet object of all side-layer faces."""
+    #    eset = np.argwhere(self._layertyp_elem == SurfaceMesh.LAYER_SIDES).T[0]
+    #    return SideSet("SideFaces", self.cell_id[eset], self.face_id[eset])
+
+    #@property
+    #def top_faces(self):
+    #    return get_faces_where(mesh, surf_mesh, attribute_name="layertyp_cell", attribute_value=-2)
 
     @property
-    def cell_id(self):
-        """The original cell IDs of the parent mesh."""
-        return np.hstack(self._mesh.cell_data["idelem1"]).astype(int)
+    def faces(self):
+        faces = []
+        faces_vtk = self._mesh.faces
+
+        i = 0
+        sz_faces = len(faces_vtk)
+        while True:
+            if i >= sz_faces:
+                break
+            stride = faces_vtk[i]
+            j = i + stride + 1
+            faces.append(faces_vtk[i+1:j])
+            i = j
+        
+        return np.array(faces, dtype=object)
 
     @property
-    def material_id(self):
-        """Returns the equivalent material ID of the parent mesh."""
-        return np.hstack(self._mesh.cell_data["itetclr1"])
+    def cell_mapping(self):
+        return self._mesh.get_array('vtkOriginalCellIds')
+    
+    @property
+    def node_mapping(self):
+        return self._mesh.get_array('vtkOriginalPointIds')
+
+    def get_attribute(self, attribute_name: str):
+        return self._mesh.get_array(attribute_name)
+
+    def get_nodes_where(self, attribute_name: str = None, attribute_value = None, set_name: str = None):
+        primary_att = self.parent_mesh.get_array(attribute_name)
+        surf_att = self._mesh.get_array(attribute_name)
+
+        primary_nodes = np.argwhere(primary_att == attribute_value).T[0]
+        surf_nodes = np.argwhere(surf_att == attribute_value).T[0]
+
+        return PointSet(
+            self.parent_mesh,
+            primary_nodes,
+            surface_mesh = self._mesh,
+            surface_mesh_nodes = surf_nodes,
+            name = set_name
+        )
 
     @property
-    def face_id(self):
-        """The original face IDs of the parent mesh."""
-        return np.hstack(self._mesh.cell_data["idface1"]).astype(int)
+    def top_nodes(self):
+        return self.get_nodes_where("layertyp", -2., set_name = "TopPoints")
 
     @property
-    def top_faces(self):
-        """Returns a SideSet object of all top-layer faces."""
-        eset = np.argwhere(self._layertyp_elem == SurfaceMesh.LAYER_TOP).T[0]
-        return SideSet("TopFaces", self.cell_id[eset], self.face_id[eset])
-
+    def bottom_nodes(self):
+        return self.get_nodes_where("layertyp", -1., set_name = "BottomPoints")
+    
     @property
-    def top_points(self):
-        """Returns a NodeSet object of all top-layer points."""
-        pset = np.argwhere(self._layertyp == SurfaceMesh.LAYER_TOP).T[0]
-        return NodeSet("TopNodes", self.node_id[pset])
+    def side_nodes(self):
+        return self.get_nodes_where("layertyp", 0., set_name = "SidePoints")
+    
+    def get_faces_where(self, attribute_name: str = None, attribute_value = None, set_name: str = None):
 
-    @property
-    def bottom_faces(self):
-        """Returns a SideSet object of all bottom-layer faces."""
-        eset = np.argwhere(self._layertyp_elem == SurfaceMesh.LAYER_BOTTOM).T[0]
-        return SideSet("BottomFaces", self.cell_id[eset], self.face_id[eset])
+        faces = self.faces
+
+        cell_map = self.cell_mapping
+        node_map = self.node_mapping
+        primary_att = self.parent_mesh.get_array(attribute_name)
+        surf_att = self._mesh.get_array(attribute_name)
+
+        primary_cells = np.argwhere(primary_att == attribute_value).T[0]
+        face_idx = np.argwhere(surf_att == attribute_value).T[0]
+
+        captured_cells = cell_map[face_idx]
+        captured_surf_faces = faces[face_idx]
+        captured_faces = np.hstack([[len(fc), *node_map[fc]] for fc in captured_surf_faces])
+
+        return SideSet(
+            self.parent_mesh,
+            captured_cells,
+            captured_faces,
+            name = set_name,
+        )
 
     @property
     def side_faces(self):
-        """Returns a SideSet object of all side-layer faces."""
-        eset = np.argwhere(self._layertyp_elem == SurfaceMesh.LAYER_SIDES).T[0]
-        return SideSet("SideFaces", self.cell_id[eset], self.face_id[eset])
+        return self.get_faces_where("layertyp_cell", 0., set_name = "SideFaces")
 
+    @property
+    def bottom_faces(self):
+        return self.get_faces_where("layertyp_cell", -1., set_name = "BottomFaces")
 
-def extract_surface_mesh(mesh):
-    """
-    Extracts the boundary of a mesh. For a solid (volume) mesh,
-    it extracts the surface mesh. If it is a surface mesh, it
-    extracts the edge mesh.
-
-    Returns in Meshio format.
-    """
-
-    # REFERENCE: https://lagrit.lanl.gov/docs/EXTRACT_SURFMESH.html
-    # ================================================================ #
-    # Six new element based attributes, itetclr0, itetclr1, idelem0 and
-    # idelem1, idface0, idface1 are added to the output mesh indicating
-    # the material numbers (itetclr) on each side of the mesh faces,
-    # i.e., the color of elements that existed on each side of a
-    # face in the original mesh. The convention is that the normal
-    # points into the larger material id (itetclr) material. itetclr0
-    # indicates the color of the elements on smaller itetclr value side
-    # (the inside) of the face normal (0 if the face is on an external
-    # boundary) and itetclr1 indicates the color of the elements on
-    # the outside of the normal. The attributes idelem0 and idelem1
-    # record the element numbers of the input mesh that produced
-    # the lower dimensional output mesh. The attributes idface0
-    # and idface1 record the local face number of the input mesh objects.
-    # A node attribute, idnode0, records the node number of the input
-    # mesh object node.
-
-    # In addition another element attribute called facecol is added to
-    # the elements of the new mesh. The facecol attribute is a model
-    # face number constructed from the itetclr0 and itetclr1 attributes.
-    # The way the facecol  attribute is constructed does not guarantee
-    # that the same facecol value will not be given to two disjoint
-    # patches of mesh faces.
-
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        mesh.save(os.path.join(tmp_dir, "volmesh.inp"))
-
-        debug("Launching PyLaGriT")
-        lg = PyLaGriT(verbose=_pylagrit_verbosity(), cwd=tmp_dir)
-
-        cmds = [
-            # (1) Read in the volume mesh
-            "read/avs/volmesh.inp/mo_vol",
-            # (2) Extract the external surface mesh
-            "extract/surfmesh/1,0,0/mo_surf/mo_vol/external",
-            # (3) Map the layertyp node attribute to elements:
-            # (3.1) Create an element-based attribute
-            "cmo/addatt/mo_surf/layertypelem/VINT/scalar/nelements",
-            "cmo/setatt/mo_surf/layertypelem/1,0,0/0",
-            # (3.2) Create pointsets for the top & bottom layers of points
-            "pset/ptop/attribute/layertyp/1,0,0/-2/eq",
-            "pset/pbot/attribute/layertyp/1,0,0/-1/eq",
-            # (3.3) Capture the elements on the top & bottom layers
-            "eltset/etop/exclusive/pset,get,ptop",
-            "eltset/ebot/exclusive/pset,get,pbot",
-            # (3.4) Set the element attribute to -2 for top and -1 for bottom
-            "cmo/setatt/mo_surf/layertypelem/eltset,get,etop/-2",
-            "cmo/setatt/mo_surf/layertypelem/eltset,get,ebot/-1",
-            # (4) Write surface mesh to disk
-            "dump/avs/surfmesh_lg.inp/mo_surf",
-        ]
-
-        for cmd in cmds:
-            lg.sendline(cmd)
-
-        del lg
-
-        surf_mesh = meshio.read(
-            os.path.join(tmp_dir, "surfmesh_lg.inp"), file_format="avsucd"
-        )
-
-    return surf_mesh
+    @property
+    def top_faces(self):
+        return self.get_faces_where("layertyp_cell", -2., set_name = "TopFaces")

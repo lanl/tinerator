@@ -24,7 +24,7 @@ from .dump_exodus import (
     EXODUS_FACE_MAPPING,
 )
 
-from .surface_mesh import SurfaceMesh, NodeSet, ElemSet, SideSet
+from .surface_mesh import SurfaceMesh, PointSet, ElementSet, SideSet, plot_sets
 
 # DEV ================== #
 from .layering_dev import (
