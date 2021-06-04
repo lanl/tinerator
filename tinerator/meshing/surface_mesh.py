@@ -2,420 +2,17 @@ import numpy as np
 import tempfile
 import meshio
 import pyvista as pv
+from scipy.spatial import distance
 from ..logging import log, warn, debug, _pylagrit_verbosity
-
-
-def ravel_faces_to_vtk(faces):
-    """
-    Ravels an NxM matrix, or list of lists, containing
-    face information into a VTK-compliant 1D array.
-    """
-    vtk_faces = []
-    for face in faces:
-        nan_mask = np.isnan(face)
-
-        if nan_mask.any():
-            face = np.array(face)[~nan_mask]
-
-        vtk_face = np.hstack([len(face), face])
-        vtk_faces.extend(vtk_face)
-
-    return np.hstack(vtk_faces).astype(int)
-
-
-def unravel_vtk_faces(faces_vtk, fill_matrix: bool = False):
-    """
-    Unravels VTK faces. If fill_matrix = True,
-    then instead of returning a list of unequal length
-    arrays, it returns an NxM **floating-point** array with unequal
-    rows filled with ``numpy.nan``.
-    """
-    faces = []
-
-    i = 0
-    sz_faces = len(faces_vtk)
-    max_stride = -1
-    while True:
-        if i >= sz_faces:
-            break
-        stride = faces_vtk[i]
-        max_stride = max(max_stride, stride)
-        j = i + stride + 1
-        faces.append(faces_vtk[i + 1 : j])
-        i = j
-    
-    if fill_matrix:
-        faces = [
-            np.hstack([face, [np.nan] * (max_stride - len(face))]) for face in faces
-        ]
-        return np.array(faces)
-    else:
-        return np.array(faces, dtype=object)
-
-def refit_arrays(arr1, arr2, type='float64'):
-    """
-    Expands the shape of the array to ``target_shape`` and
-    fills extra rows/cols with ``np.nan``.
-    Useful for getting two arrays to fit to the same shape.
-    """
-    def resize(arr, target_shape, type='float64'):
-        shape_delta = tuple(np.array(target_shape) - np.array(arr.shape))
-        padding = ((0, shape_delta[0]), (0, shape_delta[1]))
-        return np.pad(arr.astype(type), padding, constant_values=np.nan)
-    
-    target_shape = np.max([arr1.shape, arr2.shape], axis=0)
-    return resize(arr1, target_shape, type=type), resize(arr2, target_shape, type=type)
-
-def in2d(a: np.ndarray, b: np.ndarray, assume_unique: bool = False) -> np.ndarray:
-    """
-    Helper function to replicate numpy.in1d, but with
-    NxM matrices.
-    """
-    # https://stackoverflow.com/a/16216866
-
-    def as_void(arr):
-        arr = np.ascontiguousarray(arr)
-        if np.issubdtype(arr.dtype, np.floating):
-            arr += 0.0
-        return arr.view(np.dtype((np.void, arr.dtype.itemsize * arr.shape[-1])))
-    
-    init_shape = a.shape
-    a, b = refit_arrays(a, b, type='float64')
-    return np.in1d(as_void(a), as_void(b), assume_unique)[:init_shape[0]]
-
-def is_geometry(obj):
-    try:
-        return (
-            obj.__module__ == "tinerator.gis.geometry"
-            and type(obj).__name__ == "Geometry"
-        )
-    except:
-        return False
-
-
-def plot_sets(mesh, sets, num_cols: int = 3, link_views: bool = True):
-    """
-    Plots the mesh along with element sets, side (face) sets, and
-    point sets.
-    """
-    if not isinstance(sets, (list, tuple, np.ndarray)):
-        sets = [sets]
-
-    num_subplots = len(sets) + 1
-    if num_subplots <= 3:
-        num_rows = 1
-        num_cols = num_subplots
-    else:
-        num_rows = int(np.ceil(num_subplots / num_cols))
-
-    p = pv.Plotter(shape=(num_rows, num_cols))
-
-    for (i, mesh_obj) in enumerate([mesh, *sets]):
-        kwargs = {}
-        p.subplot(i // num_cols, i % 3)
-
-        if isinstance(mesh_obj, PointSet):
-            mesh_name = f'("{mesh_obj.name}")' if mesh_obj.name is not None else ""
-            mesh_name = f"Point Set {mesh_name}".strip()
-            mesh_obj = mesh_obj.to_vtk_mesh()
-            kwargs["color"] = "red"
-            kwargs["render_points_as_spheres"] = True
-        elif isinstance(mesh_obj, SideSet):
-            mesh_name = f'("{mesh_obj.name}")' if mesh_obj.name is not None else ""
-            mesh_name = f"Side Set {mesh_name}".strip()
-            mesh_obj = mesh_obj.to_vtk_mesh()
-        else:
-            mesh_name = "Primary Mesh"
-            kwargs["show_edges"] = True
-
-        p.add_text(mesh_name, font_size=12)
-        p.add_mesh(mesh_obj, **kwargs)
-
-    if link_views:
-        p.link_views()
-
-    p.show()
-
-
-class SideSet(object):
-    def __init__(self, primary_mesh, primary_cells, primary_faces, name: str = None):
-        """
-        ``primary_faces`` should take the form of:
-
-            (primary_element_id, primary_element_face_id)
-        """
-        self.name = name
-        self.primary_mesh = primary_mesh
-        self.primary_cells = primary_cells
-        self.primary_faces = primary_faces
-
-    def save(self, outfile: str):
-        self.to_vtk_mesh().save(outfile)
-
-    def to_vtk_mesh(self):
-        pts = self.primary_mesh.points
-        faces = self.primary_faces
-        return pv.PolyData(pts, faces)
-
-    def view(self, **kwargs):
-        """
-        Renders a 3D visualization of the set.
-
-        Args
-        ----
-            **kwargs: Keyword arguments to pass to PyVista.
-        """
-        self.to_vtk_mesh().plot(**kwargs)
-
-    def _ufuncs(self, side_set, type: str, set_name: str = None):
-        """
-        Master function for performing set operations.
-        """
-        assert (
-            self.primary_mesh == side_set.primary_mesh
-        ), "Sets must have the same parent mesh"
-
-        if set_name is None:
-            set_name = self.name
-
-        this_cells = self.primary_cells
-        that_cells = side_set.primary_cells
-
-        this_faces = unravel_vtk_faces(self.primary_faces, fill_matrix=True)
-        that_faces = unravel_vtk_faces(side_set.primary_faces, fill_matrix=True)
-
-        mask = in2d(this_faces, that_faces) & np.in1d(this_cells, that_cells)
-
-        #import ipdb; ipdb.set_trace()
-
-        if type in ["join", "union"]:
-            this_faces, that_faces = refit_arrays(
-                this_faces[~mask],
-                that_faces
-            )
-            new_cells = np.hstack([this_cells[~mask], that_cells])
-            new_faces = np.vstack([this_faces, that_faces])#[this_faces[~mask], that_faces])
-        elif type in ["intersect", "intersection"]:
-            new_cells = this_cells[mask]
-            new_faces = this_faces[mask]
-        elif type in ["remove", "filter", "diff", "difference"]:
-            new_cells = this_cells[~mask]
-            new_faces = this_faces[~mask]
-        else:
-            raise ValueError(f"Bad operation: {type}")
-
-        new_faces = ravel_faces_to_vtk(new_faces)
-
-        return SideSet(self.primary_mesh, new_cells, new_faces, name=set_name)
-
-    def join(self, side_set, set_name: str = None):
-        """
-        Adds all faces within ``side_set`` to this object.
-
-        Args
-        ----
-            side_set (SideSet): The side set to join.
-
-        Returns
-        -------
-            joined_set: The joined SideSet.
-        """
-        return self._ufuncs(side_set, type="join", set_name=set_name)
-
-    def remove(self, side_set, set_name: str = None):
-        """
-        Removes all faces within ``side_set`` from this object.
-
-        Args
-        ----
-            side_set (SideSet): The side set to remove.
-
-        Returns
-        -------
-            filtered_set: The filtered SideSet.
-        """
-        return self._ufuncs(side_set, type="remove", set_name=set_name)
-
-    def intersection(self, side_set, set_name: str = None):
-        """
-        Returns a SideSet containing the intersection of this
-        set and that of ``side_set``.
-
-        Args
-        ----
-            side_set (SideSet): The side set to intersect.
-
-        Returns
-        -------
-            intersected_set: The intersected SideSet.
-        """
-        return self._ufuncs(side_set, type="intersection", set_name=set_name)
-
-
-class PointSet(object):
-    def __init__(
-        self,
-        primary_mesh,
-        primary_mesh_nodes,
-        name: str = None,
-    ):
-        self.name = name
-        self.primary_mesh = primary_mesh
-        self.primary_nodes = primary_mesh_nodes
-
-        assert len(self.primary_nodes) > 0, "Set cannot be empty"
-
-    def save(self, outfile: str):
-        self.to_vtk_mesh().save(outfile)
-
-    def to_vtk_mesh(self):
-        pts = self.primary_mesh.points[self.primary_nodes]
-        return pv.PolyData(pts)
-
-    def view(self, **kwargs):
-        """
-        Renders a 3D visualization of the set.
-
-        Args
-        ----
-            **kwargs: Keyword arguments to pass to PyVista.
-        """
-        self.to_vtk_mesh().plot(**kwargs)
-
-    def _ufuncs(self, point_set, type: str, set_name: str = None):
-        """
-        Master function for performing set operations.
-        """
-        assert (
-            self.primary_mesh == point_set.primary_mesh
-        ), "Sets must have the same parent mesh"
-
-        if set_name is None:
-            set_name = self.name
-
-        this = self.primary_nodes
-        that = point_set.primary_nodes
-
-        if type in ["join", "union"]:
-            new_points = np.union1d(this, that)
-        elif type in ["intersect", "intersection"]:
-            new_points = np.intersect1d(this, that)
-        elif type in ["remove", "filter", "diff", "difference"]:
-            new_points = np.setdiff1d(this, that)
-        else:
-            raise ValueError(f"Bad operation: {type}")
-
-        return PointSet(self.primary_mesh, new_points, name=set_name)
-
-    def join(self, point_set, set_name: str = None):
-        """
-        Adds all points within ``point_set`` to this object.
-
-        Args
-        ----
-            point_set (PointSet): The point set to join.
-
-        Returns
-        -------
-            joined_set: The joined PointSet.
-        """
-        return self._ufuncs(point_set, type="join", set_name=set_name)
-
-    def remove(self, point_set, set_name: str = None):
-        """
-        Removes all points within ``point_set`` from this object.
-
-        Args
-        ----
-            point_set (PointSet): The point set to remove.
-
-        Returns
-        -------
-            filtered_set: The filtered PointSet.
-        """
-        return self._ufuncs(point_set, type="remove", set_name=set_name)
-
-    def intersection(self, point_set, set_name: str = None):
-        """
-        Returns a PointSet containing the intersection of this
-        set and that of ``point_set``.
-
-        Args
-        ----
-            point_set (PointSet): The point set to intersect.
-
-        Returns
-        -------
-            intersected_set: The intersected PointSet.
-        """
-        return self._ufuncs(point_set, type="intersection", set_name=set_name)
-
-
-class ElementSet(object):
-    def __init__(self, primary_mesh, primary_mesh_elements, name: str = None):
-        self.name = name
-        self.primary_mesh = primary_mesh
-        self.primary_elements = primary_mesh_elements
-
-    def save(self, outfile: str):
-        self.to_vtk_mesh().save(outfile)
-
-    def to_vtk_mesh(self):
-        pts = self.primary_mesh.points[self.primary_nodes]
-        return pv.PolyData(pts)
-
-    def view(self, **kwargs):
-        """
-        Renders a 3D visualization of the set.
-
-        Args
-        ----
-            **kwargs: Keyword arguments to pass to PyVista.
-        """
-        self.to_vtk_mesh().plot(**kwargs)
-
-    def join(self, element_set):
-        """
-        Adds all elements within ``side_set`` to this object.
-
-        Args
-        ----
-            element_set (ElementSet): The element set to join.
-
-        Returns
-        -------
-            joined_set: The joined ElementSet.
-        """
-        raise NotImplementedError()
-
-    def remove(self, element_set):
-        """
-        Removes all faces within ``element_set`` from this object.
-
-        Args
-        ----
-            element_set (ElementSet): The element set to remove.
-
-        Returns
-        -------
-            filtered_set: The filtered ElementSet.
-        """
-        raise NotImplementedError()
-
-    def intersection(self, element_set):
-        """
-        Returns a ElementSet containing the intersection of this
-        set and that of ``element_set``.
-
-        Args
-        ----
-            element_set (ElementSet): The element set to intersect.
-
-        Returns
-        -------
-            intersected_set: The intersected ElementSet.
-        """
-        raise NotImplementedError()
+from .meshing_utils import (
+    clockwiseangle_and_distance,
+    ravel_faces_to_vtk,
+    unravel_vtk_faces,
+    refit_arrays,
+    in2d,
+    is_geometry,
+)
+from .sets import SideSet, PointSet, ElementSet
 
 
 class SurfaceMesh:
@@ -553,10 +150,12 @@ class SurfaceMesh:
     @property
     def top_faces(self):
         return self.get_faces_where("layertyp_cell", -2.0, set_name="TopFaces")
-    
+
     @property
     def all_faces(self):
-        return self.top_faces.join(self.bottom_faces).join(self.side_faces, set_name = "AllFaces")
+        return self.top_faces.join(self.bottom_faces).join(
+            self.side_faces, set_name="AllFaces"
+        )
 
     def get_layer(self, layer: tuple, return_faces: bool = True, set_name: str = None):
 
@@ -567,10 +166,8 @@ class SurfaceMesh:
             arr = np.floor(arr).astype(int)
         elif isinstance(layer, float):
             pass
-            # idx = np.argwhere(self._mesh.get_array(layer_id_att) == layer).T[0]
         elif isinstance(layer, (list, tuple, np.ndarray)):
             layer = float(f"{layer[0]}.{layer[1]}")
-            # idx = np.argwhere(self._mesh.get_array(layer_id_att) == val).T[0]
         else:
             raise ValueError("Could not parse layer")
 
@@ -590,8 +187,6 @@ class SurfaceMesh:
             ss = SideSet(
                 self.parent_mesh, captured_cells, captured_faces, name=set_name
             )
-            #return ss
-            #import ipdb; ipdb.set_trace()
             return ss.remove(self.top_faces).remove(self.bottom_faces)
         else:
             primary_nodes = node_map[idx]
@@ -614,7 +209,7 @@ class SurfaceMesh:
 
     def discretize_sides(
         self,
-        coordinates: np.array,
+        geom: np.array,
         close_ends: bool = True,
         at_layer: tuple = None,
         return_faces: bool = True,
@@ -624,65 +219,74 @@ class SurfaceMesh:
         Coordinates can be either a list of (x,y) coordinates,
         or a Geometry object with points or lines.
         """
-        import ipdb
 
-        ipdb.set_trace()
+        side_faces_set = self.get_layer(1, 1)
 
-        if is_geometry(coordinates):
-            coordinates = coordinates.coordinates  # TODO: handle differently for lines
+        faces = self.faces
+        node_map = self.node_mapping
+        cell_map = self.cell_mapping
 
-        from scipy.spatial import distance
+        side_faces = unravel_vtk_faces(side_faces_set.primary_faces)
+        face_centroids = side_faces_set.to_vtk_mesh().cell_centers().points[:, :2]
+        set_centroid = side_faces_set.to_vtk_mesh().center
 
-        side_faces = self.side_faces
+        sort_origin = set_centroid[:2]
 
-        # if at_layer is not None:
+        lines = []
+        if is_geometry(geom):
+            coords = geom.coordinates  # TODO: handle differently for lines
+            if close_ends:
+                coords = np.vstack([coords, [coords[0]]])
+            coords = [
+                [60.9, 13.93],
+                [77.9, 9.38],
+                [69.4, 2.54],
+                [17.5, 0.18],
+                [2.7, 8.71],
+                [18.2, 13.62],
+            ]
+            lines = [[coords[i], coords[i + 1]] for i in range(len(coords) - 1)]
 
-        # where cell_layer_id == (1,1)
-        # where sides = true
-        # intersection(sides, cell_layer_id)
+        angles = np.array(
+            [
+                clockwiseangle_and_distance(pt, origin=sort_origin)
+                for pt in face_centroids
+            ]
+        )
+        sort_idx = np.lexsort((angles[:, 1], angles[:, 0]))
 
-        # top_nodes = self.top_nodes
-        # primary_mesh = top_nodes.primary_mesh
-        # primary_nodes = top_nodes.primary_nodes
-        # boundary =
+        sorted_face_centroids = face_centroids[sort_idx]
 
-        # boundary
+        sets = []
 
-        # - get boundary nodes from top
+        for (i, line) in enumerate(np.array(lines)):
+            print(line)
+            face0, face1 = distance.cdist(line, sorted_face_centroids).argmin(axis=1)
+            face0, face1 = np.sort([face0, face1 + 1])
 
-        # facesets = {}
+            if face0 == face1:
+                continue
 
-        # for key in coords:
-        #    mat_ids = np.full((np.shape(boundary)[0],),1,dtype=int)
-        #    fs = []
+            idx = sort_idx[np.array(range(face0, face1))]
+            print(idx)
 
-        #    # Iterate over given coordinates and find the closest boundary point...
-        #    for c in coords[key]:
-        #        ind = distance.cdist([c], boundary[:,:2]).argmin()
-        #        fs.append(ind)
+            import ipdb
 
-        #    # TODO: Band-aid fix.
-        #    if len(fs) == 2:
-        #        # Reverse order of fs, only so that the
-        #        # notion of 'clockwise ordering matters'
-        #        # stays constant.
-        #        fs = fs[::-1]
-        #    else:
-        #        fs.sort(reverse=True)
+            ipdb.set_trace()
 
-        #    # Map the interim space as a new faceset.
-        #    # 'Unmarked' facesets have a default filled value of 1
-        #    for i in range(len(fs)):
+            captured_cells = cell_map[idx]
+            captured_surf_faces = faces[idx]
+            captured_faces = np.hstack(
+                [[len(fc), *node_map[fc.astype(int)]] for fc in captured_surf_faces]
+            )
 
-        #        if fs[-1] > fs[i]:
-        #            mat_ids[fs[-1]:] = i+2
-        #            mat_ids[:fs[i]] = i+2
-        #        else:
-        #            mat_ids[fs[-1]:fs[i]] = i+2
+            sets.append(
+                SideSet(
+                    self.parent_mesh, captured_cells, captured_faces, name=f"Sides{i+1}"
+                )
+            )
 
-        #    facesets[key] = mat_ids
-
-        # return facesets
+        return sets
 
     def from_geometry(self, geometry):
         """

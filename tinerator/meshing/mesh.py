@@ -7,12 +7,12 @@ from typing import Union
 from .dump_exodus import dump_exodus
 from .mesh_metrics import triangle_quality
 from .mesh_attributes import MeshAttribute
-from .facesets_lg import write_facesets
 from .readwrite import ElementType, read_avs, write_avs, read_mpas
 from .surface_mesh import SurfaceMesh
 from ..visualize import view_3d as v3d
-from ..visualize import plot_triangulation
+from ..visualize import plot_triangulation, plot_sets
 from ..logging import error, print_histogram_table
+from .sets import SideSet, ElementSet, PointSet
 
 
 def _get_driver(filename: str):
@@ -95,9 +95,6 @@ def load_mesh(
             raise ValueError("Mesh type is currently not supported.")
 
     return mesh_object
-
-
-# TODO: enable face and edge information. https://pymesh.readthedocs.io/en/latest/basic.html#mesh-data-structure
 
 
 class Mesh:
@@ -397,9 +394,22 @@ class Mesh:
 
         return np.mean(self.nodes[self.elements - 1], axis=1)
 
-    def view_sets(self, surf_mesh, sets, **kwargs):
-        from .surface_mesh import plot_sets
+    def view_sets(
+        self,
+        surf_mesh: SurfaceMesh,
+        sets: Union[SideSet, ElementSet, PointSet],
+        **kwargs,
+    ):
+        """
+        Renders this mesh along with SideSets, PointSets, and
+        ElementSets.
 
+        Args
+        ----
+            surf_mesh (SurfaceMesh): The surface mesh extracted from this mesh.
+            sets (List[Union[SideSet, PointSet, ElementSet]]): The sets to visualize.
+            **kwargs: Optional keyword arguments to pass to PyVista.
+        """
         plot_sets(surf_mesh.parent_mesh, sets, **kwargs)
 
     def to_vtk_mesh(self, material_id_alias: str = None):

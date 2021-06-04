@@ -2,7 +2,12 @@ import vtk
 import numpy as np
 import pyvista as pv
 from copy import deepcopy
-from ..constants import _in_notebook, JUPYTER_BACKEND_DEFAULT
+from ..constants import (
+    _in_notebook,
+    _in_docker_container,
+    _init_pyvista_framebuffer,
+    JUPYTER_BACKEND_DEFAULT,
+)
 
 
 def _mesh_to_vtk_unstructured(
@@ -16,6 +21,9 @@ def _mesh_to_vtk_unstructured(
     Internal function.
     Converts a TINerator Mesh object into a VTK unstructured grid.
     """
+    if _in_docker_container():
+        _init_pyvista_framebuffer()
+
     ncells = mesh.n_elements
     nnodes = mesh.n_nodes
 

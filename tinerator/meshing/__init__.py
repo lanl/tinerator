@@ -8,7 +8,6 @@ from .layering import (
 )
 from .extrude_mesh import extrude_mesh
 from .triangulation import triangulate
-from .facesets_lg import FacesetBasic, FacesetFromSides, FacesetFromElevations
 from .meshing_utils import estimate_edge_lengths
 from .mesh_metrics import (
     edge_lengths,
@@ -24,17 +23,8 @@ from .dump_exodus import (
     EXODUS_FACE_MAPPING,
 )
 
-from .surface_mesh import SurfaceMesh, PointSet, ElementSet, SideSet, plot_sets
-
-# DEV ================== #
-from .layering_dev import (
-    DEV_get_dummy_layers,
-    DEV_stack,
-    DEV_basic_facesets,
-    DEV_spit_out_simple_mesh,
-)
-
-# DEV ================== #
+from .surface_mesh import SurfaceMesh
+from .sets import PointSet, ElementSet, SideSet
 
 NODE = "node"
 CELL = "cell"

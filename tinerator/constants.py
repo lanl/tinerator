@@ -1,7 +1,10 @@
+import subprocess
+
 DEFAULT_NO_DATA_VALUE = -9999.0
 DEFAULT_PROJECTION = "EPSG:32601"  # Default projection if a CRS can't be parsed
 PLOTLY_PROJECTION = "WGS84"  # All objects are projected to this for plotting
 JUPYTER_BACKEND_DEFAULT = "panel"  # PyVista Jupyter backend default: https://docs.pyvista.org/user-guide/jupyter/index.html
+PYVISTA_XVFB_STARTED = False  # toggle for _init_pyvista_framebuffer
 
 
 class MeshingConstants:
@@ -25,6 +28,46 @@ def _in_notebook():
         return False  # Probably standard Python interpreter
 
 
+def is_tinerator_object(obj, name: str):
+    """
+    Alternate method for ``isinstance()``, but with
+    TINerator objects.
+    """
+    if isinstance(name, (tuple, list)):
+        return any([is_tinerator_object(x) for x in name])
+
+    try:
+        return (
+            obj.__module__.split(".")[0] == "tinerator"
+            and type(obj).__name__.lower() == name.lower()
+        )
+    except:
+        return False
+
+
 def _in_docker_container():
-    raise NotImplementedError()
-    # import pyvista; pyvista.start_xvfb()
+    """
+    Checks if we are living in a Docker container or not.
+    """
+    # Ref: https://stackoverflow.com/a/23575107/5150303
+
+    cmd = "awk -F/ '$2 == \"docker\"' /proc/self/cgroup"
+    try:
+        result = subprocess.check_output(cmd, shell=True, stderr=subprocess.DEVNULL)
+        return "docker" in result.decode().lower()
+    except subprocess.CalledProcessError:
+        return False
+
+
+def _init_pyvista_framebuffer(force: bool = False):
+    """
+    Initializes a headless framebuffer for 3D rendering.
+    Used in Docker container.
+    """
+    global PYVISTA_XVFB_STARTED
+
+    if force or (not PYVISTA_XVFB_STARTED):
+        import pyvista as pv
+
+        pv.start_xvfb()
+        PYVISTA_XVFB_STARTED = True
