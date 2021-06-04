@@ -92,9 +92,9 @@ class Geometry:
         for shp in self.shapes:
             for x in shp.coords[:]:
                 coords.append((x[0], x[1]))
-        
+
         return np.array(coords)
-        #return np.array([(x[0], x[1]) for x in shp.coords[:] for shp in self.shapes])
+        # return np.array([(x[0], x[1]) for x in shp.coords[:] for shp in self.shapes])
 
     def add_property(self, name: str, data: list, type: str = None):
         """

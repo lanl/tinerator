@@ -2,6 +2,7 @@ from math import sqrt
 import numpy as np
 from ..gis import Raster
 
+
 def get_linestring_connectivity(
     nodes: np.array, closed: bool = True, clockwise: bool = True
 ) -> np.ndarray:

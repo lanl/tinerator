@@ -80,6 +80,7 @@ def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list)
 
     return all_layers, layer_stride
 
+
 def compute_layer_id(layering_stride: list, cells_per_layer: int, nodes_per_layer: int):
     """
     Computes the layering schema for cells and nodes.
@@ -88,12 +89,15 @@ def compute_layer_id(layering_stride: list, cells_per_layer: int, nodes_per_laye
     for (i, stride) in enumerate(layering_stride):
         for j in range(stride):
             layer_schema.append(float(f"{i+1}.{j+1}"))
-    
-    bottom_node_layer = len(layering_stride) + 1.
+
+    bottom_node_layer = len(layering_stride) + 1.0
 
     cell_layer_id = np.repeat(layer_schema, cells_per_layer).astype(float)
-    node_layer_id = np.repeat(layer_schema + [bottom_node_layer], nodes_per_layer).astype(float)
+    node_layer_id = np.repeat(
+        layer_schema + [bottom_node_layer], nodes_per_layer
+    ).astype(float)
     return cell_layer_id, node_layer_id
+
 
 def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: int):
     """
@@ -176,15 +180,21 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
         mat_ids, layer_stride, num_cells_per_layer
     )
 
-    cell_layer_id, node_layer_id = compute_layer_id(layer_stride, num_cells_per_layer, num_nodes_per_layer)
+    cell_layer_id, node_layer_id = compute_layer_id(
+        layer_stride, num_cells_per_layer, num_nodes_per_layer
+    )
 
     layertyp = np.zeros((volume_mesh.n_nodes,), dtype=int)
     layertyp[:num_nodes_per_layer] = -2
     layertyp[-num_nodes_per_layer:] = -1
 
     volume_mesh.add_attribute("layertyp", layertyp, type="node")
-    volume_mesh.add_attribute("cell_layer_id", cell_layer_id, type="cell", data_type=float)
-    volume_mesh.add_attribute("node_layer_id", node_layer_id, type="node", data_type=float)
+    volume_mesh.add_attribute(
+        "cell_layer_id", cell_layer_id, type="cell", data_type=float
+    )
+    volume_mesh.add_attribute(
+        "node_layer_id", node_layer_id, type="node", data_type=float
+    )
 
     return volume_mesh
 
