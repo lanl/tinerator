@@ -17,7 +17,6 @@ def ravel_faces_to_vtk(faces):
         if nan_mask.any():
             face = np.array(face)[~nan_mask]
 
-        # vtk_face = np.hstack([np.count_nonzero(~np.isnan(face)), face])
         vtk_face = np.hstack([len(face), face])
         vtk_faces.extend(vtk_face)
 
@@ -44,7 +43,7 @@ def unravel_vtk_faces(faces_vtk, fill_matrix: bool = False):
         j = i + stride + 1
         faces.append(faces_vtk[i + 1 : j])
         i = j
-
+    
     if fill_matrix:
         faces = [
             np.hstack([face, [np.nan] * (max_stride - len(face))]) for face in faces
@@ -53,6 +52,19 @@ def unravel_vtk_faces(faces_vtk, fill_matrix: bool = False):
     else:
         return np.array(faces, dtype=object)
 
+def refit_arrays(arr1, arr2, type='float64'):
+    """
+    Expands the shape of the array to ``target_shape`` and
+    fills extra rows/cols with ``np.nan``.
+    Useful for getting two arrays to fit to the same shape.
+    """
+    def resize(arr, target_shape, type='float64'):
+        shape_delta = tuple(np.array(target_shape) - np.array(arr.shape))
+        padding = ((0, shape_delta[0]), (0, shape_delta[1]))
+        return np.pad(arr.astype(type), padding, constant_values=np.nan)
+    
+    target_shape = np.max([arr1.shape, arr2.shape], axis=0)
+    return resize(arr1, target_shape, type=type), resize(arr2, target_shape, type=type)
 
 def in2d(a: np.ndarray, b: np.ndarray, assume_unique: bool = False) -> np.ndarray:
     """
@@ -66,12 +78,10 @@ def in2d(a: np.ndarray, b: np.ndarray, assume_unique: bool = False) -> np.ndarra
         if np.issubdtype(arr.dtype, np.floating):
             arr += 0.0
         return arr.view(np.dtype((np.void, arr.dtype.itemsize * arr.shape[-1])))
-
-    a = as_void(a)
-    b = as_void(b)
-
-    return np.in1d(a, b, assume_unique)
-
+    
+    init_shape = a.shape
+    a, b = refit_arrays(a, b, type='float64')
+    return np.in1d(as_void(a), as_void(b), assume_unique)[:init_shape[0]]
 
 def is_geometry(obj):
     try:
@@ -176,14 +186,20 @@ class SideSet(object):
 
         mask = in2d(this_faces, that_faces) & np.in1d(this_cells, that_cells)
 
+        #import ipdb; ipdb.set_trace()
+
         if type in ["join", "union"]:
+            this_faces, that_faces = refit_arrays(
+                this_faces[~mask],
+                that_faces
+            )
             new_cells = np.hstack([this_cells[~mask], that_cells])
-            new_faces = np.vstack([this_faces[~mask], that_faces])
+            new_faces = np.vstack([this_faces, that_faces])#[this_faces[~mask], that_faces])
         elif type in ["intersect", "intersection"]:
             new_cells = this_cells[mask]
             new_faces = this_faces[mask]
         elif type in ["remove", "filter", "diff", "difference"]:
-            new_cells = that_faces[~mask]
+            new_cells = this_cells[~mask]
             new_faces = this_faces[~mask]
         else:
             raise ValueError(f"Bad operation: {type}")
@@ -537,6 +553,10 @@ class SurfaceMesh:
     @property
     def top_faces(self):
         return self.get_faces_where("layertyp_cell", -2.0, set_name="TopFaces")
+    
+    @property
+    def all_faces(self):
+        return self.top_faces.join(self.bottom_faces).join(self.side_faces, set_name = "AllFaces")
 
     def get_layer(self, layer: tuple, return_faces: bool = True, set_name: str = None):
 
@@ -570,6 +590,8 @@ class SurfaceMesh:
             ss = SideSet(
                 self.parent_mesh, captured_cells, captured_faces, name=set_name
             )
+            #return ss
+            #import ipdb; ipdb.set_trace()
             return ss.remove(self.top_faces).remove(self.bottom_faces)
         else:
             primary_nodes = node_map[idx]
