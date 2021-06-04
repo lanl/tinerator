@@ -493,6 +493,23 @@ In a Jupyter notebook, it will render the 3D mesh in a live cell.</p>
 :param optional):
 :type optional): Adjusts the viewing window size or the Jupyter notebook cell size.</p>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.view_sets">
+<span class="sig-name descname"><span class="pre">view_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surf_mesh</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tinerator.meshing.surface_mesh.SurfaceMesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">tinerator.meshing.sets.SideSet</span><span class="p"><span class="pre">,</span> </span><span class="pre">tinerator.meshing.sets.ElementSet</span><span class="p"><span class="pre">,</span> </span><span class="pre">tinerator.meshing.sets.PointSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.view_sets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders this mesh along with SideSets, PointSets, and
+ElementSets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>SurfaceMesh</strong><strong>)</strong> (<em>surf_mesh</em>) – </p></li>
+<li><p><strong>(</strong><strong>List</strong><strong>[</strong><strong>Union</strong><strong>[</strong><strong>SideSet</strong> (<em>sets</em>) – </p></li>
+<li><p><strong>PointSet</strong> (<em>The sets to visualize.</em>) – </p></li>
+<li><p><strong>ElementSet</strong><strong>]</strong><strong>]</strong><strong>)</strong> (<em>The sets to visualize.</em>) – </p></li>
+<li><p><strong>**kwargs</strong> (<em>Optional keyword arguments to pass to PyVista.</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.x">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.x" title="Permalink to this definition">¶</a></dt>
