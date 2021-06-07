@@ -84,3 +84,27 @@ will be discarded or set to `no_data_value`.
     >>> dem = tin.gis.load_raster("dem.tif")
     >>> clipped_dem = tin.gis.clip_raster(dem, boundary)
     >>> clipped_dem.plot()
+
+Meshing
+=======
+
+To generate a surface mesh from a volume mesh:
+
+    >>> surface_mesh = volume_mesh.surface_mesh()
+    >>> surface_mesh.view()
+    >>> suface_mesh.save("surf.vtk")
+
+Top, bottom, and sides point and side sets are auto-generated:
+
+    >>> top_faces = surface_mesh.top_faces
+    >>> bottom_faces = surface_mesh.bottom_faces
+    >>> side_faces = surface_mesh.side_faces
+    >>> top_nodes = surface_mesh.top_nodes
+
+You can view any set object with the :obj:`tinerator.meshing.Mesh.view` function:
+
+    >>> vol_mesh.view(sets=[top_faces, top_nodes, bottom_faces])
+
+And export to ExodusII format in the same way:
+
+    >>> vol_mesh.save("full_mesh.exo", sets=[top_faces, bottom_faces, top_nodes])
