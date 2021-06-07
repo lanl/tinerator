@@ -1,6 +1,7 @@
 import numpy as np
 import pyvista as pv
 from scipy.spatial import distance
+from ..constants import _in_notebook, JUPYTER_BACKEND_DEFAULT
 from ..logging import log, warn, debug, _pylagrit_verbosity
 from .meshing_utils import (
     clockwiseangle_and_distance,
@@ -40,7 +41,11 @@ class SurfaceMesh:
 
     def view(self, **kwargs):
         """Visualize the surface mesh."""
-        self._mesh.plot(**kwargs)
+        if _in_notebook():
+            jupyter_backend = JUPYTER_BACKEND_DEFAULT
+        else:
+            jupyter_backend = None
+        self._mesh.plot(jupyter_backend=jupyter_backend, **kwargs)
 
     def __repr__(self):
         return f"SurfaceMesh<nodes={len(self.nodes)}, cells={len(self.cells)}>"
@@ -286,14 +291,14 @@ class SurfaceMesh:
         Discretizes the side external faces of the mesh with
         the given coordinates.
 
-        Coordinates **must** be given in clockwise ordering.
+        Coordinates must be given in clockwise ordering.
 
         Args
         ----
-            geom (np.ndarray): a list of (x, y) coordinates.
-            close_ends (:obj:`bool`, optional): If True, discretizes the entire perimeter.
-            at_layer (:obj:`tuple`, optional): Generate a set from a specified layer.
-            set_name_prefix (:obj:`str`, optional): The set name prefix.
+            geom (:obj:`np.ndarray`): a list of (x, y) coordinates
+            close_ends (:obj:`bool`, optional): If True, discretizes the entire perimeter
+            at_layer (:obj:`tuple`, optional): Generate a set from a specified layer
+            set_name_prefix (:obj:`str`, optional): The set name prefix
 
         Returns
         -------
