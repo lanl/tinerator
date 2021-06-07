@@ -2,6 +2,15 @@ import math
 from math import sqrt
 import numpy as np
 from .meshing_types import VTK_CELL_FACES, EXODUS_CELL_FACES, VTK_CELL_TYPES_TO_EXODUS
+import collections
+
+
+def flatten_list(li: collections.Iterable):
+    """Flattens a list of lists."""
+    if isinstance(li, collections.Iterable):
+        return [a for i in li for a in flatten_list(i)]
+    else:
+        return [li]
 
 
 def ravel_faces_to_vtk(faces):

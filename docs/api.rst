@@ -7,4 +7,5 @@ TINerator API Reference
     api_gis_geometry
     api_meshing
     api_meshing_mesh
+    api_meshing_sets
     api_misc

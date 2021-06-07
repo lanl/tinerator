@@ -7,6 +7,7 @@ from ..constants import (
     _init_pyvista_framebuffer,
     DEFAULT_CMAP_VTK,
     _in_notebook,
+    VTK_COLORS_SETS,
 )
 from ..logging import log, warn, debug, error
 
@@ -20,6 +21,7 @@ def plot_sets(
     link_views: bool = True,
     savefig: str = None,
     window_size: tuple = (1024, 1080),
+    view_sets_in_subplots: bool = True,
     cmap: str = DEFAULT_CMAP_VTK,
     scale: tuple = (1, 1, 1),
     jupyter_notebook: bool = _in_notebook(),
@@ -41,25 +43,32 @@ def plot_sets(
     else:
         num_rows = int(np.ceil(num_subplots / num_cols))
 
-    p = pv.Plotter(shape=(num_rows, num_cols))
+    if view_sets_in_subplots:
+        p = pv.Plotter(shape=(num_rows, num_cols))
+    else:
+        p = pv.Plotter()
 
     if scale != (1, 1, 1):
         warn(f"Adjustable scale is not implemented for sets rendering yet.")
 
     for (i, mesh_obj) in enumerate([mesh, *sets]):
         kwargs = {}
-        p.subplot(i // num_cols, i % 3)
+        if view_sets_in_subplots:
+            p.subplot(i // num_cols, i % 3)
+
+        set_color = VTK_COLORS_SETS[i % len(VTK_COLORS_SETS)]
 
         if is_tinerator_object(mesh_obj, "PointSet"):
             mesh_name = f'("{mesh_obj.name}")' if mesh_obj.name is not None else ""
             mesh_name = f"Point Set {mesh_name}".strip()
             mesh_obj = mesh_obj.to_vtk_mesh()
-            kwargs["color"] = "red"
+            kwargs["color"] = set_color
             kwargs["render_points_as_spheres"] = True
         elif is_tinerator_object(mesh_obj, "SideSet"):
             mesh_name = f'("{mesh_obj.name}")' if mesh_obj.name is not None else ""
             mesh_name = f"Side Set {mesh_name}".strip()
             mesh_obj = mesh_obj.to_vtk_mesh()
+            kwargs["color"] = set_color
             debug(
                 f'Rendering "{mesh_name}" as side set: num_cells = {mesh_obj.number_of_cells}'
             )
@@ -71,10 +80,15 @@ def plot_sets(
             kwargs["scalars"] = active_scalar
             kwargs["cmap"] = cmap
 
-        p.add_text(mesh_name, font_size=12)
+            if not view_sets_in_subplots:
+                kwargs["opacity"] = 0.5
+
+        if view_sets_in_subplots:
+            p.add_text(mesh_name, font_size=12)
+
         p.add_mesh(mesh_obj, **kwargs)
 
-    if link_views:
+    if view_sets_in_subplots and link_views:
         p.link_views()
 
     if jupyter_notebook:

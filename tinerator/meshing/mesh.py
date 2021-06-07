@@ -2,9 +2,11 @@ from tempfile import TemporaryDirectory
 import meshio
 import os
 import numpy as np
+import collections
 from pyproj import CRS
 from typing import Union, List
 from .write_exodusii_mesh import dump_exodus
+from .meshing_utils import flatten_list
 from .mesh_metrics import triangle_quality
 from .mesh_attributes import MeshAttribute
 from .readwrite import read_avs, write_avs, read_mpas
@@ -567,6 +569,7 @@ class Mesh:
         self,
         active_scalar: str = None,
         sets: Union[SideSet, ElementSet, PointSet] = None,
+        view_sets_in_subplots: bool = True,
         scale: tuple = (1, 1, 1),
         savefig: str = None,
         show_bounds: bool = True,
@@ -601,6 +604,11 @@ class Mesh:
                 active_scalar = "material_id"
                 assert len(self.material_id) > 0
 
+            if not isinstance(sets, collections.Iterable):
+                sets = [sets]
+
+            sets = flatten_list(sets)
+
             plot_sets(
                 self.to_vtk_mesh(material_id_alias="material_id"),
                 sets,
@@ -609,6 +617,7 @@ class Mesh:
                 savefig=savefig,
                 window_size=window_size,
                 scale=scale,
+                view_sets_in_subplots=view_sets_in_subplots,
                 **kwargs,
             )
             return
@@ -675,6 +684,11 @@ class Mesh:
         """
 
         if sets is not None:
+
+            if not isinstance(sets, collections.Iterable):
+                sets = [sets]
+            sets = flatten_list(sets)
+
             side_sets = [s.exodusii_format for s in sets if isinstance(s, SideSet)]
             node_sets = [s.exodusii_format for s in sets if isinstance(s, PointSet)]
             element_sets = None

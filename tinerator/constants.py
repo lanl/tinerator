@@ -6,6 +6,7 @@ PLOTLY_PROJECTION = "WGS84"  # All objects are projected to this for plotting
 JUPYTER_BACKEND_DEFAULT = "panel"  # PyVista Jupyter backend default: https://docs.pyvista.org/user-guide/jupyter/index.html
 PYVISTA_XVFB_STARTED = False  # toggle for _init_pyvista_framebuffer
 DEFAULT_CMAP_VTK = None  # Default colormap for rendering meshes
+VTK_COLORS_SETS = ("red", "blue", "yellow", "green", "pink", "purple")
 
 
 class MeshingConstants:

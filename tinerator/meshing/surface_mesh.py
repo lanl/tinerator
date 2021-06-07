@@ -39,6 +39,7 @@ class SurfaceMesh:
         self._mesh.save(outfile, **kwargs)
 
     def view(self, **kwargs):
+        """Visualize the surface mesh."""
         self._mesh.plot(**kwargs)
 
     def __repr__(self):
@@ -83,11 +84,29 @@ class SurfaceMesh:
         self._mesh[target_attribute_name] = cell_array
 
     def get_attribute(self, attribute_name: str):
+        """Returns an attribute as a NumPy array."""
         return self._mesh.get_array(attribute_name)
 
     def get_nodes_where(
         self, attribute_name: str = None, attribute_value=None, set_name: str = None
     ):
+        """
+        Gets external points where ``attribute_name`` has the value ``attribute_value``.
+
+        Args
+        ----
+            attribute_name (str): The attribute to query.
+            attribute_value (int, float): The attribute value to get.
+            set_name (:obj:`str`, optional): The desired set name.
+
+        Returns
+        -------
+            set : a Point Set object.
+
+        Examples
+        --------
+            >>> set = surf_mesh.get_faces_where(attribute_name="node_color", attribute_value=1)
+        """
         node_map = self.node_mapping
         surf_att = self._mesh.get_array(attribute_name)
         surf_nodes = np.argwhere(surf_att == attribute_value).T[0]
@@ -102,19 +121,39 @@ class SurfaceMesh:
 
     @property
     def top_nodes(self):
+        """Returns all top nodes."""
         return self.get_nodes_where("layertyp", -2.0, set_name="TopPoints")
 
     @property
     def bottom_nodes(self):
+        """Returns all bottom nodes."""
         return self.get_nodes_where("layertyp", -1.0, set_name="BottomPoints")
 
     @property
     def side_nodes(self):
+        """Returns all side nodes."""
         return self.get_nodes_where("layertyp", 0.0, set_name="SidePoints")
 
     def get_faces_where(
         self, attribute_name: str = None, attribute_value=None, set_name: str = None
     ):
+        """
+        Gets external faces where ``attribute_name`` has the value ``attribute_value``.
+
+        Args
+        ----
+            attribute_name (str): The attribute to query.
+            attribute_value (int, float): The attribute value to get.
+            set_name (:obj:`str`, optional): The desired set name.
+
+        Returns
+        -------
+            set : a Side Set object.
+
+        Examples
+        --------
+            >>> set = surf_mesh.get_faces_where(attribute_name="material_id", attribute_value=1)
+        """
 
         faces = self.faces
 
@@ -139,23 +178,54 @@ class SurfaceMesh:
 
     @property
     def side_faces(self):
+        """Returns all side faces."""
         return self.get_faces_where("layertyp_cell", 0.0, set_name="SideFaces")
 
     @property
     def bottom_faces(self):
+        """Returns all bottom faces."""
         return self.get_faces_where("layertyp_cell", -1.0, set_name="BottomFaces")
 
     @property
     def top_faces(self):
+        """Returns all top faces."""
         return self.get_faces_where("layertyp_cell", -2.0, set_name="TopFaces")
 
     @property
     def all_faces(self):
+        """
+        Returns all exterior faces.
+        """
         return self.top_faces.join(self.bottom_faces).join(
             self.side_faces, set_name="AllFaces"
         )
 
+    @property
+    def layer_ids(self):
+        """Returns the available layers in the mesh."""
+        layers_float = np.unique(self._mesh.get_array("cell_layer_id"))
+        return [tuple(map(int, str(x).split("."))) for x in layers_float]
+
     def get_layer(self, layer: tuple, return_faces: bool = True, set_name: str = None):
+        """
+        Returns a side set or a point set for all sides/points on the exterior of the mesh
+        at a given layer.
+
+        Args
+        ----
+            layer (tuple): The layer to get the set at.
+            return_faces (:obj:`bool`, optional): If True, return a Side Set. Otherwise, return a Point Set.
+            set_name (:obj:`str`, optional): The name to give the set.
+
+        Returns
+        -------
+            set : a Side Set or Point Set.
+
+        Examples
+        --------
+            >>> surface_mesh.get_layer((1,1)) # get the top layer
+            >>> surface_mesh.get_layer(2, return_faces = False) # get all of layer 2 as a point set
+        """
 
         layer_id_att = "cell_layer_id" if return_faces else "node_layer_id"
         arr = self._mesh.get_array(layer_id_att)
@@ -167,7 +237,7 @@ class SurfaceMesh:
         elif isinstance(layer, (list, tuple, np.ndarray)):
             layer = float(f"{layer[0]}.{layer[1]}")
         else:
-            raise ValueError("Could not parse layer")
+            raise ValueError(f"Could not parse layer: {layer}")
 
         idx = np.argwhere(arr == layer).T[0]
         node_map = self.node_mapping
@@ -210,79 +280,128 @@ class SurfaceMesh:
         geom: np.array,
         close_ends: bool = True,
         at_layer: tuple = None,
-        return_faces: bool = True,
-        return_points: bool = False,
+        set_name_prefix: str = "Sides",
     ):
         """
-        Coordinates can be either a list of (x,y) coordinates,
-        or a Geometry object with points or lines.
+        Discretizes the side external faces of the mesh with
+        the given coordinates.
+
+        Coordinates **must** be given in clockwise ordering.
+
+        Args
+        ----
+            geom (np.ndarray): a list of (x, y) coordinates.
+            close_ends (:obj:`bool`, optional): If True, discretizes the entire perimeter.
+            at_layer (:obj:`tuple`, optional): Generate a set from a specified layer.
+            set_name_prefix (:obj:`str`, optional): The set name prefix.
+
+        Returns
+        -------
+            sets : a list of side sets.
+
+        Examples
+        --------
+            >>> sides = [
+                (65.5, 0.6),
+                (50.5, 0.04),
+                (12.0, 0.04),
+                (12.0, 12.9),
+                (79.1, 9.1),
+            ]
+            >>> outlet = [
+                (71.9, 4.7),
+                (67.3, 2.1),
+            ]
+            >>> sides_side_set = sf.discretize_sides(sides)
+            >>> outlet = sf.discretize_sides(
+                    outlet,
+                    close_ends = False,
+                    at_layer = (1, 1),
+                    set_name_prefix="Outlet"
+                )
         """
 
-        side_faces_set = self.get_layer(1, 1)
-
-        faces = self.faces
-        node_map = self.node_mapping
-        cell_map = self.cell_mapping
-
-        side_faces = unravel_vtk_faces(side_faces_set.primary_faces)
-        face_centroids = side_faces_set.to_vtk_mesh().cell_centers().points[:, :2]
-        set_centroid = side_faces_set.to_vtk_mesh().center
-
-        sort_origin = set_centroid[:2]
-
-        lines = []
-        if is_geometry(geom):
-            coords = geom.coordinates  # TODO: handle differently for lines
+        if isinstance(geom, (list, tuple, np.ndarray)):
+            geom = list(geom)
             if close_ends:
-                coords = np.vstack([coords, [coords[0]]])
-            coords = [
-                [60.9, 13.93],
-                [77.9, 9.38],
-                [69.4, 2.54],
-                [17.5, 0.18],
-                [2.7, 8.71],
-                [18.2, 13.62],
-            ]
-            lines = [[coords[i], coords[i + 1]] for i in range(len(coords) - 1)]
+                geom += [geom[0]]
+            geom = [[geom[i], geom[i + 1]] for i in range(len(geom) - 1)]
+        else:
+            raise NotImplementedError()
 
-        angles = np.array(
-            [
-                clockwiseangle_and_distance(pt, origin=sort_origin)
-                for pt in face_centroids
-            ]
-        )
-        sort_idx = np.lexsort((angles[:, 1], angles[:, 0]))
-
-        sorted_face_centroids = face_centroids[sort_idx]
+        # Take the sides from all layers if not specified
+        if at_layer is not None:
+            layers = [self.get_layer(at_layer)]
+        else:
+            layers = [self.get_layer(x) for x in self.layer_ids]
 
         sets = []
 
-        for (i, line) in enumerate(np.array(lines)):
-            print(line)
-            face0, face1 = distance.cdist(line, sorted_face_centroids).argmin(axis=1)
-            face0, face1 = np.sort([face0, face1 + 1])
+        # Iterate over every layer, compute the (sorted) boundary,
+        # and grab faces between start and end points
+        for layer in layers:
+            layer_vtk = layer.to_vtk_mesh()
+            layer_centroids = np.array(layer_vtk.cell_centers().points)[:, :2]
+            layer_center = np.array(layer_vtk.center)[:2]
 
-            if face0 == face1:
-                continue
+            layer_faces = unravel_vtk_faces(layer.primary_faces, fill_matrix=True)
 
-            idx = sort_idx[np.array(range(face0, face1))]
-            print(idx)
-
-            import ipdb
-
-            ipdb.set_trace()
-
-            captured_cells = cell_map[idx]
-            captured_surf_faces = faces[idx]
-            captured_faces = np.hstack(
-                [[len(fc), *node_map[fc.astype(int)]] for fc in captured_surf_faces]
+            # Sort the boundary clockwise
+            angles = np.array(
+                [
+                    clockwiseangle_and_distance(pt, origin=layer_center)
+                    for pt in layer_centroids
+                ]
             )
+            sort_idx = np.lexsort((angles[:, 1], angles[:, 0]))
+            layer_centroids_sorted = layer_centroids[sort_idx]
 
-            sets.append(
-                SideSet(
-                    self.parent_mesh, captured_cells, captured_faces, name=f"Sides{i+1}"
+            layer_sets = []
+            slices = []
+            for (i, line) in enumerate(geom):
+                start, end = distance.cdist(
+                    np.array(line), layer_centroids_sorted
+                ).argmin(axis=1)
+
+                if start == end:
+                    warn("Malformed line: start equals end")
+                    continue
+
+                if start > end:
+                    slices.append(
+                        np.hstack(
+                            [
+                                np.array(
+                                    range(start, len(layer_centroids_sorted)), dtype=int
+                                ),
+                                np.array(range(0, end), dtype=int),
+                            ]
+                        )
+                    )
+                else:
+                    slices.append(np.array(range(start, end), dtype=int))
+
+            # Convert those sorted indices into an actual side set
+            for idx in slices:
+                captured_cells = layer.primary_cells[sort_idx[idx]]
+                captured_faces = ravel_faces_to_vtk(layer_faces[sort_idx[idx]])
+                layer_sets.append(
+                    SideSet(self.parent_mesh, captured_cells, captured_faces)
                 )
-            )
+
+            # Join subsequent layers to the top layer
+            if sets:
+                sets = [sets[i].join(layer_sets[i]) for i in range(len(layer_sets))]
+            else:
+                sets = layer_sets
+
+        if len(sets) == 1:
+            set = sets[0]
+            set.name = set_name_prefix
+            return set
+
+        for (i, set) in enumerate(sets):
+            set.name = f"{set_name_prefix}={i+1}"
 
         return sets
 
