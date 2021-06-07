@@ -191,24 +191,21 @@ return a mesh containing triangles and quads.</p>
 <span class="sig-name descname"><span class="pre">discretize_sides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geom</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close_ends</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'Sides'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SurfaceMesh.discretize_sides" title="Permalink to this definition">¶</a></dt>
 <dd><p>Discretizes the side external faces of the mesh with
 the given coordinates.</p>
-<p>Coordinates <strong>must</strong> be given in clockwise ordering.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>(</strong><strong>np.ndarray</strong><strong>)</strong> (<em>geom</em>) – </p>
-</dd>
-</dl>
-<p>:param close_ends (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
-:type close_ends (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: If True, discretizes the entire perimeter.
+<p>Coordinates must be given in clockwise ordering.</p>
+<p>:param geom (<code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code>):
+:type geom (<code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code>): a list of (x, y) coordinates
+:param close_ends (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>:
+:type close_ends (<code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code>: If True, discretizes the entire perimeter
 :param optional):
-:type optional): If True, discretizes the entire perimeter.
+:type optional): If True, discretizes the entire perimeter
 :param at_layer (<code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code>:
-:type at_layer (<code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code>: Generate a set from a specified layer.
+:type at_layer (<code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code>: Generate a set from a specified layer
 :param optional):
-:type optional): Generate a set from a specified layer.
+:type optional): Generate a set from a specified layer
 :param set_name_prefix (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>:
-:type set_name_prefix (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: The set name prefix.
+:type set_name_prefix (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>: The set name prefix
 :param optional):
-:type optional): The set name prefix.</p>
+:type optional): The set name prefix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>sets</strong></p>
