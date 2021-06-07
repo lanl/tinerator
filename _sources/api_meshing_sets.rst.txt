@@ -15,11 +15,11 @@ Surface Mesh class
 Side Set class
 --------------
 
-.. autoclass: tinerator.meshing.SideSet
+.. autoclass:: tinerator.meshing.SideSet
     :members:
 
 Point Set class
 --------------
 
-.. autoclass: tinerator.meshing.PointSet
+.. autoclass:: tinerator.meshing.PointSet
     :members:

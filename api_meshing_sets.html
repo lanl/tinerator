@@ -387,9 +387,169 @@ at a given layer.</p>
 </section>
 <section id="side-set-class">
 <h2>Side Set class<a class="headerlink" href="#side-set-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">SideSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_faces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SideSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>SideSet object.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet.exodusii_format">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">exodusii_format</span></span><a class="headerlink" href="#tinerator.meshing.SideSet.exodusii_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns set as a dictionary in an ExodusII-compliant schema.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet.intersection">
+<span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">side_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SideSet.intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SideSet containing the intersection of this
+set and that of <code class="docutils literal notranslate"><span class="pre">side_set</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>SideSet</strong><strong>)</strong> (<em>side_set</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>intersected_set</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The intersected SideSet.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet.join">
+<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">side_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SideSet.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds all faces within <code class="docutils literal notranslate"><span class="pre">side_set</span></code> to this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>SideSet</strong><strong>)</strong> (<em>side_set</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>joined_set</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The joined SideSet.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">side_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SideSet.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all faces within <code class="docutils literal notranslate"><span class="pre">side_set</span></code> from this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>SideSet</strong><strong>)</strong> (<em>side_set</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>filtered_set</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The filtered SideSet.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.SideSet.view">
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.SideSet.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders a 3D visualization of the set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>Keyword arguments to pass to PyVista.</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 </section>
 <section id="point-set-class">
 <h2>Point Set class<a class="headerlink" href="#point-set-class" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.meshing.</span></span><span class="sig-name descname"><span class="pre">PointSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_mesh_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.exodusii_format">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">exodusii_format</span></span><a class="headerlink" href="#tinerator.meshing.PointSet.exodusii_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns set as a dictionary in an ExodusII-compliant schema.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.intersection">
+<span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet.intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a PointSet containing the intersection of this
+set and that of <code class="docutils literal notranslate"><span class="pre">point_set</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>PointSet</strong><strong>)</strong> (<em>point_set</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>intersected_set</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The intersected PointSet.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.join">
+<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds all points within <code class="docutils literal notranslate"><span class="pre">point_set</span></code> to this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>PointSet</strong><strong>)</strong> (<em>point_set</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>joined_set</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The joined PointSet.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all points within <code class="docutils literal notranslate"><span class="pre">point_set</span></code> from this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>PointSet</strong><strong>)</strong> (<em>point_set</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>filtered_set</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The filtered PointSet.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the set to a mesh and saves to <code class="docutils literal notranslate"><span class="pre">outfile</span></code>.
+The extension for <code class="docutils literal notranslate"><span class="pre">outfile</span></code> can be any that Meshio supports:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.vtk</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.exo</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.inp</span></code></p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>outfile</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.to_vtk_mesh">
+<span class="sig-name descname"><span class="pre">to_vtk_mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet.to_vtk_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the set as a VTK/PyVista mesh.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.PointSet.view">
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.PointSet.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders a 3D visualization of the set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>Keyword arguments to pass to PyVista.</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 </section>
 </section>
 
