@@ -1,6 +1,7 @@
 import math
 from math import sqrt
 import numpy as np
+from .meshing_types import VTK_CELL_FACES, EXODUS_CELL_FACES, VTK_CELL_TYPES_TO_EXODUS
 
 
 def ravel_faces_to_vtk(faces):
@@ -140,3 +141,60 @@ def estimate_edge_lengths(raster, n_tris: int) -> float:
     that would fit into `raster`.
     """
     return sqrt(4.0 / sqrt(3.0) * (raster.area / float(n_tris)))
+
+
+def convert_vtk_faces_to_exodusii(
+    faces, cells, cell_types, unravel_faces: bool = True, unravel_cells: bool = True
+):
+    """
+    Converts faces in VTK format to ExodusII format.
+    VTK format is of the form:
+
+        (stride_i, node_i1, node_i2, ..., node_iN)
+
+    ExodusII format is of the form:
+
+        (face_i_id, face_j_id, ...)
+
+    Consequently, as they are collections of vertices,
+    VTK faces are not tied to the type of cell the face came from.
+    ExodusII faces, meanwhile, are directly tied to the parent cell
+    via an integer ID referencing the face number of that cell:
+    that face number depends on the type of cell it is.
+
+    See ExodusII API documentation for more details.
+    """
+
+    if unravel_faces:
+        faces = unravel_vtk_faces(faces)
+    if unravel_cells:
+        cells = unravel_vtk_faces(cells)
+
+    num_faces = len(faces)
+    face_sizes = [len(x) for x in faces]
+
+    assert len(face_sizes) == len(
+        cell_types
+    ), "Mismatched length between cells and faces"
+
+    exodus_faces = np.full((num_faces,), 0, dtype="uint8")
+
+    for i in range(num_faces):
+        # Get the cell the face belongs to in Exodus format
+        parent_cell_type = VTK_CELL_TYPES_TO_EXODUS[cell_types[i]]
+
+        # Converts global node numbers (1185, 1177, 1186) to
+        # node numbers local to the cell (1, 2, 3)
+        # Returns sorted (desired behavior), due to np.in1d
+        local_face = tuple(np.where(np.in1d(cells[i], faces[i]))[0] + 1)
+
+        try:
+            # Convert from node numbering to Exodus integer
+            exodus_faces[i] = EXODUS_CELL_FACES[parent_cell_type][local_face]
+        except KeyError:
+            raise KeyError(
+                "Fatal: could not find ExodusII face type "
+                f"for face {local_face} in cell {parent_cell_type}"
+            )
+
+    return exodus_faces

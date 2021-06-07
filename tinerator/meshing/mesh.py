@@ -3,11 +3,12 @@ import meshio
 import os
 import numpy as np
 from pyproj import CRS
-from typing import Union
-from .dump_exodus import dump_exodus
+from typing import Union, List
+from .write_exodusii_mesh import dump_exodus
 from .mesh_metrics import triangle_quality
 from .mesh_attributes import MeshAttribute
-from .readwrite import ElementType, read_avs, write_avs, read_mpas
+from .readwrite import read_avs, write_avs, read_mpas
+from .meshing_types import ElementType
 from .surface_mesh import SurfaceMesh
 from ..visualize import view_3d as v3d
 from ..visualize import plot_triangulation, plot_sets
@@ -209,7 +210,7 @@ class Mesh:
         """
         for attribute in self._attributes:
             if attribute.name == name:
-                attribute.set_data(value)
+                attribute.data = value
                 return
 
         raise AttributeError('Attribute "{name}" does not exist')
@@ -394,24 +395,6 @@ class Mesh:
 
         return np.mean(self.nodes[self.elements - 1], axis=1)
 
-    def view_sets(
-        self,
-        surf_mesh: SurfaceMesh,
-        sets: Union[SideSet, ElementSet, PointSet],
-        **kwargs,
-    ):
-        """
-        Renders this mesh along with SideSets, PointSets, and
-        ElementSets.
-
-        Args
-        ----
-            surf_mesh (SurfaceMesh): The surface mesh extracted from this mesh.
-            sets (List[Union[SideSet, PointSet, ElementSet]]): The sets to visualize.
-            **kwargs: Optional keyword arguments to pass to PyVista.
-        """
-        plot_sets(surf_mesh.parent_mesh, sets, **kwargs)
-
     def to_vtk_mesh(self, material_id_alias: str = None):
         """
         Returns the mesh in VTK/PyVista format.
@@ -583,6 +566,7 @@ class Mesh:
     def view(
         self,
         active_scalar: str = None,
+        sets: Union[SideSet, ElementSet, PointSet] = None,
         scale: tuple = (1, 1, 1),
         savefig: str = None,
         show_bounds: bool = True,
@@ -594,13 +578,17 @@ class Mesh:
         Views the mesh object in an interactive VTK-rendered windowed environment.
         In a Jupyter notebook, it will render the 3D mesh in a live cell.
 
+        Point Sets and Side Sets can also be rendered by passing a list of
+        them to the ``sets`` keyword argument.
+
         Additional keyword arguments can be found in the PyVista documentation.
 
         https://docs.pyvista.org/plotting/plotting.html#pyvista.plot
 
         Args
         ----
-            active_scalar (:obj:`str`, optional): The mesh attribute to visualize. Defaults to material ID.
+            active_scalar (:obj:`str`, optional): The mesh attribute to visualize. Defaults to "material_id".
+            sets (:obj:`Union[SideSet, PointSet]`, optional): The sets to render with the mesh.
             scale (:obj:`tuple`, optional): Relative scale for the mesh in (X, Y, Z). Defaults to (1, 1, 1).
             savefig (:obj:`str`, optional): Filepath to save a screenshot of the mesh.
             show_bounds (:obj:`bool`, optional): If True, shows the bounding box of the mesh.
@@ -608,6 +596,24 @@ class Mesh:
             window_size (:obj:`bool`, optional): Adjusts the viewing window size or the Jupyter notebook cell size.
         """
 
+        if sets is not None:
+            if active_scalar is None:
+                active_scalar = "material_id"
+                assert len(self.material_id) > 0
+
+            plot_sets(
+                self.to_vtk_mesh(material_id_alias="material_id"),
+                sets,
+                active_scalar=active_scalar,
+                show_edges=show_edges,
+                savefig=savefig,
+                window_size=window_size,
+                scale=scale,
+                **kwargs,
+            )
+            return
+
+        # TODO: use `self.to_vtk_mesh()` instead of what's below
         if self.element_type == ElementType.TRIANGLE:
             etype = "tri"
         elif self.element_type == ElementType.PRISM:
@@ -653,12 +659,42 @@ class Mesh:
             **kwargs,
         )
 
-    def save(
+    def save_exodusii(
         self,
         outfile: str,
-        face_sets: list = None,
-        node_sets: list = None,
-        element_sets: list = None,
+        sets: List[Union[SideSet, PointSet, ElementSet]] = None,
+    ):
+        """
+        Writes the mesh to ExodusII format.
+        Allows for more configuration than the standard
+        :obj:`self.save()` method.
+
+        Args:
+            outfile (str): The path to save the mesh.
+            sets (:obj:`List[Union[SideSet, PointSet]]`, optional): A list of side sets (face sets) and/or point sets.
+        """
+
+        if sets is not None:
+            side_sets = [s.exodusii_format for s in sets if isinstance(s, SideSet)]
+            node_sets = [s.exodusii_format for s in sets if isinstance(s, PointSet)]
+            element_sets = None
+        else:
+            side_sets = None
+            node_sets = None
+            element_sets = None
+
+        dump_exodus(
+            outfile,
+            self.nodes,
+            self.elements,
+            cell_block_ids=self.material_id,
+            side_sets=side_sets,
+            node_sets=node_sets,
+            element_sets=element_sets,
+        )
+
+    def save(
+        self, outfile: str, sets: List[Union[SideSet, PointSet, ElementSet]] = None
     ):
         """
         Writes a mesh object to disk. Supports file formats like VTK, AVS-UCD, and Exodus.
@@ -667,28 +703,19 @@ class Mesh:
 
         Args:
             outfile (str): The path to save the mesh. The file format of the mesh is automatically inferred by the extension.
-            face_sets (:obj:`list`, optional): A list of face sets.
-            node_sets (:obj:`list`, optional): A list of node sets.
-            element_sets (:obj:`list`, optional): A list of element sets.
+            sets (:obj:`List[Union[SideSet, PointSet, ElementSet]]`, optional): A list of side/point/element sets (works with ExodusII output only).
 
         Examples:
             >>> tri = tin.meshing.triangulate(my_dem, min_edge_length=0.005)
             >>> tri.save("my_triangulation.vtk")
             >>> tri.save("my_triangulation.inp")
-            >>> tri.save("my_triangulation.exo", face_sets = face_sets)
+            >>> tri.save("my_triangulation.exo", sets = [tri.top_faces])
         """
 
         driver = _get_driver(outfile)
 
         if driver == "exodus":
-            dump_exodus(
-                outfile,
-                self.nodes,
-                self.elements,
-                side_sets=face_sets,
-                node_sets=node_sets,
-                element_sets=element_sets,
-            )
+            self.save_exodusii(outfile, sets=sets)
         elif driver == "avsucd":
             if self.element_type == ElementType.TRIANGLE:
                 cell_type = "tri"

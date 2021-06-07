@@ -1,5 +1,6 @@
 import numpy as np
-from .mesh import Mesh, ElementType
+from .mesh import Mesh
+from .meshing_types import ElementType
 
 
 def raster_to_quadmesh(

@@ -1,7 +1,8 @@
 from copy import deepcopy
 import numpy as np
 from typing import List, Union, Callable, Any
-from .mesh import Mesh, StackedMesh, ElementType
+from .mesh import Mesh, StackedMesh
+from .meshing_types import ElementType
 from ..gis import map_elevation
 from ..logging import log, warn, debug, error
 

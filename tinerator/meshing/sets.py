@@ -1,14 +1,36 @@
 import pyvista as pv
 import numpy as np
-from .meshing_utils import ravel_faces_to_vtk, unravel_vtk_faces, in2d, refit_arrays
+from .meshing_utils import (
+    convert_vtk_faces_to_exodusii,
+    ravel_faces_to_vtk,
+    unravel_vtk_faces,
+    in2d,
+    refit_arrays,
+    convert_vtk_faces_to_exodusii,
+)
 
 
 class SideSet(object):
-    def __init__(self, primary_mesh, primary_cells, primary_faces, name: str = None):
+    """
+    SideSet object.
+    """
+
+    def __init__(
+        self,
+        primary_mesh,
+        primary_cells,
+        primary_faces,
+        name: str = None,
+        set_id: int = None,
+    ):
         self.name = name
         self.primary_mesh = primary_mesh
         self.primary_cells = primary_cells
         self.primary_faces = primary_faces
+        self.set_id = set_id
+
+    def __repr__(self):
+        return f"SideSet<name={self.name}, num_faces={len(self.primary_cells)}>"
 
     def save(self, outfile: str):
         self.to_vtk_mesh().save(outfile)
@@ -17,6 +39,35 @@ class SideSet(object):
         pts = self.primary_mesh.points
         faces = self.primary_faces
         return pv.PolyData(pts, faces)
+
+    @property
+    def exodusii_format(self):
+        """
+        Returns set as a dictionary in an ExodusII-compliant schema.
+        """
+
+        cells = unravel_vtk_faces(self.primary_mesh.cells)[self.primary_cells]
+        cell_types = self.primary_mesh.celltypes[self.primary_cells]
+        faces = convert_vtk_faces_to_exodusii(
+            self.primary_faces,
+            cells,
+            cell_types,
+            unravel_faces=True,
+            unravel_cells=False,
+        )
+
+        num_faces = len(faces)
+
+        assert num_faces == len(self.primary_cells), "Num. face and num. cell mismatch"
+
+        return {
+            "set_name": self.name,
+            "set_id": self.set_id,
+            "set_elems": self.primary_cells + 1,
+            "set_sides": faces,
+            "num_set_sides": num_faces,
+            "num_set_dist_facts": 0,
+        }
 
     def view(self, **kwargs):
         """
@@ -115,19 +166,53 @@ class PointSet(object):
         primary_mesh,
         primary_mesh_nodes,
         name: str = None,
+        set_id: int = None,
     ):
+        """
+        Object that represents a collection of points from
+        a mesh.
+        """
         self.name = name
         self.primary_mesh = primary_mesh
         self.primary_nodes = primary_mesh_nodes
+        self.set_id = set_id
 
         assert len(self.primary_nodes) > 0, "Set cannot be empty"
 
+    def __repr__(self):
+        return f"PointSet<name={self.name}, num_points={len(self.primary_nodes)}>"
+
     def save(self, outfile: str):
+        """
+        Converts the set to a mesh and saves to ``outfile``.
+        The extension for ``outfile`` can be any that Meshio supports:
+            - ``.vtk``
+            - ``.exo``
+            - ``.inp``
+
+        Args
+        ----
+            outfile (str): Path to save set to.
+        """
         self.to_vtk_mesh().save(outfile)
 
     def to_vtk_mesh(self):
+        """Returns the set as a VTK/PyVista mesh."""
         pts = self.primary_mesh.points[self.primary_nodes]
         return pv.PolyData(pts)
+
+    @property
+    def exodusii_format(self):
+        """
+        Returns set as a dictionary in an ExodusII-compliant schema.
+        """
+        return {
+            "set_name": self.name,
+            "set_id": self.set_id,
+            "set_nodes": self.primary_nodes + 1,
+            "num_set_nodes": len(self.primary_nodes),
+            "num_set_dist_facts": 0,
+        }
 
     def view(self, **kwargs):
         """
@@ -139,7 +224,7 @@ class PointSet(object):
         """
         self.to_vtk_mesh().plot(**kwargs)
 
-    def _ufuncs(self, point_set, type: str, set_name: str = None):
+    def _ufuncs(self, point_set, type: str, set_name: str = None, set_id: int = None):
         """
         Master function for performing set operations.
         """
@@ -149,6 +234,9 @@ class PointSet(object):
 
         if set_name is None:
             set_name = self.name
+
+        if set_id is None:
+            set_id = self.set_id
 
         this = self.primary_nodes
         that = point_set.primary_nodes
@@ -162,7 +250,7 @@ class PointSet(object):
         else:
             raise ValueError(f"Bad operation: {type}")
 
-        return PointSet(self.primary_mesh, new_points, name=set_name)
+        return PointSet(self.primary_mesh, new_points, name=set_name, set_id=set_id)
 
     def join(self, point_set, set_name: str = None):
         """
@@ -213,6 +301,9 @@ class ElementSet(object):
         self.name = name
         self.primary_mesh = primary_mesh
         self.primary_elements = primary_mesh_elements
+
+    def __repr__(self):
+        return f"ElementSet<name={self.name}, num_elements={len(self.primary_nodes)}>"
 
     def save(self, outfile: str):
         self.to_vtk_mesh().save(outfile)

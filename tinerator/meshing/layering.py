@@ -2,7 +2,8 @@ import numpy as np
 from copy import copy, deepcopy
 from enum import Enum, auto
 from typing import List
-from .mesh import Mesh, StackedMesh, ElementType
+from .mesh import Mesh, StackedMesh
+from .meshing_types import ElementType
 
 # TODO: what happens when the nodes on surface layer intersects a
 # flat sublayer? I.e., the prisms generated would have 0 volume.

@@ -68,17 +68,22 @@ def test_raster_load():
     assert dem.shape == (2373, 2575)
     assert np.allclose(dem.extent, [-107.70482, 36.29657, -107.46639, 36.5163])
 
+    # Test ASC (plain-text) files
+    data = ExampleData.Borden
+    _ = tin.gis.load_raster(data.dem_50cm)
+
 
 def test_raster_write():
     with TemporaryDirectory() as tmp_dir:
         data = ExampleData.NewMexico
         dem = tin.gis.load_raster(data.dem)
-        dem.save("test.tif")
+        dem.save(os.path.join(tmp_dir, "test.tif"))
 
         dem2 = tin.gis.load_raster(os.path.join(tmp_dir, "test.tif"))
 
         assert dem.shape == dem2.shape
         assert np.allclose(dem.extent, dem2.extent)
+        assert np.allclose(dem.masked_data(), dem2.masked_data())
 
 
 def test_raster_boundary():
@@ -99,8 +104,9 @@ def test_clip_raster():
     dem = tin.gis.load_raster(data.dem)
     boundary = tin.gis.load_shapefile(data.watershed_boundary)
     new_dem = tin.gis.clip_raster(dem, boundary)
+    new_dem.plot()
     assert new_dem.no_data_value == new_dem[0][0]
-    assert round(np.nanmax(new_dem.data.data)) == 2289
+    assert round(np.nanmax(new_dem.data.data)) == 2279
 
 
 def test_fill_raster_depressions():
@@ -141,8 +147,12 @@ def test_triangulate():
             refinement_feature=flowline,
         )
 
-        assert all([x > 0.5 for x in tin.meshing.triangle_quality(surf)])
-        assert all([x > 0.0 for x in tin.meshing.triangle_area(surf)])
+        assert all(
+            [x > 0.5 for x in tin.meshing.triangle_quality(surf)]
+        ), f"Bad quality triangles ({method})"
+        assert all(
+            [x > 0.0 for x in tin.meshing.triangle_area(surf)]
+        ), f"Zero or negative area triangles ({method})"
 
 
 def test_save_mesh():
@@ -152,37 +162,23 @@ def test_save_mesh():
         surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
         volume_mesh = tin.meshing.load_mesh(data.volume_mesh)
 
-        surface_mesh.save("surf.vtk")
-        surface_mesh.save("surf.inp")
-
-        volume_mesh.save("vol.vtk")
-        volume_mesh.save("vol.inp")
-
-        volume_mesh.save("vol.exo")
-        # TODO: test faceset save
+        for ext in ["vtk", "inp", "exo"]:
+            surface_mesh.save(os.path.join(tmp_dir, f"surf.{ext}"))
+            volume_mesh.save(os.path.join(tmp_dir, f"vol.{ext}"))
         # TODO: test that reading == saving
 
+
+def test_point_sets():
+    # tri_mesh =
+    # vol_mesh =
+    # surf_mesh = vol_mesh.surface_mesh()
+    # top_points = surf_mesh.top_points
+    # bottom_points = surf_mesh.bottom_points
+    # side_points = surf_mesh.side_points
+    # v1 = vol_mesh.points[top_points.primary_nodes]
+    # assert np.in1d((v1.flatten(), tri_mesh.nodes.flatten()).all()
+    # assert top_points == top_points.join(bottom_points).join(side_points).remove(bottom_points).remove(side_points)
     assert True
-
-
-def test_meshing_workflow():
-    data = ExampleData.Simple
-
-    surface_mesh = tin.meshing.load_mesh(data.surface_mesh)
-    tin.debug_mode()
-
-    depths = [0.1, 0.3, 0.2, 0.1, 0.4]
-    matids = [1, 2, 3, 3, 4]
-
-    layers = tin.meshing.DEV_get_dummy_layers(surface_mesh, depths)
-
-    volume_mesh = tin.meshing.DEV_stack(layers, matids=matids)
-
-    with TemporaryDirectory() as tmp_dir:
-        volume_mesh.save(os.path.join(tmp_dir, "test_vol.inp"))
-        assert meshes_equal(os.path.join(tmp_dir, "test_vol.inp"), data.volume_mesh)
-
-    tin.meshing.DEV_spit_out_simple_mesh(volume_mesh)  # DEV_basic_facesets(volume_mesh)
 
 
 def test_exodus_write():

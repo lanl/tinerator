@@ -7,6 +7,7 @@ from ..constants import (
     _in_docker_container,
     _init_pyvista_framebuffer,
     JUPYTER_BACKEND_DEFAULT,
+    DEFAULT_CMAP_VTK,
 )
 
 
@@ -88,7 +89,7 @@ def plot_3d(
     show_edges: bool = True,
     text: str = None,
     show_axes: bool = True,
-    cmap: str = "gist_earth_r",
+    cmap: str = DEFAULT_CMAP_VTK,
     screenshot: str = None,
     edge_color: tuple = (0.6, 0.6, 0.6),
     jupyter_notebook: bool = _in_notebook(),

@@ -51,64 +51,73 @@ class MeshAttribute:
             is_private, bool
         ), "Attribute must be marked as private or public"
 
-        if attribute_type is None:
-            attribute_type = ""
+        self.name = name
+        self.attribute_type = attribute_type
+        self._data = data
+        self.data_type = data_type
+        self.is_private = is_private
+        self._num_parent_cells = num_mesh_cells
+        self._num_parent_nodes = num_mesh_nodes
 
-        if attribute_type in MeshAttribute.SCALAR_TYPE_ALIAS:
-            attribute_type = MeshAttribute.SCALAR_TYPE
+        self._set_attribute_type()
+        self._set_data_type()
+
+        debug(
+            f"Attribute params: name = {name}; "
+            f"attribute_type = {attribute_type} -> {self.attribute_type}; "
+            f"data = {data} -> {self.data}; "
+            f"data_type = {data_type} -> {self.data_type}; "
+            f"is_private = {is_private}"
+        )
+
+    @property
+    def data(self):
+        """Returns properly formatted data vector."""
+
+        def process_data(data, target_size, dtype):
+            if isinstance(data, np.ndarray):
+                return data.astype(self.data_type)
+            elif isinstance(data, (tuple, list)):
+                return np.array(data, dtype=self.data_type)
+            elif isinstance(data, (int, np.int, np.int64, float, np.double)):
+                return np.full((target_size,), data, dtype=dtype)
+            else:
+                warn("Could not parse data")
+                return np.array(data).astype(dtype)
+
+        attribute_type = self.attribute_type
+        if attribute_type == MeshAttribute.SCALAR_TYPE:
+            return self._data
+        elif attribute_type == MeshAttribute.CELL_TYPE:
+            return process_data(self._data, self._num_parent_cells, self.data_type)
+        elif attribute_type == MeshAttribute.NODE_TYPE:
+            return process_data(self._data, self._num_parent_nodes, self.data_type)
         else:
-            if attribute_type in [
-                *MeshAttribute.CELL_TYPE_ALIAS,
-                *MeshAttribute.NODE_TYPE_ALIAS,
-            ]:
-                if attribute_type in MeshAttribute.CELL_TYPE_ALIAS:
-                    target_length = num_mesh_cells
-                    attribute_type = MeshAttribute.CELL_TYPE
-                elif attribute_type in MeshAttribute.NODE_TYPE_ALIAS:
-                    target_length = num_mesh_nodes
-                    attribute_type = MeshAttribute.NODE_TYPE
+            raise ValueError("Could not set data vector")
 
-                if isinstance(data, np.ndarray):
-                    data = data  # do nothing
-                elif isinstance(data, (int, float)):
-                    data = np.full((target_length,), data)
-                elif isinstance(data, (tuple, list)):
-                    data = np.array(data)
-                else:
-                    warn(f"Not sure how to parse data...")
-                    data = np.array(data)
-            else:
-                try:
-                    target_length = len(data)
-                except TypeError as e:
-                    raise AttributeError(e)
+    @data.setter
+    def data(self, value):
+        """Sets the data value."""
+        if self.attribute_type in [MeshAttribute.CELL_TYPE, MeshAttribute.NODE_TYPE]:
+            target_size = (
+                self._num_parent_cells
+                if self.attribute_type == MeshAttribute.CELL_TYPE
+                else self._num_parent_nodes
+            )
+            if isinstance(value, (tuple, list, np.ndarray)):
+                assert len(value) == target_size
 
-                if target_length == num_mesh_cells:
-                    attribute_type = MeshAttribute.CELL_TYPE
-                elif target_length == num_mesh_nodes:
-                    attribute_type = MeshAttribute.NODE_TYPE
-                else:
-                    raise AttributeError(
-                        "Length of data does not match number of nodes or cells,"
-                        "and data is not a scalar type"
-                    )
+        self._data = value
 
-            if attribute_type == MeshAttribute.CELL_TYPE:
-                assert len(data) == num_mesh_cells
-            elif attribute_type == MeshAttribute.NODE_TYPE:
-                assert len(data) == num_mesh_nodes
-            else:
-                raise AttributeError(f"Incorrect attribute type: {attribute_type}")
+    def _set_data_type(self):
+        data_type = self.data_type
 
-        # ===================================== #
-
-        # Validate the data type: int or float
-        if attribute_type != MeshAttribute.SCALAR_TYPE:
+        if self.attribute_type != MeshAttribute.SCALAR_TYPE:
             if data_type is None:
                 try:
-                    data_type = type(data[0])
+                    data_type = type(self._data[0])
                 except TypeError:
-                    data_type = type(data)
+                    data_type = type(self._data)
 
             if data_type in MeshAttribute.INTEGER_TYPE_ALIAS:
                 data_type = MeshAttribute.INTEGER_TYPE
@@ -119,19 +128,37 @@ class MeshAttribute:
                     f"Data type must be int or float, not: {data_type}"
                 )
 
-        debug(
-            f"Attribute params: name = {name}; "
-            f"attribute_type = {attribute_type}; "
-            f"data = {data}; "
-            f"data_type = {data_type}; "
-            f"is_private = {is_private}"
-        )
+    def _set_attribute_type(self):
+        """Attempts to set an attribute type from the data."""
+        attribute_type = self.attribute_type
+        data = self.data
 
-        self.name = name
+        if attribute_type is None:
+            try:
+                data_len = len(data)
+            except TypeError:
+                raise TypeError(
+                    f"Could not parse correct attribute type from data provided"
+                )
+
+            if data_len == self._num_parent_cells:
+                attribute_type = MeshAttribute.CELL_TYPE
+            elif data_len == self._num_parent_nodes:
+                attribute_type = MeshAttribute.NODE_TYPE
+            else:
+                raise ValueError(
+                    "Could not parse correct attribute type from data provided"
+                )
+        elif attribute_type in MeshAttribute.SCALAR_TYPE_ALIAS:
+            attribute_type = MeshAttribute.SCALAR_TYPE
+        elif attribute_type in MeshAttribute.CELL_TYPE_ALIAS:
+            attribute_type = MeshAttribute.CELL_TYPE
+        elif attribute_type in MeshAttribute.NODE_TYPE_ALIAS:
+            attribute_type = MeshAttribute.NODE_TYPE
+        else:
+            raise ValueError(f"Could not parse attribute type: {attribute_type}")
+
         self.attribute_type = attribute_type
-        self.data = data
-        self.data_type = data_type
-        self.is_private = is_private
 
     @property
     def is_node_attribute(self):
@@ -152,6 +179,7 @@ class MeshAttribute:
         return False
 
     def set_data(self, value):
-        if not isinstance(value, np.ndarray):
-            raise ValueError(f"Could not support type {type(value)}")
+        """
+        Changes the data of the attribute to ``value``.
+        """
         self.data = value

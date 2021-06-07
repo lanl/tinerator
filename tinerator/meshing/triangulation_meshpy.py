@@ -3,7 +3,8 @@ import numpy as np
 import random
 import os
 import tempfile
-from .mesh import load_mesh, Mesh, ElementType
+from .mesh import load_mesh, Mesh
+from .meshing_types import ElementType
 from .meshing_utils import get_linestring_connectivity
 from ..gis import map_elevation, Raster, Geometry, distance_map, unproject_vector
 from ..logging import log, warn, debug

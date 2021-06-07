@@ -5,7 +5,8 @@ import meshio
 from pylagrit import PyLaGriT
 from copy import copy, deepcopy
 from enum import Enum, auto
-from .mesh import Mesh, StackedMesh, ElementType, load_mesh
+from .mesh import Mesh, StackedMesh, load_mesh
+from .meshing_types import ElementType
 from ..logging import log, warn, debug, _pylagrit_verbosity
 
 

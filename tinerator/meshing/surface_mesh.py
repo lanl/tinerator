@@ -1,6 +1,4 @@
 import numpy as np
-import tempfile
-import meshio
 import pyvista as pv
 from scipy.spatial import distance
 from ..logging import log, warn, debug, _pylagrit_verbosity

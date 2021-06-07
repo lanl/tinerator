@@ -1,4 +1,5 @@
-from .mesh import Mesh, ElementType, load_mesh
+from .mesh import Mesh, load_mesh
+from .meshing_types import ElementType
 from .layering import (
     ProportionalSublayering,
     UniformSublayering,
@@ -15,7 +16,7 @@ from .mesh_metrics import (
     triangle_quality,
     prism_volume,
 )
-from .dump_exodus import (
+from .write_exodusii_mesh import (
     dump_exodus,
     check_mesh_diff,
     EXODUS_ELEMENTS,

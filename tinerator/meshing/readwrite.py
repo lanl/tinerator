@@ -1,18 +1,7 @@
 import numpy as np
 from netCDF4 import Dataset
-from enum import Enum, auto
 from ..logging import debug, log
-
-
-class ElementType(Enum):
-    TRIANGLE = auto()
-    QUAD = auto()
-    PRISM = auto()
-    HEX = auto()
-    POLYGON = auto()
-
-
-AVS_TYPE_MAPPING = {"tri": ElementType.TRIANGLE, "prism": ElementType.PRISM}
+from .meshing_types import AVS_TYPE_MAPPING, ElementType
 
 
 def read_mpas(filename: str, load_dual_mesh: bool = True):

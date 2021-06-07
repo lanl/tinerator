@@ -1,6 +1,7 @@
 import numpy as np
 import triangle as tr
-from .mesh import Mesh, ElementType
+from .mesh import Mesh
+from .meshing_types import ElementType
 from ..gis import unproject_vector
 
 

@@ -61,7 +61,7 @@ class Geometry:
         Returns the spatial extent of the Geometry object
         in the form ``(xmin, ymin, xmax, ymax)``.
         """
-        bounds = np.array([s.bounds for s in g.shapes])
+        bounds = np.array([s.bounds for s in self.shapes])
 
         return (
             np.min(bounds[:, 0]),
