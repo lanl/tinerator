@@ -697,7 +697,7 @@ class Mesh:
             side_sets = None
             node_sets = None
             element_sets = None
-        
+
         element_mapping = {"WEDGE6": [0, 1, 2, 3, 4, 5]}
 
         dump_exodus(
@@ -713,7 +713,10 @@ class Mesh:
         )
 
     def save(
-        self, outfile: str, sets: List[Union[SideSet, PointSet, ElementSet]] = None, **kwargs
+        self,
+        outfile: str,
+        sets: List[Union[SideSet, PointSet, ElementSet]] = None,
+        **kwargs,
     ):
         """
         Writes a mesh object to disk. Supports file formats like VTK, AVS-UCD, and Exodus.

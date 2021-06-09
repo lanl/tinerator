@@ -427,7 +427,7 @@ class SurfaceMesh:
         Returns
         -------
             side_set
-        
+
         Examples
         --------
             >>> ws_delin = tin.gis.watershed_delineation(dem)
@@ -444,7 +444,10 @@ class SurfaceMesh:
         points = top_faces.to_vtk_mesh().points
         faces = unravel_vtk_faces(top_faces.to_vtk_mesh().faces)
         face_pts = points[faces.astype(int)]
-        polygons = [(face_id, Polygon(x[:,:2].tolist() + [x[0][:2].tolist()])) for (face_id,x) in enumerate(face_pts)]
+        polygons = [
+            (face_id, Polygon(x[:, :2].tolist() + [x[0][:2].tolist()]))
+            for (face_id, x) in enumerate(face_pts)
+        ]
 
         captured_face_ids = []
         for shape in geometry.shapes:

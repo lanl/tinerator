@@ -39,11 +39,11 @@ class SideSet(object):
         pts = self.primary_mesh.points
         faces = self.primary_faces
         return pv.PolyData(pts, faces)
-    
+
     @property
     def id(self):
         return self.set_id
-    
+
     @id.setter
     def id(self, value):
         assert isinstance(value, int)
@@ -191,7 +191,7 @@ class PointSet(object):
     @property
     def id(self):
         return self.set_id
-    
+
     @id.setter
     def id(self, value):
         assert isinstance(value, int)

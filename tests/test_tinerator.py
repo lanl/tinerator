@@ -193,10 +193,14 @@ def test_exodus_write():
     top_points = surf_mesh.top_points
     bottom_points = surf_mesh.bottom_points
     side_points = surf_mesh.side_points
-    
-    all_sets=[
-        top_faces, bottom_faces, side_faces, 
-        top_points, side_points, bottom_points
+
+    all_sets = [
+        top_faces,
+        bottom_faces,
+        side_faces,
+        top_points,
+        side_points,
+        bottom_points,
     ]
 
     with TemporaryDirectory() as tmp_dir:
@@ -205,7 +209,7 @@ def test_exodus_write():
 
         volume_mesh.save("mesh_out.exo")
         volume_mesh.save("mesh_out.exo", sets=all_sets)
-        volume_mesh.save("mesh_out.exo", sets=all_sets, write_set_names = False)
+        volume_mesh.save("mesh_out.exo", sets=all_sets, write_set_names=False)
 
         diff = tin.meshing.check_mesh_diff(outfile, example.exodus_mesh)
 

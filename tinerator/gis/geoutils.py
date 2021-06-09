@@ -80,7 +80,9 @@ def map_elevation(dem, nodes: np.ndarray) -> np.ndarray:
         for i in range(n_nodes):
             z_array[i] = data[y_idx[i]][x_idx[i]]
     except IndexError as e:
-        raise IndexError("Mesh nodes are out of bounds of raster. Try reprojecting. {e}")
+        raise IndexError(
+            "Mesh nodes are out of bounds of raster. Try reprojecting. {e}"
+        )
 
     return z_array
 

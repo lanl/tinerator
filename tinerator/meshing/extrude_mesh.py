@@ -30,11 +30,13 @@ def create_fnc_layer(parent_layer, fnc, **kwargs):
     return base_nodes
 
 
-def create_raster_layer(parent_layer, raster, dest_crs=None, raster_thickness: bool = True, **kwargs):
+def create_raster_layer(
+    parent_layer, raster, dest_crs=None, raster_thickness: bool = True, **kwargs
+):
 
     if dest_crs is not None:
         raster = reproject_raster(raster, dest_crs)
-    
+
     base_nodes = deepcopy(parent_layer.nodes)
 
     if raster_thickness:
@@ -44,11 +46,14 @@ def create_raster_layer(parent_layer, raster, dest_crs=None, raster_thickness: b
 
     return base_nodes
 
+
 def create_raster_thickness_layer(parent_layer, raster, **kwargs):
     return create_raster_layer(parent_layer, raster, raster_thickness=True, **kwargs)
 
+
 def create_raster_depth_layer(parent_layer, raster, **kwargs):
     return create_raster_layer(parent_layer, raster, raster_thickness=False, **kwargs)
+
 
 def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list):
     """
