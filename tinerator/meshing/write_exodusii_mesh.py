@@ -328,7 +328,7 @@ def dump_exodus(
     # ======================
     side_sets = prepare_side_sets(side_sets, cell_mapping=mapping)
     node_sets = prepare_node_sets(node_sets)
-    element_sets = prepare_element_sets(element_sets)
+    element_sets = []
 
     num_side_sets = len(side_sets)
     num_node_sets = len(node_sets)
