@@ -142,6 +142,8 @@ def prepare_node_sets(node_sets: List[dict]) -> List[dict]:
 
     if isinstance(node_sets, dict):
         node_sets = [node_sets]
+    elif node_sets is None:
+        return []
 
     for (i, node_set) in enumerate(node_sets):
         set_name = _get_key(node_set, "set_name", fill_none=f"NodeSetID={i+1}")
@@ -163,15 +165,13 @@ def prepare_node_sets(node_sets: List[dict]) -> List[dict]:
     return node_sets_exo
 
 
-def prepare_element_sets(elem_sets):
-    return []
-
-
 def prepare_side_sets(side_sets, cell_mapping):
     side_sets_exo = []
 
     if isinstance(side_sets, dict):
         side_sets = [side_sets]
+    elif side_sets is None:
+        return []
 
     set_mapping = sorted(list(range(len(cell_mapping))), key=lambda x: cell_mapping[x])
     set_mapping = np.array(set_mapping)

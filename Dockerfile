@@ -49,7 +49,8 @@ RUN mkdir ~/.jupyter && \
 
 # Build all TPLs
 RUN ./tpls/build-tpls.sh -A -M && \
-    echo "export PYTHONPATH=/tinerator-install/:$PYTHONPATH" >> ~/.bashrc
+    echo "export PYTHONPATH=/tinerator-install/:$PYTHONPATH" >> ~/.bashrc && \
+    echo "export PYTHONPATH=/tinerator-install/tpls/seacas/install/lib/:$PYTHONPATH" >> ~/.bashrc
 
 # Test TINerator
 #RUN cd /tinerator-install/tests && \
