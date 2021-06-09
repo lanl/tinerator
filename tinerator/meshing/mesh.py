@@ -672,6 +672,7 @@ class Mesh:
         self,
         outfile: str,
         sets: List[Union[SideSet, PointSet, ElementSet]] = None,
+        write_set_names: bool = True,
     ):
         """
         Writes the mesh to ExodusII format.
@@ -696,6 +697,10 @@ class Mesh:
             side_sets = None
             node_sets = None
             element_sets = None
+        
+        element_mapping = {"WEDGE6": [0, 1, 2, 3, 4, 5]}
+
+        #self.elements = self.elements[:, [3, 4, 5, 0, 1, 2]]
 
         dump_exodus(
             outfile,
@@ -705,10 +710,12 @@ class Mesh:
             side_sets=side_sets,
             node_sets=node_sets,
             element_sets=element_sets,
+            element_mapping=element_mapping,
+            write_set_names=write_set_names,
         )
 
     def save(
-        self, outfile: str, sets: List[Union[SideSet, PointSet, ElementSet]] = None
+        self, outfile: str, sets: List[Union[SideSet, PointSet, ElementSet]] = None, **kwargs
     ):
         """
         Writes a mesh object to disk. Supports file formats like VTK, AVS-UCD, and Exodus.
@@ -729,7 +736,7 @@ class Mesh:
         driver = _get_driver(outfile)
 
         if driver == "exodus":
-            self.save_exodusii(outfile, sets=sets)
+            self.save_exodusii(outfile, sets=sets, **kwargs)
         elif driver == "avsucd":
             if self.element_type == ElementType.TRIANGLE:
                 cell_type = "tri"

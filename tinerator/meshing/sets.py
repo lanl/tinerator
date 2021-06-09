@@ -39,6 +39,15 @@ class SideSet(object):
         pts = self.primary_mesh.points
         faces = self.primary_faces
         return pv.PolyData(pts, faces)
+    
+    @property
+    def id(self):
+        return self.set_id
+    
+    @id.setter
+    def id(self, value):
+        assert isinstance(value, int)
+        self.set_id = value
 
     @property
     def exodusii_format(self):
@@ -178,6 +187,15 @@ class PointSet(object):
         self.set_id = set_id
 
         assert len(self.primary_nodes) > 0, "Set cannot be empty"
+
+    @property
+    def id(self):
+        return self.set_id
+    
+    @id.setter
+    def id(self, value):
+        assert isinstance(value, int)
+        self.set_id = value
 
     def __repr__(self):
         return f"PointSet<name={self.name}, num_points={len(self.primary_nodes)}>"

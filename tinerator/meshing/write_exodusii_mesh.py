@@ -238,6 +238,7 @@ def dump_exodus(
     mesh_title: str = "TINerator Mesh",
     clobber_existing_file: bool = True,
     element_mapping: dict = EXODUS_ELEMENT_MAPPING,
+    write_set_names: bool = True,
 ):
     """
     Writes nodes and elements to an Exodus-format mesh.
@@ -388,7 +389,8 @@ def dump_exodus(
     # -------------------------------------------------
     # SECTION WRITE Node Sets
     if num_node_sets > 0:
-        exo_id.put_node_set_names([ns["set_name"] for ns in node_sets])
+        if write_set_names:
+            exo_id.put_node_set_names([ns["set_name"] for ns in node_sets])
 
         for ns in node_sets:
             exo_id.put_node_set_params(
@@ -404,7 +406,8 @@ def dump_exodus(
     # -------------------------------------------------
     # SECTION WRITE Side Sets
     if num_side_sets > 0:
-        exo_id.put_side_set_names([ss["set_name"] for ss in side_sets])
+        if write_set_names:
+            exo_id.put_side_set_names([ss["set_name"] for ss in side_sets])
 
         for ss in side_sets:
             debug(
