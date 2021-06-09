@@ -700,8 +700,6 @@ class Mesh:
         
         element_mapping = {"WEDGE6": [0, 1, 2, 3, 4, 5]}
 
-        #self.elements = self.elements[:, [3, 4, 5, 0, 1, 2]]
-
         dump_exodus(
             outfile,
             self.nodes,

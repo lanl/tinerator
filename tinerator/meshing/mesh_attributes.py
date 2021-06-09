@@ -65,7 +65,7 @@ class MeshAttribute:
         debug(
             f"Attribute params: name = {name}; "
             f"attribute_type = {attribute_type} -> {self.attribute_type}; "
-            f"data = {data} -> {self.data}; "
+            f"data = {data} -> {np.unique(self.data)}; "
             f"data_type = {data_type} -> {self.data_type}; "
             f"is_private = {is_private}"
         )

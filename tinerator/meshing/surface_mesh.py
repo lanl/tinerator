@@ -1,3 +1,4 @@
+from ipdb.__main__ import set_trace
 import numpy as np
 import pyvista as pv
 from scipy.spatial import distance
@@ -410,16 +411,51 @@ class SurfaceMesh:
 
         return sets
 
-    def from_geometry(self, geometry):
+    def from_geometry(self, geometry, on_top: bool = True, set_name: str = "Geometry"):
         """
-        Takes in a TINerator Geometry object and returns
-        a Side Set or a Point Set where the mesh intersects.
+        From a TINerator Geometry object, returns a set of all top-surface
+        faces that intersect with the Geometry object.
+
+        As an example, this can be used to capture flowline cells generated via
+        watershed delineation.
+
+        Args
+        ----
+            geometry (tinerator.gis.Geometry): The geometry object to check for intersections.
+            set_name (:obj:`str`, optional): The name for the set.
+
+        Returns
+        -------
+            side_set
+        
+        Examples
+        --------
+            >>> ws_delin = tin.gis.watershed_delineation(dem)
+            >>> side_set = surface_mesh.from_geometry(ws_delin)
         """
-        raise NotImplementedError()
-        # - rasterize geometry
-        # - map to attribute
-        # - map to layer (1,1)
-        # - return where faces intersect
-        # - optionally, return points where:
-        #       - get faces intersect
-        #       - get closest node in face
+
+        from shapely.geometry import Polygon
+
+        if not on_top:
+            raise NotImplementedError()
+
+        top_faces = self.top_faces
+
+        points = top_faces.to_vtk_mesh().points
+        faces = unravel_vtk_faces(top_faces.to_vtk_mesh().faces)
+        face_pts = points[faces.astype(int)]
+        polygons = [(face_id, Polygon(x[:,:2].tolist() + [x[0][:2].tolist()])) for (face_id,x) in enumerate(face_pts)]
+
+        captured_face_ids = []
+        for shape in geometry.shapes:
+            for (i, face) in enumerate(polygons):
+                face_id = face[0]
+                polygon = face[1]
+                if polygon.intersects(shape):
+                    _ = polygons.pop(i)
+                    captured_face_ids.append(face_id)
+
+        captured_cells = top_faces.primary_cells[captured_face_ids]
+        captured_faces = ravel_faces_to_vtk(faces[captured_face_ids].astype(int))
+
+        return SideSet(self.parent_mesh, captured_cells, captured_faces, name=set_name)

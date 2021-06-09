@@ -3,25 +3,25 @@ import numpy as np
 from typing import List, Union, Callable, Any
 from .mesh import Mesh, StackedMesh
 from .meshing_types import ElementType
-from ..gis import map_elevation
+from ..gis import map_elevation, reproject_raster
 from ..logging import log, warn, debug, error
 
 
-def create_constant_layer(parent_layer, thickness):
+def create_constant_layer(parent_layer, thickness, **kwargs):
     base_nodes = deepcopy(parent_layer.nodes)
     base_nodes[:, 2] -= thickness
 
     return base_nodes
 
 
-def create_snapped_layer(parent_layer, depth):
+def create_snapped_layer(parent_layer, depth, **kwargs):
     base_nodes = deepcopy(parent_layer.nodes)
     base_nodes[:, 2] = depth
 
     return base_nodes
 
 
-def create_fnc_layer(parent_layer, fnc):
+def create_fnc_layer(parent_layer, fnc, **kwargs):
     base_nodes = deepcopy(parent_layer.nodes)
     x_vec = deepcopy(parent_layer.nodes[:, 0])
     y_vec = deepcopy(parent_layer.nodes[:, 1])
@@ -30,12 +30,25 @@ def create_fnc_layer(parent_layer, fnc):
     return base_nodes
 
 
-def create_raster_layer(parent_layer, raster):
+def create_raster_layer(parent_layer, raster, dest_crs=None, raster_thickness: bool = True, **kwargs):
+
+    if dest_crs is not None:
+        raster = reproject_raster(raster, dest_crs)
+    
     base_nodes = deepcopy(parent_layer.nodes)
-    base_nodes[:, 2] = map_elevation(raster, base_nodes)
+
+    if raster_thickness:
+        base_nodes[:, 2] -= map_elevation(raster, base_nodes)
+    else:
+        base_nodes[:, 2] = map_elevation(raster, base_nodes)
 
     return base_nodes
 
+def create_raster_thickness_layer(parent_layer, raster, **kwargs):
+    return create_raster_layer(parent_layer, raster, raster_thickness=True, **kwargs)
+
+def create_raster_depth_layer(parent_layer, raster, **kwargs):
+    return create_raster_layer(parent_layer, raster, raster_thickness=False, **kwargs)
 
 def interpolate_sublayers(top_surface: Mesh, layer_nodes: list, sublayers: list):
     """
@@ -205,6 +218,8 @@ LAYERING_FUNCS = {
     "snapped": create_snapped_layer,
     "function": create_fnc_layer,
     "raster": create_raster_layer,
+    "raster-constant": create_raster_thickness_layer,
+    "raster-snapped": create_raster_thickness_layer,
 }
 
 
@@ -225,14 +240,23 @@ def extrude_mesh(
         - "constant": a layer translated in -Z
         - "snapped": a layer where all nodes are set to Z
         - "function": a layer where the Z value of nodes are set from ``f(x, y) -> z``
-        - "raster": a layer where the Z values of nodes are set from the closest raster cell
+        - "raster": a layer where the Z values of nodes are **subtracted** from the closest raster cell
+        - "raster-constant": the same as "raster"
+        - "raster-snapped": a layer where the Z values of nodes are set from raster cells
 
-    | ``layer_type`` | ``layer_data``                                   |
-    | -------------- | ------------------------------------------------ |
-    | "constant"     | depth to extrude                                 |
-    | "snapped"      | value to set layer node Z values to              |
-    | "function"     | a Python function of the form ``f(x,y) -> z``    |
-    | "raster"       | a TINerator Raster object                        |
+    +-------------------+--------------------------------------------------+
+    | ``layer_type``    | ``layer_data``                                   |
+    +===================+==================================================+
+    | "constant"        | depth to extrude                                 |
+    +-------------------+--------------------------------------------------+
+    | "snapped"         | value to set layer node Z values to              |
+    +-------------------+--------------------------------------------------+
+    | "function"        | a Python function of the form ``f(x,y) -> z``    |
+    +-------------------+--------------------------------------------------+
+    | "raster-constant" | a TINerator Raster object                        |
+    +-------------------+--------------------------------------------------+
+    | "raster-snapped"  | a TINerator Raster object                        |
+    +-------------------+--------------------------------------------------+
 
     Args
     ----
@@ -282,7 +306,7 @@ def extrude_mesh(
         nodes=deepcopy(surface_mesh.nodes),
         elements=deepcopy(surface_mesh.elements),
         etype=surface_mesh.element_type,
-        crs=surface_mesh.element_type,
+        crs=surface_mesh.crs,
     )
 
     for (l_data, l_type) in zip(layer_data, layer_types):
@@ -293,7 +317,7 @@ def extrude_mesh(
         except KeyError:
             raise ValueError(f"Unsupported layer type: {l_type}")
 
-        all_layers.append(layer_fnc(parent_layer, l_data))
+        all_layers.append(layer_fnc(parent_layer, l_data, dest_crs=surface_mesh.crs))
 
         parent_layer = Mesh(
             nodes=deepcopy(all_layers[-1]),
