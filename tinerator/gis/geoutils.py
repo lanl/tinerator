@@ -4,6 +4,7 @@ import math
 from scipy.spatial.distance import euclidean, cdist
 from scipy import ndimage as nd
 from osgeo import ogr, gdal, gdal_array
+import pyproj
 from pyproj import CRS
 from pyproj.crs import CRSError
 from ..logging import log, warn, debug, error
@@ -42,6 +43,8 @@ def parse_crs(crs: Union[str, int, dict]) -> CRS:
             return CRS.from_epsg(crs)
         elif isinstance(crs, dict):
             return CRS.from_dict(crs)
+        elif isinstance(crs, pyproj.Proj):
+            return crs.crs
         else:
             return CRS.from_user_input(crs)
     except CRSError:

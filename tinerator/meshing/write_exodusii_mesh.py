@@ -239,6 +239,7 @@ def dump_exodus(
     clobber_existing_file: bool = True,
     element_mapping: dict = EXODUS_ELEMENT_MAPPING,
     write_set_names: bool = True,
+    element_block_name_prefix: str = "MATERIAL_ID_",
 ):
     """
     Writes nodes and elements to an Exodus-format mesh.
@@ -316,7 +317,7 @@ def dump_exodus(
             {
                 "connectivity": connectivity.flatten(order="C"),
                 "block_id": block_id,
-                "block_name": f"BlockID={block_id}",
+                "block_name": f"{element_block_name_prefix}{block_id}",
                 "elem_type": elem_type.upper(),
                 "num_elem_this_blk": connectivity.shape[0],
                 "num_nodes_per_elem": connectivity.shape[1],

@@ -1,15 +1,138 @@
 import io
+import os
+import tempfile
 from contextlib import redirect_stdout
 import numpy as np
 import richdem as rd
 from scipy.spatial.distance import cdist
 from shapely.geometry import LineString, MultiLineString
 from shapely.ops import linemerge
+from typing import List, Optional, Tuple
 from .geoutils import project_vector
 from .vector import Shape, ShapeType
 from .raster import Raster
 from .geometry import Geometry
 from ..logging import log, warn, debug
+
+
+def pysheds_watershed_delineation(
+    raster: Raster,
+    pour_point: List[int] = None,
+    pour_point_type: str = "label",
+    threshold: float = None,
+    dirmap: List[int] = (64, 128, 1, 2, 4, 8, 16, 32),
+    return_matrix: bool = False,
+    fill_depressions: bool = False,
+    resolve_flats: bool = False,
+    method: str = "D8",
+    recursion_limit: int = 15000,
+) -> Tuple[Geometry, Optional[np.ndarray]]:
+    """
+
+    Args
+    ----
+        pour_point_type (:obj:`str`, optional): How to interpret parameter ``pour_point``.
+            'index' : ``pour_point`` represents the column and row indices of the pour point.
+            'label' : ``pour_point`` represents geographic coordinates (will be snapped to nearest cell).
+
+        method (str): Routing algorithm to use:
+            'D8' : D8 flow directions
+            'dinf' : D-infinity flow directions
+
+        recusionlimit (int): Recursion limit. May need to be raised if recursion limit is reached.
+        dirmap (List[int]): List of integer values representing the following
+            cardinal and intercardinal directions (in order):
+                    [N, NE, E, SE, S, SW, W, NW]
+    """
+    from pysheds.grid import Grid
+    from shapely.geometry import shape
+    from .geoutils import parse_crs
+
+    try:
+        x, y = pour_point
+    except (TypeError, IndexError) as e:
+        raise ValueError(
+            f"`pour_point` must be a tuple in the form: (x, y). "
+            f"Not: {pour_point}. {e}"
+        )
+
+    method = method.lower()
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        raster.save(os.path.join(tmp_dir, "raster.tif"))
+
+        dem_name = "dem"
+        grid = Grid.from_raster(os.path.join(tmp_dir, "raster.tif"), data_name=dem_name)
+        # Grid.read_raster ????
+
+        # Fill depressions in DEM
+        if fill_depressions:
+            out_dem = "flooded_dem"
+            grid.fill_depressions(dem_name, out_name=out_dem)
+            dem_name = out_dem
+
+        # Resolve flats in DEM
+        if resolve_flats:
+            out_dem = "inflated_dem"
+            grid.resolve_flats(dem_name, out_name=out_dem)
+            dem_name = out_dem
+
+        # Calculate flow direction matrix
+        grid.flowdir(data=dem_name, out_name="dir", dirmap=dirmap)
+
+        # Delineate the catchment
+        grid.catchment(
+            data="dir",
+            x=x,
+            y=y,
+            dirmap=dirmap,
+            out_name="catch",
+            recursionlimit=recursion_limit,
+            xytype=pour_point_type,
+            routing=method,
+        )
+
+        grid.accumulation(data="catch", dirmap=dirmap, routing=method, out_name="acc")
+
+        accum_matrix = np.array(grid.view("acc"))
+
+        if threshold is None:
+            threshold = int(round(np.mean(accum_matrix) + np.std(accum_matrix)))
+            log(
+                "Threshold was not set by user; "
+                f"set automatically to: {round(threshold, 5)}. "
+                "Adjust this value to adjust the river network."
+            )
+
+        # Extract river network
+        branches = grid.extract_river_network(
+            fdir="catch",
+            acc="acc",
+            threshold=int(round(threshold)),
+            dirmap=dirmap,
+            routing=method,
+        )
+        # from matplotlib import pyplot as plt
+        # for branch in branches['features']:
+        #    line = np.asarray(branch['geometry']['coordinates'])
+        #    plt.plot(line[:, 0], line[:, 1])
+        # plt.show()
+        # exit()
+        shapes = [shape(feature["geometry"]) for feature in branches["features"]]
+
+        if len(shapes) == 0:
+            raise ValueError("Could not generate feature. Threshold may be too high.")
+
+        # Put data into Geometry object
+        xy = Geometry(
+            shapes=shapes,
+            crs=parse_crs(grid.crs),
+        )
+
+        if return_matrix:
+            return (xy, accum_matrix)
+
+        return xy
 
 
 def watershed_delineation(
@@ -19,7 +142,7 @@ def watershed_delineation(
     exponent: float = None,
     weights: np.ndarray = None,
     return_matrix: bool = False,
-) -> np.ndarray:
+) -> Tuple[Geometry, Optional[np.ndarray]]:
     """
     Performs watershed delination on a DEM.
     Optionally, fills DEM pits and flats.

@@ -286,6 +286,9 @@ def extrude_mesh(
         >>> vol_mesh = tin.meshing.extrude_mesh(triangulation, layers)
     """
 
+    # TODO: how do you handle negative or zero volume prisms?
+    # TODO: how do you handle pinchouts?
+
     if not isinstance(layers, (tuple, list)):
         raise ValueError(f"Cannot parse layers. View function help.")
 

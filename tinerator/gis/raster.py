@@ -216,6 +216,20 @@ class Raster:
         return (xmin + (xmax - xmin) / 2.0, ymin + (ymax - ymin) / 2.0)
 
     @property
+    def max_cell(self):
+        """Returns the first cell index representing the largest value in the raster."""
+        masked_data = self.masked_data()
+        idx = np.argwhere(masked_data == np.nanmax(masked_data))
+        return tuple(idx[0])
+
+    @property
+    def min_cell(self):
+        """Returns the first cell index representing the smallest value in the raster."""
+        masked_data = self.masked_data()
+        idx = np.argwhere(masked_data == np.nanmin(masked_data))
+        return tuple(idx[0])
+
+    @property
     def area(self):
         """
         Returns the surface area of the raster, ignoring `noDataValue` cells.
