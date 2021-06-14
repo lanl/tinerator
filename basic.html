@@ -157,9 +157,9 @@
 <h2>Primary Data Structures<a class="headerlink" href="#primary-data-structures" title="Permalink to this headline">¶</a></h2>
 <p>Within TINerator, there are three main classes:</p>
 <ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Raster</span></code> - A representation of a GIS raster object</p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Geometry</span></code> - A representation of a GIS shapefile object</p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.meshing.Mesh</span></code> - The mesh class; typically with triangular or prism elements</p></li>
+<li><p><a class="reference internal" href="api_gis_raster.html#tinerator.gis.Raster" title="tinerator.gis.Raster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Raster</span></code></a> - A representation of a GIS raster object</p></li>
+<li><p><a class="reference internal" href="api_gis_geometry.html#tinerator.gis.Geometry" title="tinerator.gis.Geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Geometry</span></code></a> - A representation of a GIS shapefile object</p></li>
+<li><p><a class="reference internal" href="api_meshing_mesh.html#tinerator.meshing.Mesh" title="tinerator.meshing.Mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.meshing.Mesh</span></code></a> - The mesh class; typically with triangular or prism elements</p></li>
 </ul>
 <p>The core of TINerator is the translation from <code class="docutils literal notranslate"><span class="pre">Raster</span> <span class="pre">-&gt;</span> <span class="pre">Mesh</span></code> or <code class="docutils literal notranslate"><span class="pre">Raster</span> <span class="pre">+</span> <span class="pre">Geometry</span> <span class="pre">-&gt;</span> <span class="pre">Mesh</span></code>.</p>
 </section>
@@ -241,7 +241,7 @@ will be discarded or set to <cite>no_data_value</cite>.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">top_nodes</span> <span class="o">=</span> <span class="n">surface_mesh</span><span class="o">.</span><span class="n">top_nodes</span>
 </pre></div>
 </div>
-<p>You can view any set object with the <code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.meshing.Mesh.view</span></code> function:</p>
+<p>You can view any set object with the <a class="reference internal" href="api_meshing_mesh.html#tinerator.meshing.Mesh.view" title="tinerator.meshing.Mesh.view"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.meshing.Mesh.view</span></code></a> function:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vol_mesh</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">sets</span><span class="o">=</span><span class="p">[</span><span class="n">top_faces</span><span class="p">,</span> <span class="n">top_nodes</span><span class="p">,</span> <span class="n">bottom_faces</span><span class="p">])</span>
 </pre></div>
 </div>

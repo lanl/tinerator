@@ -148,9 +148,126 @@
 <h1>Geometry object<a class="headerlink" href="#geometry-object" title="Permalink to this headline">¶</a></h1>
 <section id="loading-a-shapefile-into-a-geometry-object">
 <h2>Loading a Shapefile into a Geometry object<a class="headerlink" href="#loading-a-shapefile-into-a-geometry-object" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.gis.load_shapefile">
+<span class="sig-prename descclassname"><span class="pre">tinerator.gis.</span></span><span class="sig-name descname"><span class="pre">load_shapefile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> → <a class="reference internal" href="#tinerator.gis.Geometry" title="tinerator.gis.geometry.Geometry"><span class="pre">tinerator.gis.geometry.Geometry</span></a><a class="headerlink" href="#tinerator.gis.load_shapefile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a path to a shapefile, reads and returns each object
+in the shapefile as a <code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Shape</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The input filename.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <a class="reference internal" href="#tinerator.gis.Geometry" title="tinerator.gis.Geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tinerator.gis.Geometry</span></code></a> object.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">boundary</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">gis</span><span class="o">.</span><span class="n">load_shapefile</span><span class="p">(</span><span class="s2">"my_shapefile.shp"</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">"EPSG:3114"</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 </section>
 <section id="geometry-class-member-functions">
 <h2>Geometry class member functions<a class="headerlink" href="#geometry-class-member-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.gis.</span></span><span class="sig-name descname"><span class="pre">Geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pyproj.crs.crs.CRS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.OrderedDict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Geometry object. This object stores a collection
+of shapes in Shapely format (under <code class="docutils literal notranslate"><span class="pre">Geometry.shapes</span></code>), along with
+a CRS and individual shape attributes.</p>
+<p>Refer to the Shapely documentation at <a class="reference external" href="https://shapely.readthedocs.io">https://shapely.readthedocs.io</a> for
+the various methods that Shapely objects support.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.add_property">
+<span class="sig-name descname"><span class="pre">add_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Geometry.add_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a property to the Geometry object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the property.</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>) – A list containing the property data. Must be of length <code class="docutils literal notranslate"><span class="pre">len(self.shapes)</span></code>.</p></li>
+<li><p><strong>type</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional) – The type of the data. Must be <cite>str</cite>, <cite>int</cite>, <cite>float</cite>, or <cite>date</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.centroid">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">centroid</span></span><a class="headerlink" href="#tinerator.gis.Geometry.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the centroid of the Geometry object.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.coordinates">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">coordinates</span></span><a class="headerlink" href="#tinerator.gis.Geometry.coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the (x, y) array of all shapes in the Geometry object.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.extent">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">extent</span></span><a class="headerlink" href="#tinerator.gis.Geometry.extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the spatial extent of the Geometry object
+in the form <code class="docutils literal notranslate"><span class="pre">(xmin,</span> <span class="pre">ymin,</span> <span class="pre">xmax,</span> <span class="pre">ymax)</span></code>.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.geometry_type">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">geometry_type</span></span><a class="headerlink" href="#tinerator.gis.Geometry.geometry_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the geometry type of this object in GeoJSON
+format.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.ndim">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#tinerator.gis.Geometry.ndim" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of dimensions of the Geometry object. May be 2 or 3.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Geometry.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the Geometry object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>, optional) – A set of additional Raster or Geometry objects to view.</p></li>
+<li><p><strong>outfile</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional) – If not None, saves the figure to this filename.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.polygon_exterior">
+<span class="sig-name descname"><span class="pre">polygon_exterior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Geometry.polygon_exterior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the exterior nodes and connectivity
+arrays for a polygon geometry.</p>
+<p>:param shape_index (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>: <code class="docutils literal notranslate"><span class="pre">self.shapes[shape_index]</span></code> shape.
+:type shape_index (<code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code>: Computes the exterior of the
+:param optional): <code class="docutils literal notranslate"><span class="pre">self.shapes[shape_index]</span></code> shape.
+:type optional): Computes the exterior of the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Coordinates and connectivity for exterior linear ring</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ESRI</span> <span class="pre">Shapefile'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Geometry.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the Geometry object to a shapefile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outfile</strong> (<em>str</em>) – The path to save the Geometry object.</p></li>
+<li><p><strong>driver</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional) – The file format driver. May be one of: <code class="docutils literal notranslate"><span class="pre">['ESRI</span> <span class="pre">Shapefile',</span> <span class="pre">'GeoJSON']</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Geometry.units">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">units</span></span><a class="headerlink" href="#tinerator.gis.Geometry.units" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the type of unit the CRS is in.</p>
+</dd></dl>
+</dd></dl>
 </section>
 </section>
 

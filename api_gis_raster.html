@@ -148,9 +148,137 @@
 <h1>Raster object<a class="headerlink" href="#raster-object" title="Permalink to this headline">¶</a></h1>
 <section id="loading-a-raster-from-a-file">
 <h2>Loading a raster from a file<a class="headerlink" href="#loading-a-raster-from-a-file" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.gis.load_raster">
+<span class="sig-prename descclassname"><span class="pre">tinerator.gis.</span></span><span class="sig-name descname"><span class="pre">load_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.load_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a raster from a given filename.
+Supports all raster datatypes that GDAL supports, including
+GeoTIFF, IMG, and ASC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The input filename.</p></li>
+<li><p><strong>no_data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>, optional) – If NoData value is not encoded in the raster,
+it can be manually set here.</p></li>
+<li><p><strong>to_crs</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional) – If provided, will reproject raster to the given
+CRS (can be an EPSG code, WKT string, or <cite>pyproj.CRS</cite> object.)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>tinerator.Raster</cite> object.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dem</span> <span class="o">=</span> <span class="n">tin</span><span class="o">.</span><span class="n">gis</span><span class="o">.</span><span class="n">load_raster</span><span class="p">(</span><span class="s2">"my_dem.tif"</span><span class="p">,</span> <span class="n">no_data</span><span class="o">=-</span><span class="mf">9999.</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">"EPSG:3114"</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
 </section>
 <section id="raster-class-member-functions">
 <h2>Raster class member functions<a class="headerlink" href="#raster-class-member-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.gis.Raster">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.gis.</span></span><span class="sig-name descname"><span class="pre">Raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>The main Raster class object in TINerator.
+This stores the data and metadata for a loaded or created
+Raster object (like from reading in a GeoTIFF), and has
+many helper functions for reprojection, resampling,
+depression filling, and more.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.area">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#tinerator.gis.Raster.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the surface area of the raster, ignoring <cite>noDataValue</cite> cells.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.centroid">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">centroid</span></span><a class="headerlink" href="#tinerator.gis.Raster.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the raster centroid.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.extent">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">extent</span></span><a class="headerlink" href="#tinerator.gis.Raster.extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the spatial extent of the raster, in the form:</p>
+<p><code class="docutils literal notranslate"><span class="pre">(x_min,</span> <span class="pre">y_min,</span> <span class="pre">x_max,</span> <span class="pre">y_max)</span></code></p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.fill_depressions">
+<span class="sig-name descname"><span class="pre">fill_depressions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill_depressions</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_flats</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster.fill_depressions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fills flats and depressions in a DEM raster.
+On meshes intended to be high-resolution, leaving flats and
+depressions untouched may cause solver issues. This method
+should be called before generating a triangle mesh from a
+DEM raster.</p>
+<p># Arguments
+fill_depressions (bool): fill pits and depressions on DEM
+fill_flats (bool): fill flats on DEM</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.geotransform">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">geotransform</span></span><a class="headerlink" href="#tinerator.gis.Raster.geotransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raster geotransform.
+In the form of:
+(x_min, pixel_width, 0, y_min, 0, pixel_width)</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.get_boundary">
+<span class="sig-name descname"><span class="pre">get_boundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> → <a class="reference internal" href="api_gis_geometry.html#tinerator.gis.Geometry" title="tinerator.gis.geometry.Geometry"><span class="pre">tinerator.gis.geometry.Geometry</span></a><a class="headerlink" href="#tinerator.gis.Raster.get_boundary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a line mesh with nodes seperated by distance <cite>distance</cite> that
+describe the boundary of this raster object.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.mask">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">mask</span></span><a class="headerlink" href="#tinerator.gis.Raster.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean mask where the raster contains
+no_data_value elements.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.masked_data">
+<span class="sig-name descname"><span class="pre">masked_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster.masked_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a copy of the raster data where all <cite>no_data_value</cite>
+elements in the raster are replaced with <cite>numpy.nan</cite>.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.max_cell">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">max_cell</span></span><a class="headerlink" href="#tinerator.gis.Raster.max_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first cell index representing the largest value in the raster.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.min_cell">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">min_cell</span></span><a class="headerlink" href="#tinerator.gis.Raster.min_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first cell index representing the smallest value in the raster.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.origin">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#tinerator.gis.Raster.origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lower left corner of the raster.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hillshade</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the raster object.</p>
+<p># Arguments
+outfile (str): path to save figure
+title (str): figure title
+geometry (list): a list of geometrical objects to overlay</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a raster object to disk in GeoTIFF format. Writes array as Float64.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.value_at">
+<span class="sig-name descname"><span class="pre">value_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster.value_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the raster at point (x, y) in the same CRS
+as the raster.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.gis.Raster.values_at">
+<span class="sig-name descname"><span class="pre">values_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.gis.Raster.values_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the raster values at <cite>points</cite>, where <cite>points</cite>
+is a coordinate X-Y array in the same CRS as the raster.</p>
+</dd></dl>
+</dd></dl>
 </section>
 </section>
 

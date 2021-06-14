@@ -148,9 +148,51 @@
 <h1>Misc. Functions<a class="headerlink" href="#misc-functions" title="Permalink to this headline">¶</a></h1>
 <section id="logging-and-debug-mode">
 <h2>Logging and debug mode<a class="headerlink" href="#logging-and-debug-mode" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.debug_mode">
+<span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">debug_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.debug_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns on debug mode.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="tinerator.set_logging_verbosity">
+<span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">set_logging_verbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#tinerator.LogLevel" title="tinerator.logging.LogLevel"><span class="pre">tinerator.logging.LogLevel</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.set_logging_verbosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the level of verbosity for the logger.
+Use the <cite>LogLevel</cite> class to set.</p>
+<blockquote>
+<div><p>DEBUG &lt; LOG &lt; WARN &lt; ERROR</p>
+</div></blockquote>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.LogLevel">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><a class="headerlink" href="#tinerator.LogLevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 </section>
 <section id="example-datasets">
 <h2>Example datasets<a class="headerlink" href="#example-datasets" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">ExampleData</span></span><a class="headerlink" href="#tinerator.ExampleData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.Borden">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Borden</span></span><a class="headerlink" href="#tinerator.ExampleData.Borden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Very simple DEM used for comparative analysis - Bordon dataset.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.NewMexico">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NewMexico</span></span><a class="headerlink" href="#tinerator.ExampleData.NewMexico" title="Permalink to this definition">¶</a></dt>
+<dd><p>GIS data for a HUC10 in New Mexico.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.RadialMesh">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">RadialMesh</span></span><a class="headerlink" href="#tinerator.ExampleData.RadialMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple radial surface mesh.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="tinerator.ExampleData.Simple">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Simple</span></span><a class="headerlink" href="#tinerator.ExampleData.Simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>A very simple collection of meshes, used primarily for testing.</p>
+</dd></dl>
+</dd></dl>
 </section>
 </section>
 
