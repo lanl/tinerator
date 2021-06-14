@@ -1,4 +1,3 @@
-from ipdb.__main__ import set_trace
 import numpy as np
 import pyvista as pv
 from scipy.spatial import distance
