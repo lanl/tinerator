@@ -13,6 +13,7 @@ from .meshing_utils import (
     is_geometry,
 )
 from .sets import SideSet, PointSet, ElementSet
+from .adjacency import UndirectedGraph
 
 
 class SurfaceMesh:
@@ -345,21 +346,63 @@ class SurfaceMesh:
 
         # Iterate over every layer, compute the (sorted) boundary,
         # and grab faces between start and end points
-        for layer in layers:
+        for (sublayer_id, layer) in enumerate(layers):
+            log(f"Generating side set for sublayer {sublayer_id+1} of {len(layers)}")
+
             layer_vtk = layer.to_vtk_mesh()
+            min_x, max_x, min_y, max_y, _, _ = layer_vtk.bounds
+
             layer_centroids = np.array(layer_vtk.cell_centers().points)[:, :2]
             layer_center = np.array(layer_vtk.center)[:2]
-
             layer_faces = unravel_vtk_faces(layer.primary_faces, fill_matrix=True)
 
-            # Sort the boundary clockwise
-            angles = np.array(
-                [
-                    clockwiseangle_and_distance(pt, origin=layer_center)
-                    for pt in layer_centroids
-                ]
-            )
-            sort_idx = np.lexsort((angles[:, 1], angles[:, 0]))
+            adj_graph = UndirectedGraph(layer_vtk)
+            num_layer_cells = layer_centroids.shape[0]
+            visited = np.zeros((num_layer_cells,), dtype=int)
+
+            # Find the leftmost, center cell to use as the first iteration.
+            start_pt = [min_x, (max_y - min_y) / 2.0 + min_y]
+            current_cell_id = distance.cdist([start_pt], layer_centroids).argmin(
+                axis=1
+            )[0]
+
+            # Here, we are traversing the undirected graph in order to get the correct side
+            # element ordering. We start at the middle-left cell and traverse the graph
+            # in a clockwise fashion.
+            iter_visited = 0
+            while not visited.all():
+                visited[current_cell_id] = iter_visited
+                adj_cell_ids = np.array(adj_graph.get_adjacent_nodes(current_cell_id))
+                adj_cell_ids = adj_cell_ids[visited[adj_cell_ids] == 0]
+
+                if len(adj_cell_ids) == 1:
+                    current_cell_id = adj_cell_ids[0]
+                elif len(adj_cell_ids) > 1:
+                    # Assuming a connected graph, this should only be called once:
+                    # when trying to decide which direction to travel on the first iteration
+                    angles = np.array(
+                        [
+                            clockwiseangle_and_distance(pt, origin=layer_center)
+                            for pt in layer_centroids[adj_cell_ids]
+                        ]
+                    )
+                    current_cell_id = adj_cell_ids[
+                        np.lexsort((angles[:, 0], angles[:, 1]))[-1]
+                    ]
+                else:
+                    debug("Reached end of adjacency graph.")
+                    debug(f"Have all points been visited? {visited.all()}")
+
+                    if not visited.all():
+                        warn(
+                            "Side set traversal seems to have failed. Are there unconnected cells?"
+                        )
+
+                    break
+
+                iter_visited += 1
+
+            sort_idx = np.argsort(visited)
             layer_centroids_sorted = layer_centroids[sort_idx]
 
             layer_sets = []

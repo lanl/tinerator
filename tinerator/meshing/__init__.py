@@ -26,6 +26,7 @@ from .write_exodusii_mesh import (
 
 from .surface_mesh import SurfaceMesh
 from .sets import PointSet, ElementSet, SideSet
+from .adjacency import adjacency_matrix, UndirectedGraph
 
 NODE = "node"
 CELL = "cell"
