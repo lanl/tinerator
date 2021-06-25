@@ -140,7 +140,9 @@ def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: i
     return np.repeat(mat_ids_all, cells_per_layer).astype(int)
 
 
-def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids: list):
+def stack_layers(
+    top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids: list, crs=None
+):
     """
     Internal function used for stacking 2D surface meshes
     into 3D volumetric meshes.
@@ -193,6 +195,7 @@ def stack_layers(top_surface: Mesh, layer_nodes: list, sublayers: list, mat_ids:
 
     # Construct the final mesh object
     volume_mesh = StackedMesh(etype=volume_mesh_type)
+    volume_mesh.crs = crs
     volume_mesh.nodes = volume_nodes
     volume_mesh.elements = volume_connectivity
     volume_mesh.material_id = compute_material_id(
@@ -334,4 +337,10 @@ def extrude_mesh(
             crs=surface_mesh.element_type,
         )
 
-    return stack_layers(surface_mesh, all_layers, layer_sublayers, layer_material_ids)
+    return stack_layers(
+        surface_mesh,
+        all_layers,
+        layer_sublayers,
+        layer_material_ids,
+        crs=surface_mesh.crs,
+    )

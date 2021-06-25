@@ -6,7 +6,7 @@ from .gis_tools import (
     distance_map,
     resample_raster,
 )
-from .raster import Raster, load_raster
+from .raster import Raster, load_raster, new_raster
 
 # from .vector import Shape, load_shapefile, ShapeType
 from .geometry import Geometry, load_shapefile

@@ -4,7 +4,7 @@ import os
 import numpy as np
 import collections
 from pyproj import CRS
-from typing import Union, List
+from typing import Type, Union, List
 from .write_exodusii_mesh import dump_exodus
 from .meshing_utils import flatten_list
 from .mesh_metrics import triangle_quality
@@ -825,6 +825,104 @@ class StackedMesh(Mesh):
         self._nodes_per_layer = None
         self._elems_per_layer = None
 
-    def get_cells_at_sublayer(self, sublayer: int) -> np.ndarray:
-        raise NotImplementedError("Layering in progress")
-        # return self._cell_layer_ids == layer
+    @property
+    def sublayers(self):
+        layer_ids = np.unique(self.get_attribute("cell_layer_id"))
+        layer_ids = [str(x) for x in layer_ids]
+        return [tuple(map(int, str(x).split("."))) for x in layer_ids]
+
+    def get_cells_at_sublayer(
+        self, sublayer: Union[int, tuple], return_mask: bool = False
+    ) -> np.ndarray:
+        """Returns the cell IDs for the given sublayer.
+
+        Args:
+            sublayer (Union[int, tuple]): [description]
+            return_mask (bool, optional): [description]. Defaults to False.
+
+        Raises:
+            TypeError: [description]
+
+        Returns:
+            np.ndarray: [description]
+        """
+        layer_id = self.get_attribute("cell_layer_id")
+
+        if isinstance(sublayer, int):
+            mask = np.floor(layer_id).astype(int) == sublayer
+        elif isinstance(sublayer, tuple):
+            mask = layer_id == float(f"{sublayer[0]}.{sublayer[1]}")
+        else:
+            raise TypeError(f"Bad type: {type(sublayer)}")
+
+        if return_mask:
+            return mask
+
+        return np.argwhere(mask).T[0]
+
+    def get_cells_at_column(self, xy: List[float]):
+        """Returns the cells for a given column.
+
+        Args:
+            column (int): [description]
+
+        Raises:
+            NotImplementedError: [description]
+        """
+        from scipy.spatial.distance import cdist
+
+        cell_ids = np.arange(self.n_elements)
+        centroids = self.get_cell_centroids()[:, :2]
+        dists = cdist([xy], centroids)
+
+        cols = []
+        for sublayer in self.sublayers:
+            mask = self.get_cells_at_sublayer(sublayer)
+            cols.append(cell_ids[dists.argmin()])
+
+        return np.array(cols).astype(int)
+
+    def add_attribute_from_raster(
+        self,
+        attribute_name: str,
+        raster,
+        attribute_type: str = "cell",
+        data_type: Union[type, str] = None,
+        at_layer: Union[int, tuple] = None,
+        fill_value: int = -1,
+        **kwargs,
+    ):
+        """
+        Creates a new attribute from raster data.
+        If ``attribute_type = "cell"``, then every mesh cell will be filled with the values
+        of the raster at the cell centroids of the mesh.
+        If ``attribute_type = "node"``, then every mesh node will be filled with the values
+        of the raster at the mesh nodes.
+        The code does not currently support ``attribute_type = "scalar"``.
+
+        Args
+        ----
+            attribute_name (str): The name of the attribute to create.
+            raster (tinerator.gis.Raster): The Raster object to source attribute data from.
+            attribute_type (:obj:`str`, optional): The type of attribute to create. "cell", "node", or "scalar.
+            data_type (:obj:`Union[type, str]`, optional): Specifies the data type for the attribute. "int" or "float".
+            **kwargs: Other keyword arguments for :obj:`Mesh.add_attribute`.
+        """
+
+        if attribute_type in MeshAttribute.CELL_TYPE_ALIAS:
+            points = self.get_cell_centroids()
+        elif attribute_type in MeshAttribute.NODE_TYPE_ALIAS:
+            points = self.nodes
+        elif attribute_type in MeshAttribute.SCALAR_TYPE_ALIAS:
+            raise NotImplementedError("Scalars are not yet implemented.")
+
+        if at_layer is not None:
+            cell_mask = self.get_cells_at_sublayer(at_layer, return_mask=True)
+            data = np.full((self.n_elements,), fill_value)
+            data[cell_mask] = raster.values_at(points[cell_mask])
+        else:
+            data = raster.values_at(points)
+
+        self.add_attribute(
+            attribute_name, data, type=attribute_type, data_type=data_type
+        )

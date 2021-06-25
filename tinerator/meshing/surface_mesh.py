@@ -161,6 +161,8 @@ class SurfaceMesh:
             >>> set = surf_mesh.get_faces_where(attribute_name="material_id", attribute_value=1)
         """
 
+        assert isinstance(attribute_name, str)
+
         faces = self.faces
 
         cell_map = self.cell_mapping
@@ -272,14 +274,40 @@ class SurfaceMesh:
             )
             return ps.remove(self.top_nodes).remove(self.bottom_nodes)
 
-    def discretize_top(
-        self, heights: np.array, return_faces: bool = True, return_points: bool = False
-    ):
+    def discretize_top(self, attribute_name: str):
         """
-        ``heights`` can either be a NumPy array of elevations,
-        or a Geometry object composed of polygons.
+        Returns a side set for each unique value in an attribute.
+        Attribute *must be* discrete.
+
+        Args:
+            attribute_name (str): The attribute name to query from.
+
+        Returns:
+            List[SideSet]: A list of side sets.
         """
-        raise NotImplementedError()
+        bottom_faces = self.bottom_faces
+        side_faces = self.side_faces
+
+        attribute_values = np.unique(self._mesh.get_array(attribute_name))
+
+        if len(attribute_values) > 100:
+            warn(
+                f"{len(attribute_values)} side sets will be created. "
+                "This function should only be used for discrete attributes."
+            )
+
+        if np.allclose(attribute_values, attribute_values.astype(int)):
+            attribute_values = attribute_values.astype(int)
+
+        sets = []
+        for value in attribute_values:
+            new_set = self.get_faces_where(
+                attribute_name=attribute_name, attribute_value=value
+            )
+            new_set.name = f"{attribute_name}={value}"
+            sets.append(new_set.remove(side_faces).remove(bottom_faces))
+
+        return sets
 
     def discretize_sides(
         self,
