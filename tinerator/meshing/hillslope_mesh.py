@@ -1,5 +1,6 @@
 import numpy as np
 from pyproj import CRS
+from ..logging import warn, debug
 from .meshing_types import ElementType
 from .mesh import Mesh
 
@@ -53,5 +54,8 @@ def create_hillslope_mesh(z_data: np.ndarray, x_coords: np.ndarray = None, y_coo
     )
 
     mesh.material_id = 1
+
+    warn("Hillslope and quad meshes are an experimental feature.")
+    warn("Expect things to break.")
 
     return mesh
