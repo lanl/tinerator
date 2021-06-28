@@ -150,8 +150,10 @@ def stack_layers(
 
     if top_surface.element_type == ElementType.TRIANGLE:
         volume_mesh_type = ElementType.PRISM
+        volume_mesh_nodes_per_elem = 6
     elif top_surface.element_type == ElementType.QUAD:
         volume_mesh_type = ElementType.HEX
+        volume_mesh_nodes_per_elem = 8
     else:
         raise ValueError(
             f"Could not create stacked mesh from {top_surface.element_type}"
@@ -179,10 +181,9 @@ def stack_layers(
     volume_connectivity = np.vstack(volume_connectivity)
 
     # Take the stacked 2D elements and connect them to make them 3D
-    if volume_mesh_type == ElementType.PRISM:
-        # do i need to swap connectivity? do so here
+    if volume_mesh_type in [ElementType.PRISM, ElementType.HEX]:
         num_prisms = num_total_layers * num_cells_per_layer
-        prisms = np.zeros((num_prisms, 6), dtype=int)
+        prisms = np.zeros((num_prisms, volume_mesh_nodes_per_elem), dtype=int)
 
         for i in range(num_prisms):
             prisms[i] = np.hstack(

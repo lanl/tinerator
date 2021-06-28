@@ -28,6 +28,9 @@ EXODUS_ELEMENTS = [
     "Quad9",  # pp. 17
     "Tet4",
     "Tet5",
+    "Hex8",
+    "Hex9",
+    "Hex20",
     "Tet10",
     "Tet11",
     "Tet14",
@@ -166,6 +169,17 @@ def prepare_node_sets(node_sets: List[dict]) -> List[dict]:
 
 
 def prepare_side_sets(side_sets, cell_mapping):
+    """
+    Prepares side sets to local Exodus
+    reference frame.
+
+    Args:
+        side_sets (List[dict]): List of dictionaries.
+        cell_mapping ([type]): n]
+
+    Returns:
+        [type]: [description]
+    """
     side_sets_exo = []
 
     if isinstance(side_sets, dict):
@@ -282,6 +296,10 @@ def dump_exodus(
         elem_type = "Wedge6"
     elif mesh_elems.shape[1] == 3:
         elem_type = "Tri3"
+    elif mesh_elems.shape[1] == 4:
+        elem_type = "Quad4"
+    elif mesh_elems.shape[1] == 8:
+        elem_type = "Hex8"
     else:
         raise ValueError("Unknown element shape")
 

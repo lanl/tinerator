@@ -4,7 +4,7 @@ import os
 import numpy as np
 import collections
 from pyproj import CRS
-from typing import Type, Union, List
+from typing import Union, List
 from .write_exodusii_mesh import dump_exodus
 from .meshing_utils import flatten_list
 from .mesh_metrics import triangle_quality
@@ -629,6 +629,10 @@ class Mesh:
             etype = "prism"
         elif self.element_type == ElementType.POLYGON:
             etype = "polygon"
+        elif self.element_type == ElementType.HEX:
+            etype = "hex"
+        elif self.element_type == ElementType.QUAD:
+            etype = "quad"
         else:
             raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
 
@@ -698,7 +702,12 @@ class Mesh:
             node_sets = None
             element_sets = None
 
-        element_mapping = {"WEDGE6": [0, 1, 2, 3, 4, 5]}
+        element_mapping = {
+            "TRI3": [0, 1, 2],
+            "WEDGE6": [0, 1, 2, 3, 4, 5], 
+            "QUAD4": [0, 1, 2, 3],
+            "HEX8": [0, 1, 2, 3, 4, 5, 6, 7],
+        }
 
         dump_exodus(
             outfile,
@@ -743,6 +752,10 @@ class Mesh:
                 cell_type = "tri"
             elif self.element_type == ElementType.PRISM:
                 cell_type = "prism"
+            elif self.element_type == ElementType.QUAD:
+                cell_type = "quad"
+            elif self.element_type == ElementType.HEX:
+                cell_type = "hex"
             elif self.element_type is None:
                 cell_type = None
             else:

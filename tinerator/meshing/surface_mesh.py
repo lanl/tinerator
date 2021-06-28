@@ -174,7 +174,7 @@ class SurfaceMesh:
         captured_cells = cell_map[face_idx]
         captured_surf_faces = faces[face_idx]
         captured_faces = np.hstack(
-            [[len(fc), *node_map[fc]] for fc in captured_surf_faces]
+            [[len(fc), *node_map[fc.astype(int)]] for fc in captured_surf_faces]
         )
 
         return SideSet(

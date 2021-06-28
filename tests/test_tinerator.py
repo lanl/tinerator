@@ -1,4 +1,5 @@
 import os
+import pytest
 import sys
 import numpy as np
 import tinerator as tin
@@ -214,3 +215,35 @@ def test_exodus_write():
         diff = tin.meshing.check_mesh_diff(outfile, example.exodus_mesh)
 
         assert len(diff) < 66
+
+@pytest.mark.dev
+def test_quad_mesh():
+    z_data = [1, 2, 3, 4, 5, 4, 3, 2, 1]
+    x_coords = list(range(len(z_data)))
+
+    quad_mesh = tin.meshing.create_hillslope_mesh(z_data, x_coords=x_coords)
+    #quad_mesh.view()
+    print(quad_mesh)
+
+    quad_mesh.material_id = [1,2,3,4,5,6,7,8]
+    quad_mesh.save("quad_out.exo")
+
+    layers = [
+        ("constant", 3, 3, 1)
+    ]
+    hex_mesh = tin.meshing.extrude_mesh(quad_mesh, layers)
+    #hex_mesh.view()
+    hex_mesh.save("hex_out.exo")
+    hex_mesh.save("hex_out.inp")
+
+    surf_mesh = hex_mesh.surface_mesh()
+
+    sets = [
+        surf_mesh.top_faces,
+        surf_mesh.side_faces,
+        surf_mesh.bottom_faces,
+    ]
+
+    hex_mesh.save("hex_out.exo", sets=sets)
+
+    #hex_mesh.view(sets=sets)

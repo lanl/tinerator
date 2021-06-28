@@ -34,9 +34,15 @@ def _mesh_to_vtk_unstructured(
     if element_type.lower() == "tri":
         nodes_per_elem = 3
         vtk_cell_type = vtk.VTK_TRIANGLE
+    elif element_type.lower() == "quad":
+        nodes_per_elem = 4
+        vtk_cell_type = vtk.VTK_QUAD
     elif element_type.lower() == "prism":
         nodes_per_elem = 6
         vtk_cell_type = vtk.VTK_WEDGE
+    elif element_type.lower() == "hex":
+        nodes_per_elem = 8
+        vtk_cell_type = vtk.VTK_HEXAHEDRON
     elif element_type.lower() == "polygon":
         vtk_cell_type = vtk.VTK_POLYGON
     else:
@@ -53,7 +59,7 @@ def _mesh_to_vtk_unstructured(
             (np.full((ncells, 1), nodes_per_elem), mesh.elements - 1)
         ).flatten()
 
-    cell_type = np.repeat([vtk_cell_type], ncells)
+    cell_type = np.repeat([vtk_cell_type], ncells).astype(int)
     nodes = deepcopy(mesh.nodes)
 
     # Scale mesh coordinates
@@ -103,6 +109,7 @@ def plot_3d(
     # Additional documentation:
     # https://docs.pyvista.org/plotting/plotting.html#pyvista.plot
     # https://docs.pyvista.org/user-guide/jupyter/ipygany.html#returning-scenes
+
 
     grid = _mesh_to_vtk_unstructured(
         mesh,

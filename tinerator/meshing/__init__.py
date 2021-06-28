@@ -1,4 +1,5 @@
 from .mesh import Mesh, load_mesh
+from .hillslope_mesh import create_hillslope_mesh
 from .meshing_types import ElementType
 from .layering import (
     ProportionalSublayering,
