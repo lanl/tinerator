@@ -149,8 +149,8 @@ def prepare_node_sets(node_sets: List[dict]) -> List[dict]:
         return []
 
     for (i, node_set) in enumerate(node_sets):
-        set_name = _get_key(node_set, "set_name", fill_none=f"NodeSetID={i+1}")
         set_id = _get_key(node_set, "set_id", fill_none=int(f"4{i}"))
+        set_name = _get_key(node_set, "set_name", fill_none=f"NodeSetID={set_id}")
         set_nodes = _get_key(node_set, "set_nodes")
         num_set_nodes = len(set_nodes)
         num_set_dist_facts = _get_key(node_set, "num_set_dist_facts", fill_none=0)
@@ -191,8 +191,8 @@ def prepare_side_sets(side_sets, cell_mapping):
     set_mapping = np.array(set_mapping)
 
     for (i, side_set) in enumerate(side_sets):
-        set_name = _get_key(side_set, "set_name", fill_none=f"SideSetID={i+1}")
         set_id = _get_key(side_set, "set_id", fill_none=int(f"3{i}"))
+        set_name = _get_key(side_set, "set_name", fill_none=f"SideSetID={set_id}")
         set_elems = np.array(_get_key(side_set, "set_elems"), dtype=int)
         set_sides = np.array(_get_key(side_set, "set_sides"), dtype=int)
         num_set_sides = len(set_sides)
