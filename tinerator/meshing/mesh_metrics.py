@@ -1,5 +1,28 @@
 import numpy as np
 
+def check_orientation(mesh):
+    """Returns True if nodes are ordered clockwise, and False otherwise.
+
+    Args:
+        mesh ([type]): [description]
+    """
+
+    raise NotImplementedError()
+
+    #elements = mesh.elements - 1
+
+    #edges = np.array([
+    #    [elements[:,0], elements[:,1]],
+    #    [elements[:,1], elements[:,2]],
+    #    [elements[:,2], elements[:,3]],
+    #    [elements[:,3], elements[:,0]],
+    #], dtype=int)
+
+    #points = mesh.nodes[edges]
+
+    # https://stackoverflow.com/a/1165943/5150303
+
+
 
 def prism_volume(mesh):
     """

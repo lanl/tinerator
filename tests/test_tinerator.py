@@ -218,23 +218,28 @@ def test_exodus_write():
 
 @pytest.mark.dev
 def test_quad_mesh():
-    z_data = [1, 2, 3, 4, 5, 4, 3, 2, 1]
+    CELLS_LENGTH = 100
+    CELLS_DEPTH = 20
+    PLANAR_SURFACE = True#False
+
+    if PLANAR_SURFACE:
+        z_data = [1] * CELLS_LENGTH
+    else:
+        z_data = [np.sin((2*np.pi)*(i/CELLS_LENGTH)) for i in range(CELLS_LENGTH)]
+    
     x_coords = list(range(len(z_data)))
 
-    quad_mesh = tin.meshing.create_hillslope_mesh(z_data, x_coords=x_coords)
-    #quad_mesh.view()
+    quad_mesh = tin.meshing.create_hillslope_mesh(np.array(z_data, dtype=float), x_coords=x_coords)
     print(quad_mesh)
 
-    quad_mesh.material_id = [1,2,3,4,5,6,7,8]
-    quad_mesh.save("quad_out.exo")
+    # DOES NOT WORK
+    #quad_mesh.material_id = x_coords
 
     layers = [
-        ("constant", 3, 3, 1)
+        ("constant", 20, 100, 1)
     ]
     hex_mesh = tin.meshing.extrude_mesh(quad_mesh, layers)
-    #hex_mesh.view()
-    hex_mesh.save("hex_out.exo")
-    hex_mesh.save("hex_out.inp")
+    print(hex_mesh)
 
     surf_mesh = hex_mesh.surface_mesh()
 
@@ -244,6 +249,17 @@ def test_quad_mesh():
         surf_mesh.bottom_faces,
     ]
 
-    hex_mesh.save("hex_out.exo", sets=sets)
+    # Temp - until MSTK is fixed
+    for s in sets:
+        s.name = None
 
+    #quad_mesh.view()
+    #hex_mesh.view()
     #hex_mesh.view(sets=sets)
+
+    with TemporaryDirectory() as tmp_dir:
+        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tinerator-core/tests/ttt"
+        quad_mesh.save(os.path.join(tmp_dir, "quad_out.exo"))
+        hex_mesh.save(os.path.join(tmp_dir, "hex_out.exo"))
+        hex_mesh.save(os.path.join(tmp_dir, "hex_out.inp"))
+        hex_mesh.save(os.path.join(tmp_dir, "hex_out.exo"), sets=sets)

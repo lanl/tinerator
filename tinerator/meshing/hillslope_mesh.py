@@ -47,8 +47,8 @@ def create_hillslope_mesh(z_data: np.ndarray, x_coords: np.ndarray = None, y_coo
 
     quads = np.array(quads, dtype=int) + 1
     mesh = Mesh(
-        nodes=coords.astype(int),
-        elements=quads,
+        nodes=coords.astype(float),
+        elements=quads.astype(int),
         etype=ElementType.QUAD,
         crs=crs,
     )
