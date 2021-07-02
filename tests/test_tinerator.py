@@ -258,7 +258,6 @@ def test_quad_mesh():
     #hex_mesh.view(sets=sets)
 
     with TemporaryDirectory() as tmp_dir:
-        tmp_dir = "/Users/livingston/playground/lanl/tinerator/tinerator-core/tests/ttt"
         quad_mesh.save(os.path.join(tmp_dir, "quad_out.exo"))
         hex_mesh.save(os.path.join(tmp_dir, "hex_out.exo"))
         hex_mesh.save(os.path.join(tmp_dir, "hex_out.inp"))
