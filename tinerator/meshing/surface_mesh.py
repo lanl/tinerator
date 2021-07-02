@@ -3,6 +3,7 @@ import pyvista as pv
 from scipy.spatial import distance
 from ..constants import _in_notebook, JUPYTER_BACKEND_DEFAULT
 from ..logging import log, warn, debug, _pylagrit_verbosity
+from .mesh_metrics import get_cell_normals
 from .meshing_utils import (
     clockwiseangle_and_distance,
     ravel_faces_to_vtk,
@@ -532,3 +533,51 @@ class SurfaceMesh:
         captured_faces = ravel_faces_to_vtk(faces[captured_face_ids].astype(int))
 
         return SideSet(self.parent_mesh, captured_cells, captured_faces, name=set_name)
+
+    def from_cell_normals(
+        self,
+        get_north: bool = True,
+        get_south: bool = True,
+        get_west: bool = True,
+        get_east: bool = True,
+        get_top: bool = True,
+        get_bottom: bool = False,
+        tol: float = 0.03,
+    ):
+        compass = {
+            "north": [0, +1, 0],
+            "south": [0, -1, 0],
+            "east": [+1, 0, 0],
+            "west": [-1, 0, 0],
+            "up": [0, 0, +1],
+            "down": [0, 0, -1],
+        }
+
+        normals = get_cell_normals(self._mesh)
+
+        node_map = self.node_mapping
+        faces = self.faces
+        cell_map = self.cell_mapping
+
+        sets = []
+
+        for compass_dir in compass:
+            v = compass[compass_dir]
+            diff = np.mean(np.abs(normals - np.array(v, dtype=float)), axis=1)
+            idx = np.argwhere(diff < tol).T[0]
+
+            if idx.size == 0:
+                continue
+
+            captured_cells = cell_map[idx]
+            captured_surf_faces = faces[idx]
+            captured_faces = np.hstack(
+                [[len(fc), *node_map[fc.astype(int)]] for fc in captured_surf_faces]
+            )
+
+            set = SideSet(
+                self.parent_mesh, captured_cells, captured_faces, name=compass_dir
+            )
+            sets.append(set)
+
+        return sets

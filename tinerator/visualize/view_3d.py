@@ -110,7 +110,6 @@ def plot_3d(
     # https://docs.pyvista.org/plotting/plotting.html#pyvista.plot
     # https://docs.pyvista.org/user-guide/jupyter/ipygany.html#returning-scenes
 
-
     grid = _mesh_to_vtk_unstructured(
         mesh,
         element_type,

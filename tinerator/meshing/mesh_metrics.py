@@ -1,4 +1,7 @@
 import numpy as np
+import vtk
+from vtk.util.numpy_support import vtk_to_numpy
+
 
 def check_orientation(mesh):
     """Returns True if nodes are ordered clockwise, and False otherwise.
@@ -9,19 +12,33 @@ def check_orientation(mesh):
 
     raise NotImplementedError()
 
-    #elements = mesh.elements - 1
+    # elements = mesh.elements - 1
 
-    #edges = np.array([
+    # edges = np.array([
     #    [elements[:,0], elements[:,1]],
     #    [elements[:,1], elements[:,2]],
     #    [elements[:,2], elements[:,3]],
     #    [elements[:,3], elements[:,0]],
-    #], dtype=int)
+    # ], dtype=int)
 
-    #points = mesh.nodes[edges]
+    # points = mesh.nodes[edges]
 
     # https://stackoverflow.com/a/1165943/5150303
 
+
+def get_cell_normals(mesh, feature_angle: float = None):
+    normals = vtk.vtkPolyDataNormals()
+    normals.SetInputData(mesh)
+
+    if feature_angle is not None:
+        normals.SetFeatureAngle(feature_angle)
+
+    normals.ComputeCellNormalsOn()
+    normals.ComputePointNormalsOff()
+    normals.Update()
+
+    output = normals.GetOutput().GetCellData().GetNormals()
+    return vtk_to_numpy(output)
 
 
 def prism_volume(mesh):

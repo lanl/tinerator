@@ -216,28 +216,30 @@ def test_exodus_write():
 
         assert len(diff) < 66
 
+
 @pytest.mark.dev
 def test_quad_mesh():
     CELLS_LENGTH = 100
     CELLS_DEPTH = 20
-    PLANAR_SURFACE = True#False
+    PLANAR_SURFACE = False
 
     if PLANAR_SURFACE:
-        z_data = [1] * CELLS_LENGTH
+        z_data = [1.0 + 3.0 * i / CELLS_LENGTH for i in range(CELLS_LENGTH)]
     else:
-        z_data = [np.sin((2*np.pi)*(i/CELLS_LENGTH)) for i in range(CELLS_LENGTH)]
-    
+        z_data = [np.sin((2 * np.pi) * (i / CELLS_LENGTH)) for i in range(CELLS_LENGTH)]
+        z_data = [z_data[i] + 3.0 * i / CELLS_LENGTH for i in range(CELLS_LENGTH)]
+
     x_coords = list(range(len(z_data)))
 
-    quad_mesh = tin.meshing.create_hillslope_mesh(np.array(z_data, dtype=float), x_coords=x_coords)
+    quad_mesh = tin.meshing.create_hillslope_mesh(
+        np.array(z_data, dtype=float), x_coords=x_coords
+    )
     print(quad_mesh)
 
     # DOES NOT WORK
-    #quad_mesh.material_id = x_coords
+    # quad_mesh.material_id = x_coords
 
-    layers = [
-        ("constant", 20, 100, 1)
-    ]
+    layers = [("constant", 20, 100, 1)]
     hex_mesh = tin.meshing.extrude_mesh(quad_mesh, layers)
     print(hex_mesh)
 
@@ -249,13 +251,15 @@ def test_quad_mesh():
         surf_mesh.bottom_faces,
     ]
 
+    sets = surf_mesh.from_cell_normals()
+
     # Temp - until MSTK is fixed
     for s in sets:
         s.name = None
 
-    #quad_mesh.view()
-    #hex_mesh.view()
-    #hex_mesh.view(sets=sets)
+    # quad_mesh.view()
+    # hex_mesh.view()
+    # hex_mesh.view(sets=sets)
 
     with TemporaryDirectory() as tmp_dir:
         quad_mesh.save(os.path.join(tmp_dir, "quad_out.exo"))
