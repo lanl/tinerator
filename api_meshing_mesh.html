@@ -318,6 +318,11 @@ The code does not currently support <code class="docutils literal notranslate"><
 <span class="sig-name descname"><span class="pre">get_cell_centroids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.get_cell_centroids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the centroids of every cell</p>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.get_cells_along_line">
+<span class="sig-name descname"><span class="pre">get_cells_along_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.get_cells_along_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the IDs of cells that intersect with the line formed by [line_start, line_end].</p>
+</dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.material_id">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">material_id</span></span><a class="headerlink" href="#tinerator.meshing.Mesh.material_id" title="Permalink to this definition">¶</a></dt>
@@ -447,6 +452,11 @@ Allows for more configuration than the standard
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.set_attribute">
 <span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.set_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets an existing attribute.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.Mesh.set_cell_materials">
+<span class="sig-name descname"><span class="pre">set_cell_materials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tinerator.meshing.Mesh.set_cell_materials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the material ID for the given cells to the given value.</p>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="tinerator.meshing.Mesh.surface_mesh">
