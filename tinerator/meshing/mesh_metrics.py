@@ -3,6 +3,27 @@ import vtk
 from vtk.util.numpy_support import vtk_to_numpy
 
 
+def get_cells_along_line(vtk_mesh, line_start, line_end):
+    """Returns the cell IDs that intersect with the line formed by [line_start, line_end].
+
+    Args:
+        vtk_mesh ([type]): [description]
+        line_start ([type]): [description]
+        line_end ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    cell_loc = vtk.vtkCellLocator()
+    cell_loc.SetDataSet(vtk_mesh)
+    cell_loc.BuildLocator()
+
+    cell_ids = vtk.vtkIdList()
+    cell_loc.FindCellsAlongLine(line_start, line_end, 0.001, cell_ids)
+
+    return [cell_ids.GetId(i) for i in range(cell_ids.GetNumberOfIds())]
+
+
 def check_orientation(mesh):
     """Returns True if nodes are ordered clockwise, and False otherwise.
 

@@ -7,7 +7,7 @@ from pyproj import CRS
 from typing import Union, List
 from .write_exodusii_mesh import dump_exodus
 from .meshing_utils import flatten_list
-from .mesh_metrics import triangle_quality
+from .mesh_metrics import triangle_quality, get_cells_along_line
 from .mesh_attributes import MeshAttribute
 from .readwrite import read_avs, write_avs, read_mpas
 from .meshing_types import ElementType
@@ -564,6 +564,16 @@ class Mesh:
             v_edges.append(self.elements[:, i : i + 2])
 
         return np.unique(np.sort(np.vstack(v_edges), axis=1), axis=0)
+
+    def get_cells_along_line(self, line_start, line_end):
+        """Returns the IDs of cells that intersect with the line formed by [line_start, line_end]."""
+        return get_cells_along_line(self.to_vtk_mesh(), line_start, line_end)
+
+    def set_cell_materials(self, cell_ids, value: int):
+        """Sets the material ID for the given cells to the given value."""
+        mat_id = self.material_id
+        mat_id[cell_ids] = value
+        self.material_id = mat_id
 
     def view(
         self,

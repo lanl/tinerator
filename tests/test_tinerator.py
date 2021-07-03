@@ -232,14 +232,16 @@ def test_quad_mesh():
     x_coords = list(range(len(z_data)))
 
     quad_mesh = tin.meshing.create_hillslope_mesh(
-        np.array(z_data, dtype=float), x_coords=x_coords
+        np.array(z_data, dtype=float),
+        x_coords=x_coords,
     )
     print(quad_mesh)
 
-    # DOES NOT WORK
-    # quad_mesh.material_id = x_coords
+    layers = [
+        ("constant", 2, 10, 1),
+        ("constant", 20, 100, 2),
+    ]
 
-    layers = [("constant", 20, 100, 1)]
     hex_mesh = tin.meshing.extrude_mesh(quad_mesh, layers)
     print(hex_mesh)
 
@@ -260,6 +262,19 @@ def test_quad_mesh():
     # quad_mesh.view()
     # hex_mesh.view()
     # hex_mesh.view(sets=sets)
+
+    fractures = [
+        [[10, 0.5, -12.0], [20, 0.5, -3]],
+        [[60, 0.5, 2.0], [80, 0.5, -10]],
+        [[30, 0.5, 1], [40, 0.5, -1]],
+    ]
+
+    for (i, fracture) in enumerate(fractures):
+        cell_ids = hex_mesh.get_cells_along_line(fracture[0], fracture[1])
+        hex_mesh.set_cell_materials(cell_ids, 5 + i)
+
+    hex_mesh.view(active_scalar="material_id")
+    exit()
 
     with TemporaryDirectory() as tmp_dir:
         quad_mesh.save(os.path.join(tmp_dir, "quad_out.exo"))
