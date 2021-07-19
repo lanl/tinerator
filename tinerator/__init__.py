@@ -14,8 +14,10 @@ reproduce, prepare derivative works, distribute copies to the public,
 perform publicly and display publicly, and to permit others to do so.
 """
 
+version_info = (1, 0, 0)
+__version__ = ".".join(map(str, version_info))
+
 import os
-from tinerator._version import __version__
 from tinerator.logging import set_logging_verbosity, debug_mode, LogLevel
 import tinerator.meshing as meshing
 import tinerator.gis as gis

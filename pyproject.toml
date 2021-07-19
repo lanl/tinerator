@@ -1,27 +1,6 @@
-# https://snarky.ca/what-the-heck-is-pyproject-toml/
-# https://python-poetry.org/docs/pyproject/
-# https://medium.com/swlh/a-modern-set-up-for-python-package-development-f60b27a26bd7
-
-[tool.black]
-line-length = 88
-target-version = ['py36', 'py37', 'py38']
-include = '\.pyi?$'
-
-[tool.poetry]
-name = "tinerator"
-version = "0.1.0"
-description = "Intuitive mesh generation from GIS data"
-authors = ["Daniel Reece Livingston <livingston@lanl.gov>"]
-license = "BSD-3"
-
-[tool.poetry.dependencies]
-python = "^3.8"
-numpy = "^1.20.1"
-pyproj = "^3.0.1"
-meshio = "^4.3.11"
-
-[tool.poetry.dev-dependencies]
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = [
+    "setuptools>=42",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"

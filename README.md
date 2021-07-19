@@ -2,6 +2,11 @@
 
 [![build](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml/badge.svg)](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+- PyPI
+- License
+- Coveralls
+- Docs (CI)
+
 [![dockerhub](https://img.shields.io/static/v1?label=Docker&message=Download%20container&color=blue&style=for-the-badge&logo=docker)](https://hub.docker.com/r/ees16/tinerator) <br/>
 [![readthedocs](https://img.shields.io/static/v1?label=Documentation&message=Read%20online&color=blue&style=for-the-badge&logo=read-the-docs)](https://daniellivingston.github.io/tinerator-core/) <br/>
 [![jupyter](https://img.shields.io/static/v1?label=Jupyter%20Notebook&message=View%20examples&color=blue&style=for-the-badge&logo=jupyter)](https://github.com/daniellivingston/tinerator-core/tree/master/examples)
