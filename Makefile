@@ -4,8 +4,11 @@
 all: ## Builds the package
 	python setup.py build
 
+install: tpls ## Builds & installs TINerator
+	python setup.py install
+
 tpls: ## Builds TPLs (Exodus, JIGSAW, and PyLaGriT)
-	./tpls/build-tpls.sh -A
+	./tpls/build-tpls.sh -A -M
 
 coverage: ## Run tests with code coverage
 	coverage erase

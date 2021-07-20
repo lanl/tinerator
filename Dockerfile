@@ -1,6 +1,4 @@
 # https://betterprogramming.pub/super-slim-docker-containers-fdaddc47e560
-
-
 FROM ubuntu:20.04
 LABEL maintainer="Daniel Livingston <livingston@lanl.gov>"
 WORKDIR /tinerator-install
@@ -34,9 +32,6 @@ RUN apt-get update -y && \
     # Change the default shell to bash
     chsh -s /bin/bash $(whoami)
 
-# Build Python packages
-RUN pip install -r requirements.txt
-
 # Configure Jupyter Notebook/Jupyter Lab settings
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
@@ -47,24 +42,17 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
 
-# Build all TPLs
-RUN ./tpls/build-tpls.sh -A -M && \
-    echo "export PYTHONPATH=/tinerator-install/:$PYTHONPATH" >> ~/.bashrc && \
-    echo "export PYTHONPATH=/tinerator-install/tpls/seacas/install/lib/:$PYTHONPATH" >> ~/.bashrc
-
-# Test TINerator
-#RUN cd /tinerator-install/tests && \
-#    pytest
-
-# Generate the documentation, and copy it (+ examples) to user-facing location
-RUN cd /tinerator-install/docs/ && \
-    make html && \
+RUN \
+    # Build dependencies and build TINerator
+    make deps && make install && \
+    # Test TINerator
+    make test && \
+    # Build the documentation
+    make docs && \
+    # Copy the documentation to a user-facing place
     mkdir -p /tinerator/ && \
     cp -r /tinerator-install/docs/_build/html /tinerator/docs && \
     cp -r /tinerator-install/examples /tinerator/examples
-
-# Generate the PYTHONPATH so that it's visible to Jupyter on launch
-ENV PYTHONPATH "/tinerator-install/:/tinerator-install/tpls/seacas/install/lib/:${PYTHONPATH}"
 
 WORKDIR /tinerator/
 
