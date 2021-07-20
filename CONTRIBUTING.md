@@ -5,12 +5,14 @@
 Pull requests for missing features, bug fixes, and documentation updates are
 more than welcome. To contribute, please submit a pull request at
 
-    https://github.com/daniellivingston/tinerator-core
+    https://github.com/lanl/tinerator
 
 To ensure the best chance of acceptance for your pull request, please ensure that:
 
 1. All tests pass, and you have added test case(s) for your developed functionality
+  - Tests are run with `make test`
 2. Your code is well documented, formatted with the [Black](https://github.com/psf/black) code formatter, and, if applicable, that the documentation has been updated to reflect any new functionality
+  - Code is formatted with `make format`
 3. That the purpose and scope of your contributions are well explained in the PR
 
 ### Need an Issue?
