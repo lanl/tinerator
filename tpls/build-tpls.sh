@@ -39,8 +39,8 @@ build_jigsaw() {
     git clone https://github.com/dengwirda/jigsaw-python.git ${JIGSAW_SRC_DIR}
     cd ${JIGSAW_SRC_DIR}
 
-    python3 setup.py build_external
-    python3 setup.py install
+    python setup.py build_external
+    python setup.py install
 
     cd $_cwd
 }
@@ -94,8 +94,21 @@ build_exodus() {
 
     make && make install
 
-    export PYTHONPATH=${SEACAS_SRC_DIR}/install/lib:${PYTHONPATH}
+    cd ${SEACAS_SRC_DIR}/install/lib
+    cat >setup.py << EOL
+from setuptools import setup
+setup(
+    name='exodus3',
+    version='0.1.0',
+    py_modules=['exodus3'],
+    #entry_points='''
+    #    [console_scripts]
+    #    exodus3=exodus3:exodus3
+    #''',
+)
+EOL
 
+    python setup.py install || echo "INSTALLING PYTHON MODULE FAILED! $(pwd)/exodus3.py"
     cd $_cwd
 }
 

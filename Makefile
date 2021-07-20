@@ -1,52 +1,58 @@
-# make pep8 to check for basic Python code compliance
-# make pylint to check Python code for enhanced compliance including naming
-#  and documentation
-# make coverage-report to check coverage of the python scripts by the tests
+.DEFAULT_GOAL := help
+.PHONY: all tpls coverage deps format dev docker test test-dev help
 
-PYSOURCES=$(wildcard screed/*.py)
-TESTSOURCES=$(wildcard screed/tests/*.py)
-SOURCES=$(PYSOURCES) setup.py
-
-VERSION=$(shell git describe --tags --dirty | sed s/v//)
-all:
+all: ## Builds the package
 	python setup.py build
 
-install: FORCE
-	python setup.py build install
+tpls: ## Builds TPLs (Exodus, JIGSAW, and PyLaGriT)
+	./tpls/build-tpls.sh -A
 
-install-dependencies: FORCE
-	pip install -e .[all]
+coverage: ## Run tests with code coverage
+	coverage erase
+	coverage run --include=tinerator/* -m pytest -ra
+	coverage report -m
 
-develop: FORCE
-	python setup.py develop
-
-dev:
-	pip install --editable .
-
-dist: dist/screed-$(VERSION).tar.gz
-
-dist/screed-$(VERSION).tar.gz: $(SOURCES)
-	python setup.py sdist
-
-clean: FORCE
+clean: ## Clean build artifacts
 	python setup.py clean --all || true
 	rm -rf build/
 	rm -rf coverage-debug .coverage coverage.xml
 	rm -rf doc/_build
 	rm -rf .eggs/ *.egg-info/ .cache/ __pycache__/ *.pyc */*.pyc */*/*.pyc
 
-pep8: $(PYSOURCES) $(TESTSOURCES)
-	pycodestyle --exclude=_version.py setup.py screed/
+deps: ## Install developer dependencies
+	python -m pip install --upgrade pip
+	python -m pip install -e '.[all]'
 
-pylint: FORCE
-	pylint --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
-		setup.py screed || true
+format: ## Format the code with Black
+	python -m black --verbose --config pyproject.toml .
 
-doc: FORCE
-	cd doc && make html
+dev: ## Temporary build for active development
+	python -m pip install --editable .
 
-test: FORCE
-	python setup.py develop
-	python setup.py test
+docs: ## Builds HTML documentation
+	cd docs/ && make html
 
-FORCE:
+docker: ## Build Docker container
+	docker build -t ees16/tinerator:latest -f Dockerfile ./
+
+test: ## Run tests
+	python -m pytest -ra
+
+test-dev: dev test ## Builds & tests TINerator within active development
+
+help: ## Show help message
+	@IFS=$$'\n' ; \
+	help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##/:/'`); \
+	printf "%s\n\n" "Usage: make [task]"; \
+	printf "%-20s %s\n" "task" "help" ; \
+	printf "%-20s %s\n" "------" "----" ; \
+	for help_line in $${help_lines[@]}; do \
+		IFS=$$':' ; \
+		help_split=($$help_line) ; \
+		help_command=`echo $${help_split[0]} | sed -e 's/^ *//' -e 's/ *$$//'` ; \
+		help_info=`echo $${help_split[2]} | sed -e 's/^ *//' -e 's/ *$$//'` ; \
+		printf '\033[36m'; \
+		printf "%-20s %s" $$help_command ; \
+		printf '\033[0m'; \
+		printf "%s\n" $$help_info; \
+	done
