@@ -38,6 +38,23 @@ After the container launches, navigate to `http://127.0.0.1:8888/lab` in a web b
 
 To build TINerator from source, refer to the [documentation](https://daniellivingston.github.io/tinerator-core/installation.html).
 
+```sh
+# (Optional) Install testing & documentation deps
+$ make deps 
+
+# (Optional) Installs Exodus & JIGSAW & PyLaGriT
+$ make tpls 
+
+# Install TINerator
+$ python setup.py install
+
+# Test TINerator
+$ make test
+
+# Build the documentation (requires `make deps`)
+$ make docs
+```
+
 ### Contributing
 
 Pull requests of all manner are welcomed! Please read the [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
