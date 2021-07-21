@@ -7,6 +7,90 @@ from .meshing_utils import get_linestring_connectivity
 from ..gis import map_elevation, Raster, Geometry, distance_map
 from ..logging import log, warn, debug
 
+"""
+JIGSAW_DEFAULTS = {
+    #------------------------------------------ MISC options
+    verbosity = None
+
+        self.jcfg_file = None
+
+        self.tria_file = None
+        self.bnds_file = None
+
+    #------------------------------------------ INIT options
+        self.init_file = None
+        self.init_tags = None
+        self.init_near = None
+
+    #------------------------------------------ GEOM options
+        self.geom_file = None
+        self.geom_tags = None
+
+        self.geom_seed = None
+
+        self.geom_feat = None
+
+        self.geom_phi1 = None
+        self.geom_phi2 = None
+
+        self.geom_eta1 = None
+        self.geom_eta2 = None
+
+    #------------------------------------------ HFUN options
+        self.hfun_file = None
+        self.hfun_tags = None
+
+        self.hfun_scal = None
+
+        self.hfun_hmax = None
+        self.hfun_hmin = None
+
+    #------------------------------------------ MESH options
+        self.mesh_file = None
+        self.mesh_tags = None
+
+        self.mesh_kern = None
+        self.bnds_kern = None
+
+        self.mesh_iter = None
+
+        self.mesh_dims = None
+
+        self.mesh_top1 = None
+        self.mesh_top2 = None
+
+        self.mesh_siz1 = None
+        self.mesh_siz2 = None
+        self.mesh_siz3 = None
+
+        self.mesh_eps1 = None
+        self.mesh_eps2 = None
+
+        self.mesh_rad2 = None
+        self.mesh_rad3 = None
+
+        self.mesh_off2 = None
+        self.mesh_off3 = None
+
+        self.mesh_snk2 = None
+        self.mesh_snk3 = None
+
+        self.mesh_vol3 = None
+
+    #------------------------------------------ OPTM options
+        self.optm_kern = None
+
+        self.optm_iter = None
+
+        self.optm_qtol = None
+        self.optm_qlim = None
+
+        self.optm_zip_ = None
+        self.optm_div_ = None
+        self.optm_tria = None
+        self.optm_dual = None
+}
+"""
 
 def triangulation_jigsaw(
     raster: Raster,
@@ -16,7 +100,7 @@ def triangulation_jigsaw(
     refinement_feature: Geometry = None,
     scaling_type: str = "relative",
     meshing_kernel: str = "delfront",
-    jigsaw_opts: dict = {"verbosity": 1},
+    **kwargs
 ):
     """
     Uses JIGSAW to triangulate a raster.
@@ -80,6 +164,27 @@ def triangulation_jigsaw(
     geom.vert2 = np.array(verts, dtype=geom.VERT2_t)
     geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
 
+    if False:
+        from matplotlib import pyplot as plt
+        print("====")
+        print(geom.vert2)
+        print(geom.edge2)
+
+        dbg_verts = np.array([x for x, _ in verts])
+        dbg_edges = np.array([x for x, _ in conn])
+        print(dbg_verts[dbg_edges])
+
+        print("====")
+        f = plt.figure()
+
+        for x in dbg_verts[dbg_edges]:
+            dist = np.linalg.norm(x[0] - x[1])
+            print(dist)
+            plt.plot(x[:,0], x[:,1])
+        plt.scatter(dbg_verts[:,0], dbg_verts[:,1], c=list(range(len(verts))))
+        plt.savefig("DEBUG-verts.png")
+        exit()
+
     # Construct JIGSAW opts object
     opts.hfun_scal = scaling_type  # Interpret HMIN/HMAX as relative or absolute?
     opts.hfun_hmin = min_edge_length
@@ -119,11 +224,6 @@ def triangulation_jigsaw(
         # HMIN and HMAX are contained within the HMAT raster now
         opts.hfun_hmin = float(+0.00)
         opts.hfun_hmax = float("inf")
-
-    # Allow for user-defined overrides of `opts`
-    if jigsaw_opts is not None:
-        for key in jigsaw_opts.keys():
-            opts.__dict__[key] = jigsaw_opts[key]
 
     # Run the triangulation algorithm
     debug("Beginning triangulation...")
