@@ -10,6 +10,7 @@ from .raster import Raster, load_raster, new_raster
 from .vector import Shape, ShapeType
 from .geometry import Geometry
 from typing import Any, Callable, List, Union
+from collections.abc import Iterable
 
 try:
     from osgeo import gdal
@@ -104,7 +105,7 @@ def rasterize_geometry(raster: Raster, shape: Shape) -> Raster:
 
 
 def distance_map(
-    raster: Raster, shape: Geometry, min_dist: float = 0.0, max_dist: float = 1.0
+    raster: Raster, shape: Union[Geometry, List[Geometry]], min_dist: float = 0.0, max_dist: float = 1.0
 ) -> Raster:
     """
     Creates a distance map. A new raster will be returned, where
@@ -134,14 +135,30 @@ def distance_map(
 
     log("Creating distance map")
 
-    # Rasterize a shapefile onto the same dimensionality
-    # and projection as `raster`
-    shape_raster = rasterize_geometry(raster, shape)
+    def _raster_mask(raster, shp):
+        # Rasterize a shapefile onto the same dimensionality
+        # and projection as `raster`
+        shape_raster = rasterize_geometry(raster, shp)
 
-    data = np.array(shape_raster.data)
-    data[data < 0] = 0
-    data[data > 0] = 1
-    data = data.astype(bool)
+        data = np.array(shape_raster.data)
+        data[data < 0] = 0
+        data[data > 0] = 1
+        return shape_raster, data.astype(bool)
+
+    if isinstance(shape, Geometry):
+        shape_raster, data = _raster_mask(raster, shape)
+    elif isinstance(shape, Iterable):
+        if not all([isinstance(x, Geometry) for x in shape]):
+            raise ValueError("Expected Geometry object")
+
+        shape_raster, data = _raster_mask(raster, shape[0])
+
+        if len(shape) > 1:
+            for x in shape[1:]:
+                _, data_new = _raster_mask(raster, x)
+                data = data | data_new
+    else:
+        raise ValueError(f"Expected Geometry object, got: {type(shape)}")
 
     # Use Snowy to generate a signed distance field
     # (The weird "[:,:,None]" slicing is due to Snowy
