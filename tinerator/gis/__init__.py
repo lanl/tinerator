@@ -9,7 +9,7 @@ from .gis_tools import (
 from .raster import Raster, load_raster, new_raster
 
 # from .vector import Shape, load_shapefile, ShapeType
-from .geometry import Geometry, load_shapefile
+from .geometry import Geometry, load_shapefile, buffer_geometry
 from .watershed_delin import watershed_delineation, pysheds_watershed_delineation
 from .geoutils import parse_crs, map_elevation, project_vector, unproject_vector
 from .distance_maps import DistanceMap, import_refinement_features

@@ -1,3 +1,4 @@
+from ntpath import join
 import fiona
 from distutils.version import LooseVersion
 from itertools import chain
@@ -296,3 +297,35 @@ def load_shapefile(filename: str) -> Geometry:
             shapes.append(shp_shapely)
 
         return Geometry(shapes=shapes, crs=crs, properties=properties)
+
+def buffer_geometry(geom: Geometry, distance: float, resolution = 16, cap_style = 1, join_style = 1, mitre_limit = 5.0) -> Geometry:
+    """
+    Returns an approximate representation of all points within a given
+    distance of the this geometric object.
+
+    The styles of caps are specified by integer values:
+
+    - 1 (round)
+    - 2 (flat)
+    - 3 (square)
+
+    The styles of joins between offset segments are specified by
+    integer values:
+
+    - 1 (round)
+    - 2 (mitre)
+    - 3 (bevel)
+
+    A positive distance has an effect of dilation; a negative distance,
+    erosion. The optional resolution argument determines the number of
+    segments used to approximate a quarter circle around a point.
+    """
+
+    shapes = []
+
+    for s in geom.shapes:
+        shapes.append(
+            s.buffer(distance, resolution=resolution, cap_style=cap_style, join_style=join_style, mitre_limit=mitre_limit)
+        )
+
+    return Geometry(shapes=shapes, crs=geom.crs, properties=geom.properties)
