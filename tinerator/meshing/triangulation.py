@@ -105,6 +105,9 @@ def triangulate(
     debug(f"Generating boundary for triangulation at distance = {boundary_dist}")
     boundary = raster.get_boundary().polygon_exterior(spacing=boundary_dist)
 
+    #boundary.save("DEBUG_boundary_good.shp")
+    #exit()
+
     return triang_cb(
         raster,
         raster_boundary=boundary,

@@ -1,16 +1,27 @@
-*.egg-info/
-tpls/
+# OS / IDE artifacts
 *DS_Store
+*.swp
+.vscode/
+
+# Distribution
+dist/
+.eggs
+*.egg-info/
+
+# Build artifacts
+tpls/
 __pycache__/
 build/
 internal/
+*.pyc
+docs/_build/
+
+# Runtime artifacts
 *.inp
 lagrit.log
 lagrit.out
 outx3dgen
 logx3dgen
-.vscode/
 .ipynb_checkpoints/
-docs/_build/
 *.exo
 *.vtk
