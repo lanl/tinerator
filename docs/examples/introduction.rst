@@ -1,3 +1,5 @@
+.. _introduction:
+
 Basic Usage
 ===========
 
@@ -32,7 +34,7 @@ Shapefiles are loaded via:
 
     >>> geom = tin.gis.load_shapefile("flowline.shp")
 
-TINerator uses `Fiona <https://fiona.readthedocs.io>`_ as the file reader, and supports all 
+TINerator uses `Fiona <https://fiona.readthedocs.io>`_ as the file reader, and supports all
 file formats that Fiona does.
 
 Visualizing GIS data

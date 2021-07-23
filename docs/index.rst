@@ -2,10 +2,6 @@
 TINerator --- GIS Mesh Generation for FEM
 =========================================
 
-.. raw:: html
-
-    <iframe src="./_static/vtk_example.html" width="100%" height="500px"></iframe>
-
 TINerator_ is a Python module for the rapid creation
 of quality 2D and 3D unstructured meshes from GIS data sources.
 It provides a set of GIS and mesh processing and manipulation
@@ -61,11 +57,12 @@ Contents:
 =========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
-   user_guide
-   examples
-   api
+   user_guide/index
+   examples/index
+   api/index
+   license
 
 Indices and tables
 ==================
