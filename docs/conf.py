@@ -15,7 +15,6 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
-
 # -- Project information -----------------------------------------------------
 
 project = "TINerator"
@@ -24,7 +23,6 @@ author = "Daniel Livingston"
 
 # The full version, including alpha/beta/rc tags
 release = "1.0.0"
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -39,6 +37,11 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.intersphinx",
+    "sphinx_copybutton",
+    "sphinx_inline_tabs",
 ]
 
 source_suffix = ".rst"
@@ -64,6 +67,8 @@ html_theme_options = {
     "light_logo": "logo-color-vert.svg",
     "dark_logo": "logo-color-vert.svg",
     "sidebar_hide_name": True,
+    "navigation_with_keys": True,
+    "announcement": "&#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389;",
 }
 
 
