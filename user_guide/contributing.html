@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Installation" href="installation.html" /><link rel="prev" title="TINerator — GIS Mesh Generation for FEM" href="../index.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Examples &amp; Workflows" href="../examples/index.html" /><link rel="prev" title="Installation" href="installation.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
-        <title>User Guide - TINerator 1.0.0 documentation</title>
+        <title>Contributing - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -118,9 +118,9 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">User Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">User Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Contributing</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples/index.html">Examples &amp; Workflows</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -152,39 +152,56 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="user-guide">
-<span id="id1"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#docker">Docker</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#clarifying-the-docker-command">Clarifying the Docker command</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#interfacing-with-docker-via-bash-instead-of-jupyter-lab">Interfacing with Docker via Bash instead of Jupyter Lab</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#download-the-source">Download the Source</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">Dependencies</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#python-module-dependencies">Python module dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#third-party-programs">Third-party programs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#system-dependencies">System dependencies</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#environment-variables">Environment Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#building-tinerator">Building TINerator</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#install-tinerator">Install TINerator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#post-installation-check">Post-installation check</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#pull-request-process">Pull Request Process</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#need-an-issue">Need an Issue?</a></li>
-</ul>
-</li>
-</ul>
+        <section id="contributing">
+<span id="id1"></span><h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<section id="pull-request-process">
+<h2>Pull Request Process<a class="headerlink" href="#pull-request-process" title="Permalink to this headline">¶</a></h2>
+<p>Pull requests for missing features, bug fixes, and documentation updates are
+more than welcome. To contribute, please submit a pull request at</p>
+<blockquote>
+<div><p><a class="reference external" href="https://github.com/lanl/tinerator">https://github.com/lanl/tinerator</a></p>
+</div></blockquote>
+<p>To ensure the best chance of acceptance for your pull request, please ensure that:</p>
+<ol class="arabic simple">
+<li><p>All tests pass, and you have added test case(s) for your developed functionality</p></li>
+<li><p>Your code is well documented, formatted with the [Black](<a class="reference external" href="https://github.com/psf/black">https://github.com/psf/black</a>) code formatter, and, if applicable, that the documentation has been updated to reflect any new functionality</p></li>
+<li><p>That the purpose and scope of your contributions are well explained in the PR</p></li>
+</ol>
+</section>
+<section id="need-an-issue">
+<h2>Need an Issue?<a class="headerlink" href="#need-an-issue" title="Permalink to this headline">¶</a></h2>
+<p>Visit the Issues page of TINerator and search for tag ‘Good First Issue’.
+These are great issues for someone unfamiliar with the codebase to work on.</p>
+<p>### Function Docstrings</p>
+<p>Documentation is generated with [Sphinx](<a class="reference external" href="https://www.sphinx-doc.org/en/master/">https://www.sphinx-doc.org/en/master/</a>), and docstrings must follow the [Google Style for Python Docstrings](<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html">https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html</a>).</p>
+<p>Further, all functions should be annotated with [type hints](<a class="reference external" href="https://docs.python.org/3/library/typing.html">https://docs.python.org/3/library/typing.html</a>).</p>
+<p>As an example of proper formatting,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">example_function</span><span class="p">(</span><span class="n">param1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">param2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    This is an example of proper docstring formatting.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        param1 (int): The first parameter.</span>
+<span class="sd">        param2 (:obj:`str`, optional): The second parameter. Defaults to None.</span>
+<span class="sd">            Second line of description should be indented.</span>
+<span class="sd">        *args: Variable length argument list.</span>
+<span class="sd">        **kwargs: Arbitrary keyword arguments.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if successful, False otherwise.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if `param2` is not of type `str`.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; result = example_function(10, param2 = '10')</span>
+<span class="sd">        &gt;&gt;&gt; print(result)</span>
+<span class="sd">        True</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param2</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Invalid type for param2: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">param2</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">param1</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">param2</span><span class="p">)</span>
+</pre></div>
 </div>
 </section>
 </section>
@@ -193,23 +210,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="installation.html">
+          <a class="next-page" href="../examples/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Installation</div>
+                <div class="title">Examples &amp; Workflows</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../index.html">
+          <a class="prev-page" href="installation.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Installation</div>
                 
               </div>
             </a>
@@ -223,7 +240,7 @@
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
             |
-            <a class="muted-link" href="../_sources/user_guide/index.rst.txt"
+            <a class="muted-link" href="../_sources/user_guide/contributing.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -243,8 +260,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">User Guide</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#">Contributing</a><ul>
+<li><a class="reference internal" href="#pull-request-process">Pull Request Process</a></li>
+<li><a class="reference internal" href="#need-an-issue">Need an Issue?</a></li>
 </ul>
 </li>
 </ul>
