@@ -8,3 +8,4 @@ Installation
 
 .. toctree::
     installation
+    contributing
