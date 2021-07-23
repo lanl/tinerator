@@ -1,9 +1,3 @@
-.. TINerator documentation master file, created by
-   sphinx-quickstart on Sat Apr 24 10:46:55 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-
 =========================================
 TINerator --- GIS Mesh Generation for FEM
 =========================================
@@ -12,10 +6,10 @@ TINerator_ is a Python module for the rapid creation
 of quality 2D and 3D unstructured meshes from GIS data sources.
 It provides a set of GIS and mesh processing and manipulation
 submodules that interface cleanly, along with robust visualization
-methods, that allow for an end-to-end meshing workflow for 
+methods, that allow for an end-to-end meshing workflow for
 FEM applications.
 
-.. _TINerator: https://github.com/daniellivingston/tinerator-core
+.. _TINerator: https://github.com/lanl/tinerator
 
 .. image:: _static/sample-mesh.png
    :align: center
@@ -25,7 +19,7 @@ Mesh generation should be simple in Python. TINerator promotes
 a human-readable, intuitive API framework that's easy to use
 without sacrificing power.
 
-A quality triangulation can be generated from a DEM in as 
+A quality triangulation can be generated from a DEM in as
 few as two lines of code:
 
 .. code:: python
@@ -51,9 +45,9 @@ Features
 * Built-in GIS operations like reprojecting, raster clipping, and resampling
 * Adaptive mesh refinement using watershed delineation or any imported shapefile
 * High-quality uniform and refined Delaunay triangulations using meshing kernels
-  from `JIGSAW <http://www.github.com/jigsawpy>`_, PyGMSH, 
+  from `JIGSAW <http://www.github.com/jigsawpy>`_, PyGMSH,
   MeshPy and more
-* `ExodusII <https://github.com/seacas>`_ export supported, with full 
+* `ExodusII <https://github.com/seacas>`_ export supported, with full
   support for side sets, node sets, and element sets.
 * Advanced 2D and 3D visualization capabilities, including live 3D rendering
   within Jupyter notebook cells
@@ -63,10 +57,12 @@ Contents:
 =========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
-   user_guide
-   api
+   user_guide/index
+   examples/index
+   api/index
+   license
 
 Indices and tables
 ==================

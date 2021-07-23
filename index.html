@@ -3,12 +3,14 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User Guide" href="user_guide.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User Guide" href="user_guide/index.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
         <title>Home - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css" />
     
 
@@ -77,7 +79,11 @@
 <label class="overlay sidebar-overlay" for="__navigation"></label>
 <label class="overlay toc-overlay" for="__toc"></label>
 
-
+<div class="announcement">
+  <aside class="announcement-content">
+     &#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389; 
+  </aside>
+</div>
 
 <div class="page">
   <header class="mobile-header">
@@ -112,22 +118,25 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="user_guide.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic.html">Basic Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basic.html#meshing">Meshing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html">Installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">TINerator API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="api_gis.html">GIS Module Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_gis_raster.html">Raster object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_gis_geometry.html">Geometry object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_meshing.html">Meshing Module Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_meshing_mesh.html">Mesh object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_meshing_sets.html">Surface mesh generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_misc.html">Misc. Functions</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples/index.html">Examples &amp; Workflows</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/introduction.html">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/introduction.html#meshing">Meshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/workflow/simple.html">Simple Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/workflow/borden.html">Case Study: Borden Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/snippets/hillslope.html">Hillslope</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">TINerator API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/module.html">TINerator Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gis.html">GIS Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/meshing.html">Meshing Submodule</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 
 </div>
@@ -144,7 +153,7 @@
         </label>
         <section id="tinerator-gis-mesh-generation-for-fem">
 <h1>TINerator — GIS Mesh Generation for FEM<a class="headerlink" href="#tinerator-gis-mesh-generation-for-fem" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://github.com/daniellivingston/tinerator-core">TINerator</a> is a Python module for the rapid creation
+<p><a class="reference external" href="https://github.com/lanl/tinerator">TINerator</a> is a Python module for the rapid creation
 of quality 2D and 3D unstructured meshes from GIS data sources.
 It provides a set of GIS and mesh processing and manipulation
 submodules that interface cleanly, along with robust visualization
@@ -189,81 +198,22 @@ within Jupyter notebook cells</p></li>
 <h2>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#docker">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#download-the-source">Download the Source</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#dependencies">Dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#environment-variables">Environment Variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#building-tinerator">Building TINerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/index.html#installation">Installation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="basic.html">Basic Usage</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#importing-tinerator">Importing TINerator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#primary-data-structures">Primary Data Structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#loading-gis-data">Loading GIS data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#visualizing-gis-data">Visualizing GIS data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#saving-gis-objects">Saving GIS objects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#reprojecting-gis-objects">Reprojecting GIS objects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="basic.html#clipping-a-raster-with-a-geometry-object">Clipping a Raster with a Geometry object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples &amp; Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html#workflow">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html#snippets">Snippets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="basic.html#meshing">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">TINerator API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#documentation">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">TINerator API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api_gis.html">GIS Module Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#loading-files">Loading files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#reprojection">Reprojection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#resample-a-raster">Resample a Raster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#clipping-a-raster-with-geometry">Clipping a Raster with Geometry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#generate-flowlines-from-a-dem-using-watershed-delineation">Generate flowlines from a DEM using watershed delineation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#converting-a-triangulation-into-a-geometry-object">Converting a triangulation into a Geometry object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#rasterize-geometry">Rasterize Geometry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#create-a-pyproj-crs-object">Create a pyproj.CRS object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis.html#compute-the-distance-field-from-a-geometry-object-to-all-raster-cells">Compute the distance field from a Geometry object to all Raster cells</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_gis_raster.html">Raster object</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_gis_raster.html#loading-a-raster-from-a-file">Loading a raster from a file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis_raster.html#raster-class-member-functions">Raster class member functions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_gis_geometry.html">Geometry object</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_gis_geometry.html#loading-a-shapefile-into-a-geometry-object">Loading a Shapefile into a Geometry object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_gis_geometry.html#geometry-class-member-functions">Geometry class member functions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_meshing.html">Meshing Module Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#loading-a-mesh-from-disk">Loading a mesh from disk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#mesh-quality-statistics">Mesh quality statistics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#extruding-a-surface-mesh-into-a-volume-mesh">Extruding a surface mesh into a volume mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#generating-a-triangulation-from-a-raster">Generating a triangulation from a raster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#converting-a-triangulation-into-a-geometry-object">Converting a triangulation into a Geometry object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#estimate-edge-length-size-from-triangle-count">Estimate edge length size from triangle count</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing.html#extracting-a-surface-mesh-and-defining-sets">Extracting a surface mesh and defining sets</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_meshing_mesh.html">Mesh object</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_mesh.html#loading-a-mesh-from-a-file">Loading a mesh from a file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_mesh.html#mesh-element-types">Mesh element types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_mesh.html#mesh-class-member-functions">Mesh class member functions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_meshing_sets.html">Surface mesh generation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_sets.html#generating-a-surface-mesh">Generating a surface mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_sets.html#surface-mesh-class">Surface Mesh class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_sets.html#side-set-class">Side Set class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_meshing_sets.html#point-set-class">Point Set class</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api_misc.html">Misc. Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api_misc.html#logging-and-debug-mode">Logging and debug mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api_misc.html#example-datasets">Example datasets</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
 </ul>
 </div>
 </section>
@@ -281,7 +231,7 @@ within Jupyter notebook cells</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="user_guide.html">
+          <a class="next-page" href="user_guide/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
@@ -341,5 +291,8 @@ within Jupyter notebook cells</p></li>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/scripts/main.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/tabs.js"></script>
     </body>
 </html>

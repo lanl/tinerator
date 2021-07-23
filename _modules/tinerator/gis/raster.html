@@ -1,0 +1,570 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
+        <title>tinerator.gis.raster - TINerator 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css" />
+    
+
+
+<style>
+  :root {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+  }
+  .override-dark {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+  }
+</style><link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../_static/pygments_dark.css"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<div class="announcement">
+  <aside class="announcement-content">
+     &#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389; 
+  </aside>
+</div>
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">TINerator 1.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo-color-vert.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-color-vert.svg" alt="Dark Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/installation.html">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../examples/index.html">Examples &amp; Workflows</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/introduction.html">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/introduction.html#meshing">Meshing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/workflow/simple.html">Simple Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/workflow/borden.html">Case Study: Borden Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/snippets/hillslope.html">Hillslope</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">TINerator API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/module.html">TINerator Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/gis.html">GIS Submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/meshing.html">Meshing Submodule</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <h1>Source code for tinerator.gis.raster</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">richdem</span> <span class="k">as</span> <span class="nn">rd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">CRS</span>
+<span class="kn">from</span> <span class="nn">pyproj.crs</span> <span class="kn">import</span> <span class="n">CRSError</span>
+<span class="kn">from</span> <span class="nn">shapely.ops</span> <span class="kn">import</span> <span class="n">polygonize</span><span class="p">,</span> <span class="n">linemerge</span>
+<span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">error</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Geometry</span>
+<span class="kn">from</span> <span class="nn">..visualize</span> <span class="kn">import</span> <span class="n">plot</span> <span class="k">as</span> <span class="n">pl</span>
+<span class="kn">from</span> <span class="nn">.geoutils</span> <span class="kn">import</span> <span class="n">project_vector</span><span class="p">,</span> <span class="n">unproject_vector</span><span class="p">,</span> <span class="n">parse_crs</span>
+<span class="kn">from</span> <span class="nn">.raster_boundary</span> <span class="kn">import</span> <span class="n">square_trace_boundary</span> <span class="k">as</span> <span class="n">st_boundary</span>
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="kn">import</span> <span class="n">DEFAULT_NO_DATA_VALUE</span><span class="p">,</span> <span class="n">DEFAULT_PROJECTION</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">gdal</span>
+
+<span class="c1"># Rendering a DEM in 3D:</span>
+<span class="c1"># https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py</span>
+
+<span class="n">extension</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="load_raster"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.load_raster">[docs]</a><span class="k">def</span> <span class="nf">load_raster</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">no_data</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Loads a raster from a given filename.</span>
+<span class="sd">    Supports all raster datatypes that GDAL supports, including</span>
+<span class="sd">    GeoTIFF, IMG, and ASC.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): The input filename.</span>
+<span class="sd">        no_data (:obj:`float`, optional): If NoData value is not encoded in the raster,</span>
+<span class="sd">            it can be manually set here.</span>
+<span class="sd">        to_crs (:obj:`str`, optional): If provided, will reproject raster to the given</span>
+<span class="sd">            CRS (can be an EPSG code, WKT string, or `pyproj.CRS` object.)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A `tinerator.Raster` object.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; dem = tin.gis.load_raster("my_dem.tif", no_data=-9999., crs="EPSG:3114")</span>
+<span class="sd">    """</span>
+
+    <span class="k">return</span> <span class="n">Raster</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">no_data</span><span class="o">=</span><span class="n">no_data</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">new_raster</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">geotransform</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">crs</span><span class="p">:</span> <span class="n">CRS</span> <span class="o">=</span> <span class="n">DEFAULT_PROJECTION</span><span class="p">,</span>
+    <span class="n">no_data</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_NO_DATA_VALUE</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Creates a new Raster object from an NxM Numpy array.</span>
+
+<span class="sd">    https://gdal.org/tutorials/geotransforms_tut.html</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data (np.ndarray): An NxM matrix to create the raster from.</span>
+<span class="sd">        geotransform (:obj:`tuple`, optional): The geotransform of the raster. See the GDAL</span>
+<span class="sd">            documentation for more information.</span>
+<span class="sd">        crs (:obj:`pyproj.CRS`, optional): The CRS to create the raster into.</span>
+<span class="sd">        no_data (:obj:`float`, optional): The No Data value to use for the raster.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A TINerator raster object.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; A = np.array([[1,2,3],[4,5,6],[7,8,9]], dtype=float)</span>
+<span class="sd">        &gt;&gt;&gt; raster = tin.gis.new_raster(A)</span>
+<span class="sd">    """</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Float64</span>
+
+    <span class="k">if</span> <span class="n">geotransform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">cell_size</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="n">geotransform</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">xmin</span><span class="p">,</span>
+            <span class="n">cell_size</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">nrows</span><span class="p">),</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="o">-</span><span class="n">cell_size</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="s2">"tmp_raster.tif"</span><span class="p">)</span>
+
+        <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s2">"GTiff"</span><span class="p">)</span>
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">nrows</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">(</span><span class="n">geotransform</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">crs</span><span class="o">.</span><span class="n">to_wkt</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">pyproj</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">WktVersion</span><span class="o">.</span><span class="n">WKT1_GDAL</span><span class="p">))</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="n">no_data</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">FlushCache</span><span class="p">()</span>
+        <span class="n">outdata</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">load_raster</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Raster"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster">[docs]</a><span class="k">class</span> <span class="nc">Raster</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    The main Raster class object in TINerator.</span>
+<span class="sd">    This stores the data and metadata for a loaded or created</span>
+<span class="sd">    Raster object (like from reading in a GeoTIFF), and has</span>
+<span class="sd">    many helper functions for reprojection, resampling,</span>
+<span class="sd">    depression filling, and more.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raster_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">no_data</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">LoadGDAL</span><span class="p">(</span><span class="n">raster_path</span><span class="p">,</span> <span class="n">no_data</span><span class="o">=</span><span class="n">no_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_data_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">no_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xll_corner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yll_corner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">raster_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">parse_crs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">projection</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">&lt;</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">]</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Raster&lt;data.shape=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">, extent=</span><span class="si">{</span><span class="n">extent</span><span class="si">}</span><span class="s1">, CRS="</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"&gt;'</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">geotransform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Raster geotransform.</span>
+<span class="sd">        In the form of:</span>
+<span class="sd">        (x_min, pixel_width, 0, y_min, 0, pixel_width)</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">geotransform</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns a boolean mask where the raster contains</span>
+<span class="sd">        no_data_value elements.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns the lower left corner of the raster.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xll_corner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yll_corner</span><span class="p">)</span>
+
+    <span class="nd">@origin</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Sets the lower-left corner of the raster.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xll_corner</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yll_corner</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nrows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ncols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">extent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns the spatial extent of the raster, in the form:</span>
+
+<span class="sd">            ``(x_min, y_min, x_max, y_max)``</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xll_corner</span><span class="p">,</span>  <span class="c1"># x_min</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yll_corner</span><span class="p">,</span>  <span class="c1"># y_min</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xll_corner</span><span class="p">,</span>  <span class="c1"># x_max</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">yll_corner</span><span class="p">,</span>  <span class="c1"># y_max</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">axis_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns the raster centroid.</span>
+<span class="sd">        """</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">xmin</span> <span class="o">+</span> <span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">+</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Returns the first cell index representing the largest value in the raster."""</span>
+        <span class="n">masked_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">masked_data</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">masked_data</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">min_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Returns the first cell index representing the smallest value in the raster."""</span>
+        <span class="n">masked_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">masked_data</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">masked_data</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns the surface area of the raster, ignoring `noDataValue` cells.</span>
+<span class="sd">        """</span>
+        <span class="c1"># Count the non-NaN cells in the raster.</span>
+        <span class="c1"># Then, multiply by cell_size_x * cell_size_y to adjust for CRS.</span>
+        <span class="n">valid_cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">valid_cells</span>
+
+<div class="viewcode-block" id="Raster.values_at"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.values_at">[docs]</a>    <span class="k">def</span> <span class="nf">values_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns the raster values at `points`, where `points`</span>
+<span class="sd">        is a coordinate X-Y array in the same CRS as the raster.</span>
+<span class="sd">        """</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">unproject_vector</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">indices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()[</span><span class="n">indices</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Raster.value_at"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.value_at">[docs]</a>    <span class="k">def</span> <span class="nf">value_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns the value of the raster at point (x, y) in the same CRS</span>
+<span class="sd">        as the raster.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]]))</span></div>
+
+<div class="viewcode-block" id="Raster.masked_data"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.masked_data">[docs]</a>    <span class="k">def</span> <span class="nf">masked_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns a copy of the raster data where all `no_data_value`</span>
+<span class="sd">        elements in the raster are replaced with `numpy.nan`.</span>
+<span class="sd">        """</span>
+        <span class="n">masked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">masked</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">masked</span></div>
+
+<div class="viewcode-block" id="Raster.fill_depressions"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.fill_depressions">[docs]</a>    <span class="k">def</span> <span class="nf">fill_depressions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fill_depressions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fill_flats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Fills flats and depressions in a DEM raster.</span>
+<span class="sd">        On meshes intended to be high-resolution, leaving flats and</span>
+<span class="sd">        depressions untouched may cause solver issues. This method</span>
+<span class="sd">        should be called before generating a triangle mesh from a</span>
+<span class="sd">        DEM raster.</span>
+
+<span class="sd">        # Arguments</span>
+<span class="sd">        fill_depressions (bool): fill pits and depressions on DEM</span>
+<span class="sd">        fill_flats (bool): fill flats on DEM</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="n">fill_depressions</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="n">rd</span><span class="o">.</span><span class="n">FillDepressions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">topology</span><span class="o">=</span><span class="s2">"D8"</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fill_flats</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="n">rd</span><span class="o">.</span><span class="n">ResolveFlats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">in_place</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Raster.plot"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">layers</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">outfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">geometry</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">hillshade</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Plots the raster object.</span>
+
+<span class="sd">        # Arguments</span>
+<span class="sd">        outfile (str): path to save figure</span>
+<span class="sd">        title (str): figure title</span>
+<span class="sd">        geometry (list): a list of geometrical objects to overlay</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Raster: "</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="si">}</span><span class="s1">" | CRS: "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span>
+            <span class="p">)</span>
+
+        <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">layers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">layers</span><span class="p">]</span>
+            <span class="n">objects</span> <span class="o">+=</span> <span class="n">layers</span>
+
+        <span class="n">pl</span><span class="o">.</span><span class="n">plot_objects</span><span class="p">(</span>
+            <span class="n">objects</span><span class="p">,</span>
+            <span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">xlabel</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Easting (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="n">ylabel</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Northing (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+            <span class="n">raster_hillshade</span><span class="o">=</span><span class="n">hillshade</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Raster.get_boundary"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.get_boundary">[docs]</a>    <span class="k">def</span> <span class="nf">get_boundary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Geometry</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Get a line mesh with nodes seperated by distance `distance` that</span>
+<span class="sd">        describe the boundary of this raster object.</span>
+<span class="sd">        """</span>
+
+        <span class="n">connect_ends</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">distance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">*</span> <span class="mf">2.0</span>
+
+        <span class="n">distance</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span>
+        <span class="n">vertices</span><span class="p">,</span> <span class="n">connectivity</span> <span class="o">=</span> <span class="n">st_boundary</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">(),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+            <span class="n">dist</span><span class="o">=</span><span class="n">distance</span><span class="p">,</span>
+            <span class="n">connect_ends</span><span class="o">=</span><span class="n">connect_ends</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">project_vector</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">polygons</span> <span class="o">=</span> <span class="n">polygonize</span><span class="p">(</span><span class="n">linemerge</span><span class="p">(</span><span class="n">vertices</span><span class="p">[</span><span class="n">connectivity</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+
+        <span class="k">return</span> <span class="n">Geometry</span><span class="p">(</span>
+            <span class="n">shapes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">polygons</span><span class="p">),</span>
+            <span class="n">crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Raster.save"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Saves a raster object to disk in GeoTIFF format. Writes array as Float64.</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="n">extension</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"tif"</span><span class="p">,</span> <span class="s2">"tiff"</span><span class="p">]:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">"Writing raster as a GeoTIFF."</span><span class="p">)</span>
+
+        <span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Attempting to save raster object to </span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s2">"GTiff"</span><span class="p">)</span>
+
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrows</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GDT_Float64</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geotransform</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">to_wkt</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">pyproj</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">WktVersion</span><span class="o">.</span><span class="n">WKT1_GDAL</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_data_value</span><span class="p">)</span>
+        <span class="n">outdata</span><span class="o">.</span><span class="n">FlushCache</span><span class="p">()</span>
+
+        <span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Raster object saved to </span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div></div>
+</pre></div>
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021, Daniel Livingston
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/scripts/main.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    </body>
+</html>
