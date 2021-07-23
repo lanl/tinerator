@@ -8,4 +8,9 @@ Installation
 
 .. toctree::
     installation
+
+Contributing
+------------
+
+.. toctree::
     contributing
