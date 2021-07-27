@@ -24,3 +24,6 @@ Sphinx
 furo
 sphinxcontrib-napoleon
 panel
+sphinx-inline-tabs
+sphinx-copybutton
+gendocs
