@@ -1,6 +1,6 @@
 ![logo](docs/_static/logo-color-horiz.svg)
 
-[![build](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml/badge.svg)](https://github.com/daniellivingston/tinerator-core/actions/workflows/docker-image.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![build](https://github.com/lanl/tinerator/actions/workflows/docker-image.yml/badge.svg)](https://github.com/lanl/tinerator/actions/workflows/docker-image.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 - PyPI
 - License
@@ -8,8 +8,8 @@
 - Docs (CI)
 
 [![dockerhub](https://img.shields.io/static/v1?label=Docker&message=Download%20container&color=blue&style=for-the-badge&logo=docker)](https://hub.docker.com/r/ees16/tinerator) <br/>
-[![readthedocs](https://img.shields.io/static/v1?label=Documentation&message=Read%20online&color=blue&style=for-the-badge&logo=read-the-docs)](https://daniellivingston.github.io/tinerator-core/) <br/>
-[![jupyter](https://img.shields.io/static/v1?label=Jupyter%20Notebook&message=View%20examples&color=blue&style=for-the-badge&logo=jupyter)](https://github.com/daniellivingston/tinerator-core/tree/master/examples)
+[![readthedocs](https://img.shields.io/static/v1?label=Documentation&message=Read%20online&color=blue&style=for-the-badge&logo=read-the-docs)](https://lanl.github.io/tinerator/) <br/>
+[![jupyter](https://img.shields.io/static/v1?label=Jupyter%20Notebook&message=View%20examples&color=blue&style=for-the-badge&logo=jupyter)](https://github.com/lanl/tinerator/tree/master/examples)
 
 ### About TINerator
 
@@ -23,7 +23,7 @@ TINerator has been designed to work well with [Amanzi-ATS](https://amanzi.github
 
 ### Documentation
 
-- [Read the documentation online](https://daniellivingston.github.io/tinerator-core)
+- [Read the documentation online](https://lanl.github.io/tinerator)
 
 ### Quick Start
 
@@ -36,7 +36,7 @@ After the container launches, navigate to `http://127.0.0.1:8888/lab` in a web b
 
 ### Building TINerator
 
-To build TINerator from source, refer to the [documentation](https://daniellivingston.github.io/tinerator-core/installation.html).
+To build TINerator from source, refer to the [documentation](https://lanl.github.io/tinerator/installation.html).
 
 ```sh
 # (Optional) Install testing & documentation deps
