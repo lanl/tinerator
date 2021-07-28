@@ -1,5 +1,4 @@
 from copy import deepcopy
-from .lagrit_helper import *
 from .mesh import read_avs
 from ..gis import Raster, Shape, DistanceMap
 from ..gis import map_elevation

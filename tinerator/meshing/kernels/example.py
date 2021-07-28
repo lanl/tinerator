@@ -1,28 +1,37 @@
-try:
-    import blah
-    from .register import register_kernel
-    register_kernel(**return_registration())
-except ModuleNotFoundError as e:
-    print("blah blah blah")
+import NonExistantModule
 
 
 def algo():
-    pass
-
-
-def return_registration():
     return {
-        "function": algo,
-        # triangle, quad, polygon, mixed
-        "elements": ["triangle"],
-        # distance_field, polyline, None
-        "refinement": {
-            "type": "distance_field",
+        "nodes": [1,2,3],
+        "elements": [
+            {
+                "type": "triangle",
+                "connectivity": [[0,1,2], [2,4,2]]
+            }
+        ],
+        "attributes": {
+            "node": {},
+            "element": {
+                "material_id": [1,2,3,4]
+            }
+        }
+    }
 
+
+def register():
+    return {
+        "metadata": {
+            "name": "JIGSAW",
+            "description": algo.__doc__,
+            "function": algo,
+            "output_mesh": "triangle",
         },
-        "mesh": {
-            "elements": ["triangle"],
-            "format": "tinerator", # {"nodes": ..., "elements": ["type": ..., "connectivity": ...], "attributes": {"node": ..., "element": ...}}
-            "has_Z": True,
+        "input": {
+            "clockwise_boundary": True,
+            "refinement_type": "distance_field", # distance_field, polyline, None
+        },
+        "output": {
+            "interpolate_Z": True,
         },
     }
