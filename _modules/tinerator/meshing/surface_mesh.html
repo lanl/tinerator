@@ -4,50 +4,45 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.11.beta42"/>
         <title>tinerator.meshing.surface_mesh - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=197f00461d56902ea7ca048ec6e6ba026f62c97b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=93475b62d1c3bc01323a0eefdc14a62d77b12690" />
+    
     
 
 
 <style>
-  :root {
+  body {
+    --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+  }
+  body[data-theme="dark"] {
     --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
   
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    body:not([data-theme="light"]) {
       --color-code-background: #272822;
   --color-code-foreground: #f8f8f2;
   
     }
   }
-
-  /* For allowing end-user-specific overrides */
-  .override-light {
-    --color-code-background: #272822;
-  --color-code-foreground: #f8f8f2;
-  
-  }
-  .override-dark {
-    --color-code-background: #272822;
-  --color-code-foreground: #f8f8f2;
-  
-  }
-</style><link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../_static/pygments_dark.css"></head>
-  <body dir="">
+</style>
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../_static/pygments_dark.css"></head>
+  <body>
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z"/>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
       <line x1="4" y1="6" x2="20" y2="6" />
       <line x1="10" y1="12" x2="20" y2="12" />
       <line x1="6" y1="18" x2="20" y2="18" />
@@ -55,9 +50,8 @@
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-      class="feather feather-menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
       <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -65,18 +59,57 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-      class="feather feather-chevron-right">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
     </svg>
   </symbol>
 </svg>
 
 <input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
 <input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation"></label>
-<label class="overlay toc-overlay" for="__toc"></label>
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
 <div class="announcement">
   <aside class="announcement-content">
@@ -88,6 +121,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
         <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
       </label>
     </div>
@@ -95,7 +129,16 @@
       <a href="../../../index.html"><div class="brand">TINerator 1.0.0 documentation</div></a>
     </div>
     <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
     </div>
@@ -111,18 +154,19 @@
   </div>
   
   
-</a><form class="sidebar-search-container" method="get" action="../../../search.html">
-  <input class="sidebar-search" placeholder=Search name="q">
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
-</form><div class="sidebar-scroll"><div class="sidebar-tree">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/installation.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/contributing.html">Contributing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../examples/index.html">Examples &amp; Workflows</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../examples/index.html">Examples &amp; Workflows</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../examples/introduction.html">Basic Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../examples/introduction.html#meshing">Meshing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../examples/workflow/simple.html">Simple Workflow</a></li>
@@ -130,7 +174,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../examples/snippets/hillslope.html">Hillslope</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">TINerator API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">TINerator API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/module.html">TINerator Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/gis.html">GIS Submodule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/meshing.html">Meshing Submodule</a></li>
@@ -145,16 +189,28 @@
       
     </div>
   </aside>
-  <main class="main">
+  <div class="main">
     <div class="content">
       <article role="main">
-        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
-        </label>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
         <h1>Source code for tinerator.meshing.surface_mesh</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pyvista</span> <span class="k">as</span> <span class="nn">pv</span>
 <span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
 <span class="kn">from</span> <span class="nn">..constants</span> <span class="kn">import</span> <span class="n">_in_notebook</span><span class="p">,</span> <span class="n">JUPYTER_BACKEND_DEFAULT</span>
 <span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">_pylagrit_verbosity</span>
 <span class="kn">from</span> <span class="nn">.mesh_metrics</span> <span class="kn">import</span> <span class="n">get_cell_normals</span>
@@ -636,7 +692,7 @@
 
         <span class="k">return</span> <span class="n">sets</span></div>
 
-<div class="viewcode-block" id="SurfaceMesh.from_geometry"><a class="viewcode-back" href="../../../api/meshing.html#tinerator.meshing.SurfaceMesh.from_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">from_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">on_top</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">set_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Geometry"</span><span class="p">):</span>
+<div class="viewcode-block" id="SurfaceMesh.from_geometry"><a class="viewcode-back" href="../../../api/meshing.html#tinerator.meshing.SurfaceMesh.from_geometry">[docs]</a>    <span class="k">def</span> <span class="nf">from_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">set_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Geometry"</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        From a TINerator Geometry object, returns a set of all top-surface</span>
 <span class="sd">        faces that intersect with the Geometry object.</span>
@@ -659,34 +715,41 @@
 <span class="sd">            &gt;&gt;&gt; side_set = surface_mesh.from_geometry(ws_delin)</span>
 <span class="sd">        """</span>
 
-        <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_top</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
-
+        <span class="c1"># We only care about the top faces - get those</span>
         <span class="n">top_faces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_faces</span>
+        <span class="n">vtk_top_faces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_faces</span><span class="o">.</span><span class="n">to_vtk_mesh</span><span class="p">()</span>
 
-        <span class="n">points</span> <span class="o">=</span> <span class="n">top_faces</span><span class="o">.</span><span class="n">to_vtk_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">points</span>
-        <span class="n">faces</span> <span class="o">=</span> <span class="n">unravel_vtk_faces</span><span class="p">(</span><span class="n">top_faces</span><span class="o">.</span><span class="n">to_vtk_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
-        <span class="n">face_pts</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">faces</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span>
-        <span class="n">polygons</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">x</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()]))</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">face_id</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">face_pts</span><span class="p">)</span>
-        <span class="p">]</span>
+        <span class="c1"># Reform the top faces from an index into the points array</span>
+        <span class="c1"># into actually storing the points</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">vtk_top_faces</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">faces</span> <span class="o">=</span> <span class="n">unravel_vtk_faces</span><span class="p">(</span><span class="n">vtk_top_faces</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
+        <span class="n">faces_with_pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">face</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)])</span> <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">]</span>
 
-        <span class="n">captured_face_ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">shapes</span><span class="p">:</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">face</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">polygons</span><span class="p">):</span>
-                <span class="n">face_id</span> <span class="o">=</span> <span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">polygon</span> <span class="o">=</span> <span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">polygon</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
-                    <span class="n">_</span> <span class="o">=</span> <span class="n">polygons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                    <span class="n">captured_face_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face_id</span><span class="p">)</span>
+        <span class="c1"># Convert all top faces into Shapely Polygon objects</span>
+        <span class="n">faces_as_polygons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">face</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">faces_with_pts</span><span class="p">):</span>
+            <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">face</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()])</span>
+            <span class="n">faces_as_polygons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">id</span><span class="p">,</span> <span class="n">polygon</span><span class="p">))</span>
 
-        <span class="n">captured_cells</span> <span class="o">=</span> <span class="n">top_faces</span><span class="o">.</span><span class="n">primary_cells</span><span class="p">[</span><span class="n">captured_face_ids</span><span class="p">]</span>
-        <span class="n">captured_faces</span> <span class="o">=</span> <span class="n">ravel_faces_to_vtk</span><span class="p">(</span><span class="n">faces</span><span class="p">[</span><span class="n">captured_face_ids</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+        <span class="c1"># Finally, run the Shapely `intersects` object between</span>
+        <span class="c1"># each pair of top faces and Geometry shapes</span>
+        <span class="c1"># If there is an intersection, then it's marked for the new set</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">faces_as_polygons</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">triangle</span><span class="p">)</span> <span class="ow">in</span> <span class="n">faces_as_polygons</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">shapes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">triangle</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+                    <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">return</span> <span class="n">SideSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent_mesh</span><span class="p">,</span> <span class="n">captured_cells</span><span class="p">,</span> <span class="n">captured_faces</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">set_name</span><span class="p">)</span></div>
+        <span class="n">primary_cells</span> <span class="o">=</span> <span class="n">top_faces</span><span class="o">.</span><span class="n">primary_cells</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">primary_faces</span> <span class="o">=</span> <span class="n">ravel_faces_to_vtk</span><span class="p">(</span><span class="n">faces</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">SideSet</span><span class="p">(</span>
+            <span class="n">top_faces</span><span class="o">.</span><span class="n">primary_mesh</span><span class="p">,</span>
+            <span class="n">primary_cells</span><span class="p">,</span>
+            <span class="n">primary_faces</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">set_name</span><span class="p">,</span>
+            <span class="n">set_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">from_cell_normals</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -760,7 +823,7 @@
       
       
     </aside>
-  </main>
+  </div>
 </div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
