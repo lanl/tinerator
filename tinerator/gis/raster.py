@@ -126,6 +126,9 @@ class Raster:
         self.filename = raster_path
         self.crs = parse_crs(self.data.projection)
 
+        # TODO - workaround - integer data matrices cause a crash in self.masked_data()
+        self.data = self.data.astype(np.double)
+
     def __lt__(self, other):
         return self.data < other
 
