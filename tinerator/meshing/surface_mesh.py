@@ -1,6 +1,7 @@
 import numpy as np
 import pyvista as pv
 from scipy.spatial import distance
+from shapely.geometry import Polygon
 from ..constants import _in_notebook, JUPYTER_BACKEND_DEFAULT
 from ..logging import log, warn, debug, _pylagrit_verbosity
 from .mesh_metrics import get_cell_normals
@@ -482,7 +483,7 @@ class SurfaceMesh:
 
         return sets
 
-    def from_geometry(self, geometry, on_top: bool = True, set_name: str = "Geometry"):
+    def from_geometry(self, geometry, set_name: str = "Geometry"):
         """
         From a TINerator Geometry object, returns a set of all top-surface
         faces that intersect with the Geometry object.
@@ -505,34 +506,42 @@ class SurfaceMesh:
             >>> side_set = surface_mesh.from_geometry(ws_delin)
         """
 
-        from shapely.geometry import Polygon
-
-        if not on_top:
-            raise NotImplementedError()
-
+        # We only care about the top faces - get those
         top_faces = self.top_faces
+        vtk_top_faces = self.top_faces.to_vtk_mesh()
 
-        points = top_faces.to_vtk_mesh().points
-        faces = unravel_vtk_faces(top_faces.to_vtk_mesh().faces)
-        face_pts = points[faces.astype(int)]
-        polygons = [
-            (face_id, Polygon(x[:, :2].tolist() + [x[0][:2].tolist()]))
-            for (face_id, x) in enumerate(face_pts)
-        ]
+        # Reform the top faces from an index into the points array
+        # into actually storing the points
+        points = vtk_top_faces.points
+        faces = unravel_vtk_faces(vtk_top_faces.faces)
+        faces_with_pts = [np.array(points[face.astype(int)]) for face in faces]
 
-        captured_face_ids = []
-        for shape in geometry.shapes:
-            for (i, face) in enumerate(polygons):
-                face_id = face[0]
-                polygon = face[1]
-                if polygon.intersects(shape):
-                    _ = polygons.pop(i)
-                    captured_face_ids.append(face_id)
+        # Convert all top faces into Shapely Polygon objects
+        faces_as_polygons = []
+        for (id, face) in enumerate(faces_with_pts):
+            polygon = Polygon(face[:, :2].tolist() + [face[0][:2].tolist()])
+            faces_as_polygons.append((id, polygon))
 
-        captured_cells = top_faces.primary_cells[captured_face_ids]
-        captured_faces = ravel_faces_to_vtk(faces[captured_face_ids].astype(int))
+        # Finally, run the Shapely `intersects` object between
+        # each pair of top faces and Geometry shapes
+        # If there is an intersection, then it's marked for the new set
+        mask = np.zeros((len(faces_as_polygons),), dtype=bool)
+        for (i, triangle) in faces_as_polygons:
+            for shape in geometry.shapes:
+                if triangle.intersects(shape):
+                    mask[i] = True
 
-        return SideSet(self.parent_mesh, captured_cells, captured_faces, name=set_name)
+        primary_cells = top_faces.primary_cells[mask]
+        primary_faces = ravel_faces_to_vtk(faces[mask].astype(int))
+
+        return SideSet(
+            top_faces.primary_mesh,
+            primary_cells,
+            primary_faces,
+            name = set_name,
+            set_id = None
+        )
+
 
     def from_cell_normals(
         self,
