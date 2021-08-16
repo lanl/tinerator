@@ -538,10 +538,9 @@ class SurfaceMesh:
             top_faces.primary_mesh,
             primary_cells,
             primary_faces,
-            name = set_name,
-            set_id = None
+            name=set_name,
+            set_id=None,
         )
-
 
     def from_cell_normals(
         self,
