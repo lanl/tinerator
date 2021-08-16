@@ -1,5 +1,9 @@
 *DS_Store
+dist/
+*.egg-info/
+.eggs/
 __pycache__/
+tpls/
 build/
 internal/
 *.inp
