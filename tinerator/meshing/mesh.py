@@ -377,7 +377,7 @@ class Mesh:
         elif attribute_type in MeshAttribute.SCALAR_TYPE_ALIAS:
             raise NotImplementedError("Scalars are not yet implemented.")
 
-        data = raster.values_at(points)
+        data = raster.values_at(points, interpolate_no_data=True)
         self.add_attribute(
             attribute_name, data, type=attribute_type, data_type=data_type
         )
@@ -942,9 +942,11 @@ class StackedMesh(Mesh):
         if at_layer is not None:
             cell_mask = self.get_cells_at_sublayer(at_layer, return_mask=True)
             data = np.full((self.n_elements,), fill_value)
-            data[cell_mask] = raster.values_at(points[cell_mask])
+            data[cell_mask] = raster.values_at(
+                points[cell_mask], interpolate_no_data=True
+            )
         else:
-            data = raster.values_at(points)
+            data = raster.values_at(points, interpolate_no_data=True)
 
         self.add_attribute(
             attribute_name, data, type=attribute_type, data_type=data_type

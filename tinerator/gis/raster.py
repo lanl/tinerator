@@ -242,22 +242,33 @@ class Raster:
         valid_cells = np.sum(~np.isnan(self.masked_data()))
         return (self.cell_size * self.cell_size) * valid_cells
 
-    def values_at(self, points: np.ndarray):
+    def values_at(self, points: np.ndarray, interpolate_no_data: bool = False):
         """
         Returns the raster values at `points`, where `points`
         is a coordinate X-Y array in the same CRS as the raster.
+
+        If ``interpolate_no_data = True``, then this method will return
+        the value of the nearest cell that doesn't contain ``NoData``.
         """
         indices = unproject_vector(points, self)
         indices = (indices[:, 1], indices[:, 0])
 
-        return self.masked_data()[indices]
+        if interpolate_no_data:
+            return self.interpolated_data()[indices]
+        else:
+            return self.masked_data()[indices]
 
-    def value_at(self, x: float, y: float):
+    def value_at(self, x: float, y: float, interpolate_no_data: bool = False):
         """
         Returns the value of the raster at point (x, y) in the same CRS
         as the raster.
+
+        If ``interpolate_no_data = True``, then this method will return
+        the value of the nearest cell that doesn't contain ``NoData``.
         """
-        return self.values_at(np.array([[x, y]]))
+        return self.values_at(
+            np.array([[x, y]]), interpolate_no_data=interpolate_no_data
+        )
 
     def masked_data(self):
         """
@@ -266,6 +277,22 @@ class Raster:
         """
         masked = np.array(deepcopy(self.data))
         masked[self.mask] = np.nan
+        return masked
+
+    def interpolated_data(self):
+        """
+        Returns a copy of the raster data where all `no_data_value`
+        elements in the raster are filled with values from a
+        nearest-neighbor interpolation.
+        """
+        from scipy import ndimage as nd
+
+        masked = self.masked_data()
+        invalid = np.isnan(masked)
+        ind = nd.distance_transform_edt(
+            invalid, return_distances=False, return_indices=True
+        )
+        masked = masked[tuple(ind)]
         return masked
 
     def fill_depressions(self, fill_depressions: bool = True, fill_flats: bool = True):
