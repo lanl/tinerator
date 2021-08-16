@@ -451,22 +451,33 @@
         <span class="n">valid_cells</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()))</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">valid_cells</span>
 
-<div class="viewcode-block" id="Raster.values_at"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.values_at">[docs]</a>    <span class="k">def</span> <span class="nf">values_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<div class="viewcode-block" id="Raster.values_at"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.values_at">[docs]</a>    <span class="k">def</span> <span class="nf">values_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">interpolate_no_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns the raster values at `points`, where `points`</span>
 <span class="sd">        is a coordinate X-Y array in the same CRS as the raster.</span>
+
+<span class="sd">        If ``interpolate_no_data = True``, then this method will return</span>
+<span class="sd">        the value of the nearest cell that doesn't contain ``NoData``.</span>
 <span class="sd">        """</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">unproject_vector</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">indices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()[</span><span class="n">indices</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="n">interpolate_no_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolated_data</span><span class="p">()[</span><span class="n">indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()[</span><span class="n">indices</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Raster.value_at"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.value_at">[docs]</a>    <span class="k">def</span> <span class="nf">value_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="Raster.value_at"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.value_at">[docs]</a>    <span class="k">def</span> <span class="nf">value_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">interpolate_no_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Returns the value of the raster at point (x, y) in the same CRS</span>
 <span class="sd">        as the raster.</span>
+
+<span class="sd">        If ``interpolate_no_data = True``, then this method will return</span>
+<span class="sd">        the value of the nearest cell that doesn't contain ``NoData``.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]]))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values_at</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]]),</span> <span class="n">interpolate_no_data</span><span class="o">=</span><span class="n">interpolate_no_data</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Raster.masked_data"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.masked_data">[docs]</a>    <span class="k">def</span> <span class="nf">masked_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -475,6 +486,22 @@
 <span class="sd">        """</span>
         <span class="n">masked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
         <span class="n">masked</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">masked</span></div>
+
+<div class="viewcode-block" id="Raster.interpolated_data"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.interpolated_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolated_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Returns a copy of the raster data where all `no_data_value`</span>
+<span class="sd">        elements in the raster are filled with values from a</span>
+<span class="sd">        nearest-neighbor interpolation.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span> <span class="k">as</span> <span class="n">nd</span>
+
+        <span class="n">masked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masked_data</span><span class="p">()</span>
+        <span class="n">invalid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">masked</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">nd</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span>
+            <span class="n">invalid</span><span class="p">,</span> <span class="n">return_distances</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">masked</span> <span class="o">=</span> <span class="n">masked</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">masked</span></div>
 
 <div class="viewcode-block" id="Raster.fill_depressions"><a class="viewcode-back" href="../../../api/gis.html#tinerator.gis.Raster.fill_depressions">[docs]</a>    <span class="k">def</span> <span class="nf">fill_depressions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fill_depressions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">fill_flats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
