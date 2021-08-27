@@ -21,3 +21,5 @@ import tinerator.meshing as meshing
 import tinerator.gis as gis
 import tinerator.visualize as visualize
 from tinerator.example_data import ExampleData
+
+from .dash import test_plot_vtk
