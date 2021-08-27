@@ -4,13 +4,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.11.beta42"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.17.beta43"/>
         <title>tinerator.meshing.sets - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=197f00461d56902ea7ca048ec6e6ba026f62c97b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=910ac4ccc9d7c023151c34010d7b500fb9777a51" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=93475b62d1c3bc01323a0eefdc14a62d77b12690" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     
     
 
@@ -330,7 +330,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bad operation: </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="n">new_faces</span> <span class="o">=</span> <span class="n">ravel_faces_to_vtk</span><span class="p">(</span><span class="n">new_faces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_faces</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_faces</span> <span class="o">=</span> <span class="n">ravel_faces_to_vtk</span><span class="p">(</span><span class="n">new_faces</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">SideSet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">primary_mesh</span><span class="p">,</span> <span class="n">new_cells</span><span class="p">,</span> <span class="n">new_faces</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">set_name</span><span class="p">)</span>
 

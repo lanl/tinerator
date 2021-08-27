@@ -4,13 +4,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.11.beta42"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.17.beta43"/>
         <title>tinerator.meshing.surface_mesh - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=197f00461d56902ea7ca048ec6e6ba026f62c97b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=910ac4ccc9d7c023151c34010d7b500fb9777a51" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=93475b62d1c3bc01323a0eefdc14a62d77b12690" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     
     
 
@@ -797,7 +797,52 @@
             <span class="p">)</span>
             <span class="n">sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">sets</span></div>
+        <span class="k">return</span> <span class="n">sets</span>
+    
+<div class="viewcode-block" id="SurfaceMesh.validate_sets"><a class="viewcode-back" href="../../../api/meshing.html#tinerator.meshing.SurfaceMesh.validate_sets">[docs]</a>    <span class="k">def</span> <span class="nf">validate_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sets</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Given a list of side sets, this function verifies their integrity.</span>
+<span class="sd">        Namely, it checks that they are non-overlapping, and that they cover</span>
+<span class="sd">        the whole of the mesh surface.</span>
+
+<span class="sd">        Raises an AssertionError if malformed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sets (List[SideSet]): A list of sets to check.</span>
+<span class="sd">        """</span>
+        <span class="n">all_faces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_faces</span>
+
+        <span class="n">union_test</span> <span class="o">=</span> <span class="n">sets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">union_test</span> <span class="o">=</span> <span class="n">union_test</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_faces</span><span class="o">.</span><span class="n">primary_cells</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">union_test</span><span class="o">.</span><span class="n">primary_cells</span><span class="p">),</span> <span class="s1">'Malformed set(s): cell count mismatch'</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_faces</span><span class="o">.</span><span class="n">primary_faces</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">union_test</span><span class="o">.</span><span class="n">primary_faces</span><span class="p">),</span> <span class="s1">'Malformed set(s): face count mismatch'</span>
+
+        <span class="n">log</span><span class="p">(</span><span class="s2">"[green]PASSED[/green]: union"</span><span class="p">)</span>
+
+        <span class="n">difference_test</span> <span class="o">=</span> <span class="n">union_test</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">all_faces</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">difference_test</span><span class="o">.</span><span class="n">primary_cells</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'Malformed set(s): cell count mismatch'</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">difference_test</span><span class="o">.</span><span class="n">primary_faces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'Malformed set(s): face count mismatch'</span>
+
+        <span class="n">log</span><span class="p">(</span><span class="s2">"[green]PASSED[/green]: difference"</span><span class="p">)</span>
+
+        <span class="n">intersection_test</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sets</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sets</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">intersection_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">sets</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+                <span class="n">intersection_test</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">sets</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
+
+        <span class="k">for</span> <span class="n">intersection</span> <span class="ow">in</span> <span class="n">intersection_test</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">intersection</span><span class="o">.</span><span class="n">primary_cells</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Malformed set(s): cell count mismatch (</span><span class="si">{</span><span class="n">intersection</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">)'</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">intersection</span><span class="o">.</span><span class="n">primary_faces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Malformed set(s): face count mismatch (</span><span class="si">{</span><span class="n">intersection</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">)'</span>
+
+        <span class="n">log</span><span class="p">(</span><span class="s2">"[green]PASSED[/green]: intersection"</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

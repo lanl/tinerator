@@ -5,13 +5,13 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="License" href="../license.html" /><link rel="prev" title="GIS Submodule" href="gis.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.11.beta42"/>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.17.beta43"/>
         <title>Meshing Submodule - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=197f00461d56902ea7ca048ec6e6ba026f62c97b" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=910ac4ccc9d7c023151c34010d7b500fb9777a51" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=93475b62d1c3bc01323a0eefdc14a62d77b12690" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     
     
 
@@ -1010,6 +1010,19 @@ at a given layer.</p>
 <dt class="sig sig-object py" id="tinerator.meshing.SurfaceMesh.top_nodes">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">top_nodes</span></span><a class="headerlink" href="#tinerator.meshing.SurfaceMesh.top_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns all top nodes.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tinerator.meshing.SurfaceMesh.validate_sets">
+<span class="sig-name descname"><span class="pre">validate_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tinerator/meshing/surface_mesh.html#SurfaceMesh.validate_sets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.meshing.SurfaceMesh.validate_sets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of side sets, this function verifies their integrity.
+Namely, it checks that they are non-overlapping, and that they cover
+the whole of the mesh surface.</p>
+<p>Raises an AssertionError if malformed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sets</strong> (<em>List</em><em>[</em><a class="reference internal" href="#tinerator.meshing.SideSet" title="tinerator.meshing.SideSet"><em>SideSet</em></a><em>]</em>) – A list of sets to check.</p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="tinerator.meshing.SurfaceMesh.view">
