@@ -589,3 +589,48 @@ class SurfaceMesh:
             sets.append(set)
 
         return sets
+    
+    def validate_sets(self, sets):
+        """
+        Given a list of side sets, this function verifies their integrity.
+        Namely, it checks that they are non-overlapping, and that they cover
+        the whole of the mesh surface.
+
+        Raises an AssertionError if malformed.
+
+        Args:
+            sets (List[SideSet]): A list of sets to check.
+        """
+        all_faces = self.all_faces
+
+        union_test = sets[0]
+        for s in sets[1:]:
+            union_test = union_test.join(s)
+        
+        assert len(all_faces.primary_cells) == len(union_test.primary_cells), 'Malformed set(s): cell count mismatch'
+        assert len(all_faces.primary_faces) == len(union_test.primary_faces), 'Malformed set(s): face count mismatch'
+
+        log("[green]PASSED[/green]: union")
+
+        difference_test = union_test.remove(all_faces)
+
+        assert len(difference_test.primary_cells) == 0, 'Malformed set(s): cell count mismatch'
+        assert len(difference_test.primary_faces) == 0, 'Malformed set(s): face count mismatch'
+
+        log("[green]PASSED[/green]: difference")
+
+        intersection_test = []
+
+        for i in range(len(sets)):
+            for j in range(len(sets)):
+                if i == j:
+                    continue
+
+                intersection_test.append(sets[i].intersection(sets[j]))
+                intersection_test[-1].name = f"{sets[i].name} | {sets[j].name}"
+
+        for intersection in intersection_test:
+            assert len(intersection.primary_cells) == 0, f'Malformed set(s): cell count mismatch ({intersection.name})'
+            assert len(intersection.primary_faces) == 0, f'Malformed set(s): face count mismatch ({intersection.name})'
+
+        log("[green]PASSED[/green]: intersection")

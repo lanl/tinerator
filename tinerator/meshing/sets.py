@@ -121,7 +121,8 @@ class SideSet(object):
         else:
             raise ValueError(f"Bad operation: {type}")
 
-        new_faces = ravel_faces_to_vtk(new_faces)
+        if len(new_faces) > 0:
+            new_faces = ravel_faces_to_vtk(new_faces)
 
         return SideSet(self.primary_mesh, new_cells, new_faces, name=set_name)
 
