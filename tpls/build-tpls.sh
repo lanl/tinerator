@@ -60,7 +60,7 @@ build_exodus() {
 
     TPL_ROOT_DIR="${TPL_ROOT_DIR:-$_script_dir}"
 
-    PYTHON_PREIFX="$(cd $(dirname $(which python))/../; pwd)"
+    PYTHON_PREFIX="$(cd $(dirname $(which python))/../; pwd)"
     CONDA_PREFIX="${CONDA_PREFIX:-$PYTHON_PREFIX}"
 
     info "Building EXODUSII: ${SEACAS_SRC_DIR}"
