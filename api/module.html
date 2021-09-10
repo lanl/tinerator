@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="GIS Submodule" href="gis.html" /><link rel="prev" title="TINerator API Reference" href="index.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.08.17.beta43"/>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.1.2, furo 2021.09.08"/>
         <title>TINerator Module - TINerator 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=910ac4ccc9d7c023151c34010d7b500fb9777a51" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -34,9 +34,11 @@
   
     }
   }
-</style>
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css"></head>
+</style></head>
   <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
@@ -192,7 +194,7 @@
   </aside>
   <div class="main">
     <div class="content">
-      <article role="main">
+      <div class="article-container">
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
@@ -207,61 +209,21 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <section id="tinerator-module">
+        <article role="main">
+          <section id="tinerator-module">
 <span id="api-module"></span><h1>TINerator Module<a class="headerlink" href="#tinerator-module" title="Permalink to this headline">¶</a></h1>
 <p>Functions and classes from the root <code class="docutils literal notranslate"><span class="pre">tinerator</span></code> module.
 The vast majority of functionality is found in TINerator’s submodules.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="tinerator.debug_mode">
-<span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">debug_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tinerator/logging.html#debug_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.debug_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turns on debug mode.</p>
-</dd></dl>
-<dl class="py function">
-<dt class="sig sig-object py" id="tinerator.set_logging_verbosity">
-<span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">set_logging_verbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#tinerator.LogLevel" title="tinerator.logging.LogLevel"><span class="pre">tinerator.logging.LogLevel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tinerator/logging.html#set_logging_verbosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.set_logging_verbosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the level of verbosity for the logger.
-Use the <cite>LogLevel</cite> class to set.</p>
-<blockquote>
-<div><p>DEBUG &lt; LOG &lt; WARN &lt; ERROR</p>
-</div></blockquote>
-</dd></dl>
 </section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="tinerator.LogLevel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><a class="reference internal" href="../_modules/tinerator/logging.html#LogLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.LogLevel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="tinerator.ExampleData">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tinerator.</span></span><span class="sig-name descname"><span class="pre">ExampleData</span></span><a class="reference internal" href="../_modules/tinerator/example_data.html#ExampleData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.ExampleData" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py class">
-<dt class="sig sig-object py" id="tinerator.ExampleData.Borden">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Borden</span></span><a class="reference internal" href="../_modules/tinerator/example_data.html#ExampleData.Borden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.ExampleData.Borden" title="Permalink to this definition">¶</a></dt>
-<dd><p>Very simple DEM used for comparative analysis - Bordon dataset.</p>
-</dd></dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="tinerator.ExampleData.NewMexico">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NewMexico</span></span><a class="reference internal" href="../_modules/tinerator/example_data.html#ExampleData.NewMexico"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.ExampleData.NewMexico" title="Permalink to this definition">¶</a></dt>
-<dd><p>GIS data for a HUC10 in New Mexico.</p>
-</dd></dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="tinerator.ExampleData.RadialMesh">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">RadialMesh</span></span><a class="reference internal" href="../_modules/tinerator/example_data.html#ExampleData.RadialMesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.ExampleData.RadialMesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple radial surface mesh.</p>
-</dd></dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="tinerator.ExampleData.Simple">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Simple</span></span><a class="reference internal" href="../_modules/tinerator/example_data.html#ExampleData.Simple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tinerator.ExampleData.Simple" title="Permalink to this definition">¶</a></dt>
-<dd><p>A very simple collection of meshes, used primarily for testing.</p>
-</dd></dl>
-</dd></dl>
 </section>
 </section>
 
-      </article>
+        </article>
+      </div>
       <footer>
         
         <div class="related-pages">
@@ -288,13 +250,11 @@ Use the <cite>LogLevel</cite> class to set.</p>
         </div>
 
         <div class="related-information">
-              Copyright &#169; 2021, Daniel Livingston
-            |
+              Copyright &#169; 2021, Daniel Livingston |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            |
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
             <a class="muted-link" href="../_sources/api/module.rst.txt"
                rel="nofollow">
               Show Source
