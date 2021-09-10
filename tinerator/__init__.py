@@ -20,9 +20,34 @@ from tinerator.logging import set_logging_verbosity, debug_mode, LogLevel
 import tinerator.meshing as meshing
 import tinerator.gis as gis
 #import tinerator.visualize as visualize
-from tinerator.visualize import plot2d, plot3d
+from tinerator.visualize import plot2d, plot3d, mapbox_styles
 from tinerator.example_data import ExampleData
 
 from tinerator.meshing import Mesh
 from tinerator.meshing import SideSet, PointSet
 from tinerator.gis import Geometry, Raster
+
+def configure(**kwargs):
+    """
+    Sets TINerator global configuration.
+
+    Args:
+        debug (bool, optional): Toggle debug mode on/off.
+        plot_backend (str, optional): one of: "jupyter", "window", "nothing"
+        plot_server_host (str, optional): Plotting server host. Defaults to "127.0.0.1".
+        plot_server_port (Union[int, str], optional): Plotting server port. Defaults to "8050".
+    """
+    from tinerator.visualize import set_server_settings
+
+    if 'debug' in kwargs:
+        if kwargs['debug'] == True:
+            debug_mode()
+    
+    if 'plot_backend' in kwargs:
+        set_server_settings(mode=kwargs['plot_backend'])
+
+    if 'plot_server_host' in kwargs:
+        set_server_settings(host=kwargs['plot_server_host'])
+
+    if 'plot_server_port' in kwargs:
+        set_server_settings(port=kwargs['plot_server_port'])

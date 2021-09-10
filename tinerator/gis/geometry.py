@@ -1,17 +1,32 @@
 import fiona
 from distutils.version import LooseVersion
-from itertools import chain
+from typing import Any, Callable, List, Union, NoReturn
 from collections import OrderedDict
 import pyproj
 import numpy as np
 from pyproj.crs import CRS
+from shapely.ops import transform
 from shapely.geometry import LineString
 from shapely.geometry import shape as to_shapely_shape
 from shapely.geometry import mapping as shapely_mapping
 from .geoutils import parse_crs
-from ..visualize import plot as pl
+from ..visualize import plot2d, MapboxStyles
 from ..logging import log, warn, debug, error
 
+try:
+    from osgeo import gdal
+except ImportError:
+    import gdal
+
+try:
+    from osgeo import osr
+except ImportError:
+    import osr
+
+try:
+    from osgeo import ogr
+except ImportError:
+    import ogr
 
 class Geometry:
     """
@@ -121,15 +136,17 @@ class Geometry:
         self.properties["metadata"]["schema"][name] = type
         self.properties["properties"][name] = data
 
-    def plot(self, layers: list = None, outfile: str = None, **kwargs):
+    def plot(
+        self,
+        layers: list = None,
+        mapbox_style: str = MapboxStyles.OPEN_STREET_MAP,
+        show_legend: bool = False,
+        raster_cmap: list = None,
+        **kwargs,
+    ):
         """
         Plots the Geometry object.
-
-        Args:
-            layer (:obj:`list`, optional): A set of additional Raster or Geometry objects to view.
-            outfile (:obj:`str`, optional): If not None, saves the figure to this filename.
         """
-
         objects = [self]
 
         if layers is not None:
@@ -137,13 +154,7 @@ class Geometry:
                 layers = [layers]
             objects += layers
 
-        pl.plot_objects(
-            objects,
-            outfile=outfile,
-            xlabel=f"Easting ({self.units})",
-            ylabel=f"Northing ({self.units})",
-            **kwargs,
-        )
+        plot2d(objects, mapbox_style=mapbox_style, show_legend=show_legend, raster_cmap=raster_cmap, **kwargs)
 
     def save(self, outfile: str, driver: str = "ESRI Shapefile"):
         """
@@ -258,7 +269,27 @@ class Geometry:
             )
 
         return Geometry(shapes=[exterior_interp], crs=self.crs, properties=None)
+    
+    def reproject(
+        self, crs: Union[pyproj.CRS, str, int, dict], in_place: bool = False
+    ) -> Union['Geometry', NoReturn]:
+        """
+        Reprojects a Geometry object into the provided CRS and returns
+        the new object.
 
+        Args:
+            shape (Geometry): The Geometry object to reproject.
+            crs (Union[pyproj.CRS, str, int, dict]): The CRS to reproject into.
+
+        Returns:
+            If ``in_place == False``, a TINerator Geometry object in the new coordinate reference space.
+        """
+
+        crs = parse_crs(crs)
+        project = pyproj.Transformer.from_crs(self.crs, crs)
+        new_shapes = [transform(project.transform, shp) for shp in self.shapes]
+
+        return Geometry(shapes=new_shapes, crs=crs, properties=self.properties)
 
 def load_shapefile(filename: str) -> Geometry:
     """

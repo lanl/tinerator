@@ -16,9 +16,20 @@ class MapboxStyles:
     STAMEN_TONER = "stamen-toner"
     STAMEN_WATERCOLOR = "stamen-watercolor"
 
+def mapbox_styles():
+    """
+    Prints available Mapbox styles. Pass one as
+    an argument to ``tinerator.plot2d``, 
+    ``Raster.plot``, or ``Geometry.plot``.
+    """
+    mapbox_vars = vars(MapboxStyles)
+    for key in mapbox_vars:
+        if not key.startswith('__'):
+            print(mapbox_vars[key])
+
 def plot2d(
     objects: list,
-    mapbox_style: str = MapboxStyles.OPEN_STREET_MAP,
+    mapbox_style: str = MapboxStyles.STAMEN_TERRAIN,
     show_legend: bool = False,
     raster_cmap: list = None,
     **kwargs,

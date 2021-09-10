@@ -164,6 +164,8 @@ def get_layout(
     color_with_attribute="Material Id",
     show_cube_axes=False,
     show_layers_in_range: tuple = None,
+    height: str = "calc(100vh - 0px)",
+    width: str = "100%",
 ):
 
     if isinstance(color_with_attribute, str):
@@ -179,9 +181,8 @@ def get_layout(
             color_with_attribute = "Material Id"
 
     return html.Div(
-        style={"width": "100%", "height": "500px"},
+        style={"width": width, "height": height},
         children=[
-            html.H1("Jupyter Dash Demo"),
             vtk_view(
                 mesh,
                 sets=sets,

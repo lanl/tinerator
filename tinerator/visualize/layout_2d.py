@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+from ..constants import is_tinerator_object
+from ..logging import log, warn, error, debug
 
 WGS_84 = 4326  # EPSG code
 DEFAULT_RASTER_CMAP = cc.isolum
@@ -152,12 +154,14 @@ def init_figure(
 
     if mapbox_style is None:
         mapbox_style = "white-bg"
+    
+    log(f"Mapbox style: \"{mapbox_style}\"")
 
     if not isinstance(objects, Iterable):
         objects = [objects]
 
-    if not isinstance(raster_cmap, list):
-        raster_cmap = list(raster_cmap)
+    if not isinstance(raster_cmap, Iterable):
+        raster_cmap = [raster_cmap]
     
     rcmap_idx = 0
 
@@ -169,9 +173,9 @@ def init_figure(
         map_extent[2] = max(map_extent[2], extent[2])
         map_extent[3] = max(map_extent[3], extent[3])
 
-        if isinstance(obj, Geometry):
+        if is_tinerator_object(obj, "Geometry"):
             add_geometry(fig, obj, uid=uid)
-        elif isinstance(obj, Raster):
+        elif is_tinerator_object(obj, "Raster"):
             r_cmap = None
 
             try:
@@ -210,12 +214,12 @@ def init_figure(
     return fig
 
 
-def get_layout(objects, mapbox_style = None, show_legend = False, raster_cmap = None, **kwargs):
+def get_layout(objects, mapbox_style = None, show_legend = False, raster_cmap = None, width: str = "100%", height: str = "calc(100vh - 0px)", **kwargs):
     return html.Div(
-        style={"width": "100%", "height": "calc(100vh - 0px)"},
+        style={"width": width, "height": height},
         children=[
             dcc.Graph(
-                figure=init_figure(objects, **kwargs),
+                figure=init_figure(objects, raster_cmap=raster_cmap, mapbox_style=mapbox_style, show_legend=show_legend, **kwargs),
                 config={
                     "showAxisDragHandles": True,
                     "watermark": False,

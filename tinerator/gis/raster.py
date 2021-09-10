@@ -1,3 +1,4 @@
+from typing import Any, Callable, List, Union, NoReturn
 import richdem as rd
 import numpy as np
 import io
@@ -21,13 +22,24 @@ try:
 except ImportError:
     import gdal
 
+try:
+    from osgeo import osr
+except ImportError:
+    import osr
+
+try:
+    from osgeo import ogr
+except ImportError:
+    import ogr
+
+
 # Rendering a DEM in 3D:
 # https://pvgeo.org/examples/grids/read-esri.html#sphx-glr-examples-grids-read-esri-py
 
 extension = lambda x: os.path.splitext(x)[-1].replace(".", "").lower().strip()
 
 
-def load_raster(filename: str, no_data: float = None):
+def load_raster(filename: str, no_data: float = None, to_crs: pyproj.CRS = None):
     """
     Loads a raster from a given filename.
     Supports all raster datatypes that GDAL supports, including
@@ -47,7 +59,12 @@ def load_raster(filename: str, no_data: float = None):
         >>> dem = tin.gis.load_raster("my_dem.tif", no_data=-9999., crs="EPSG:3114")
     """
 
-    return Raster(filename, no_data=no_data)
+    r = Raster(filename, no_data=no_data)
+    
+    if to_crs is not None:
+        r.reproject(to_crs)
+    
+    return r
 
 
 def new_raster(
@@ -392,3 +409,51 @@ class Raster:
         outdata.FlushCache()
 
         log(f"Raster object saved to {outfile}")
+
+    def reproject(self, crs: Union[pyproj.CRS, str, dict, int], in_place: bool = False) -> Union['Raster', NoReturn]:
+        """
+        Reprojects a TINerator Raster object into the
+        destination CRS.
+
+        The CRS must be a ``pyproj.CRS`` object, a WKT string,
+        an EPSG code (in the style of "EPSG:1234"), or a
+        PyProj string.
+
+        Args:
+            raster (Raster): A TINerator Raster object to reproject.
+            dst_crs (pyproj.CRS): The CRS to project into.
+
+        Returns:
+            A reprojected Raster object if ``in_place == False``, else ``None``.
+
+        Examples:
+            >>> dem.reproject("EPSG:3857")
+        """
+
+        dst_crs = parse_crs(crs)
+        log(f"Reprojecting from {self.crs.name} into {dst_crs.name}")
+
+        dst_crs = dst_crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
+        dst_srs = osr.SpatialReference()
+        dst_srs.ImportFromWkt(dst_crs)
+
+        debug(f"dst_crs = {dst_crs}")
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            debug(f"Temp directory created at: {tmp_dir}")
+
+            RASTER_OUT = os.path.join(tmp_dir, "raster.tif")
+            REPROJ_RASTER_OUT = os.path.join(tmp_dir, "raster_reprojected.tif")
+
+            self.save(RASTER_OUT)
+            debug("Raster was saved from memory to disk")
+
+            gdal.Warp(REPROJ_RASTER_OUT, RASTER_OUT, dstSRS=dst_srs, format="GTiff")
+
+            r = load_raster(REPROJ_RASTER_OUT)
+
+            if in_place:
+                self = r
+                return
+            else:
+                return r
