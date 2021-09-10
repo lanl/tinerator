@@ -91,6 +91,9 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     libarchive \
     h5py \
     netCDF4 \
+    xarray \
+    datashader \
+    colorcet \
     plotly \
     dash \
     dash-renderer \
@@ -137,7 +140,8 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
     echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
-    echo "c.NotebookApp.token = u''" >> $jupyter_cfg
+    echo "c.NotebookApp.token = u''" >> $jupyter_cfg && \
+    jupyter lab build
 
 # emacs
 COPY docker/files/emacs_d_init.el ${HOME}/.emacs.d/

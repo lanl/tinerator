@@ -1,6 +1,9 @@
 import numpy as np
 from enum import Enum
 from collections.abc import Iterable
+import xarray
+import datashader as ds
+import datashader.transfer_functions as tf
 import colorcet as cc
 import plotly.graph_objects as go
 import dash_core_components as dcc
@@ -82,9 +85,6 @@ def add_points(fig, xy, uid=None):
 
 
 def add_raster(raster, uid=None, colormap=None):
-    import xarray
-    import datashader as ds
-    import datashader.transfer_functions as tf
 
     if colormap is None:
         colormap = DEFAULT_RASTER_CMAP
