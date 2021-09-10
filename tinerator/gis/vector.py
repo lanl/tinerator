@@ -11,7 +11,7 @@ import pyproj
 from pyproj import CRS
 from pyproj.crs import CRSError
 from .geoutils import project_vector, parse_crs
-from ..visualize import plot as pl
+from ..visualize import plot2d, MapboxStyles
 from ..logging import log, warn, debug, error
 
 
@@ -90,19 +90,14 @@ class Shape:
     def plot(
         self,
         layers: list = None,
-        outfile: str = None,
-        title: str = None,
-        raster_hillshade=False,
+        mapbox_style: str = MapboxStyles.OPEN_STREET_MAP,
+        show_legend: bool = False,
+        raster_cmap: list = None,
+        **kwargs,
     ):
         """
-        Plots the Shape object.
+        Plots the vector object.
         """
-
-        if title is None:
-            title = (
-                f'Shape: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
-            )
-
         objects = [self]
 
         if layers is not None:
@@ -110,14 +105,7 @@ class Shape:
                 layers = [layers]
             objects += layers
 
-        pl.plot_objects(
-            objects,
-            outfile=outfile,
-            title=title,
-            xlabel=f"Easting ({self.units})",
-            ylabel=f"Northing ({self.units})",
-            raster_hillshade=raster_hillshade,
-        )
+        plot2d(objects, mapbox_style=mapbox_style, show_legend=show_legend, raster_cmap=raster_cmap, **kwargs)
 
     def save(self, filename: str):
         """

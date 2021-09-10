@@ -12,9 +12,8 @@ from .mesh_attributes import MeshAttribute
 from .readwrite import read_avs, write_avs, read_mpas
 from .meshing_types import ElementType
 from .surface_mesh import SurfaceMesh
-from ..visualize import view_3d as v3d
-from ..visualize import plot_triangulation, plot_sets
-from ..logging import error, print_histogram_table
+from ..visualize import plot3d
+from ..logging import error, print_histogram_table, warn
 from .sets import SideSet, ElementSet, PointSet
 
 
@@ -574,113 +573,64 @@ class Mesh:
         mat_id = self.material_id
         mat_id[cell_ids] = value
         self.material_id = mat_id
+    
+    def view(self, *args, **kwargs):
+        """
+        Deprecated.
+        Wrapper around ``Mesh.plot()``.
+        """
+        warn("Mesh.view() is deprecated. Please use Mesh.plot().")
+        self.plot(*args, **kwargs)
 
-    def view(
+    def plot(
         self,
-        active_scalar: str = None,
         sets: Union[SideSet, ElementSet, PointSet] = None,
-        view_sets_in_subplots: bool = True,
-        scale: tuple = (1, 1, 1),
-        savefig: str = None,
-        show_bounds: bool = True,
-        show_edges: bool = True,
-        window_size: tuple = None,
+        attribute: str = "Material Id",
+        show_cube_axes: bool = False,
+        show_layers_in_range: tuple = None,
         **kwargs,
     ):
         """
-        Views the mesh object in an interactive VTK-rendered windowed environment.
-        In a Jupyter notebook, it will render the 3D mesh in a live cell.
+        Renders a mesh in 3D using VTK.
 
-        Point Sets and Side Sets can also be rendered by passing a list of
-        them to the ``sets`` keyword argument.
+        For ``show_layers_in_range``, it expects the following:
 
-        Additional keyword arguments can be found in the PyVista documentation.
+        .. code::python
+            (layer_start, layer_stop)
 
-        https://docs.pyvista.org/plotting/plotting.html#pyvista.plot
+        where ``layer_start`` and ``layer_stop`` are in the form:
 
-        Args
-        ----
-            active_scalar (:obj:`str`, optional): The mesh attribute to visualize. Defaults to "material_id".
-            sets (:obj:`Union[SideSet, PointSet]`, optional): The sets to render with the mesh.
-            scale (:obj:`tuple`, optional): Relative scale for the mesh in (X, Y, Z). Defaults to (1, 1, 1).
-            savefig (:obj:`str`, optional): Filepath to save a screenshot of the mesh.
-            show_bounds (:obj:`bool`, optional): If True, shows the bounding box of the mesh.
-            show_edges (:obj:`bool`, optional): If True, shows the mesh edges.
-            window_size (:obj:`bool`, optional): Adjusts the viewing window size or the Jupyter notebook cell size.
+        .. code::python
+            layer_number
+            layer_number.sublayer_number
+
+        For example, to show layers between 1 and 3, 
+
+        .. code::python
+            show_layers_in_range = (1, 3)
+
+        Or to only show the first three sublayers in layer 1:
+
+        .. code::python
+            show_layers_in_range = (1.0, 1.3)
+
+        Args:
+            mesh (tinerator.Mesh): The mesh to render.
+            sets (List[Union[SideSet, PointSet]], optional): Renders side sets and point sets on the mesh. Defaults to None.
+            attribute (str, optional): The attribute to color the mesh by. Defaults to "Material Id".
+            show_cube_axes (bool, optional): Shows cube axes around the mesh. Defaults to False.
+            show_layers_in_range (tuple, optional): Only draw certain layer(s) of the mesh. Defaults to None.
         """
+        mesh = self
 
         if sets is not None:
-            if active_scalar is None:
-                active_scalar = "material_id"
-                assert len(self.material_id) > 0
-
             if not isinstance(sets, collections.Iterable):
                 sets = [sets]
 
             sets = flatten_list(sets)
 
-            plot_sets(
-                self.to_vtk_mesh(material_id_alias="material_id"),
-                sets,
-                active_scalar=active_scalar,
-                show_edges=show_edges,
-                savefig=savefig,
-                window_size=window_size,
-                scale=scale,
-                view_sets_in_subplots=view_sets_in_subplots,
-                **kwargs,
-            )
-            return
+        plot3d(mesh, sets=sets, attribute=attribute, show_cube_axes=show_cube_axes, show_layers_in_range=show_layers_in_range, **kwargs)
 
-        # TODO: use `self.to_vtk_mesh()` instead of what's below
-        if self.element_type == ElementType.TRIANGLE:
-            etype = "tri"
-        elif self.element_type == ElementType.PRISM:
-            etype = "prism"
-        elif self.element_type == ElementType.POLYGON:
-            etype = "polygon"
-        elif self.element_type == ElementType.HEX:
-            etype = "hex"
-        elif self.element_type == ElementType.QUAD:
-            etype = "quad"
-        else:
-            raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
-
-        cell_arrays = None
-        node_arrays = None
-
-        try:
-            if active_scalar is None:
-                active_scalar = "material_id"
-                attrb = self.material_id
-                attribute_name = active_scalar
-            else:
-                attrb = self.get_attribute(active_scalar)
-                attribute_name = active_scalar
-
-            if len(attrb) == self.n_nodes:
-                node_arrays = {attribute_name: attrb}
-            elif len(attrb) == self.n_elements:
-                cell_arrays = {attribute_name: attrb}
-            else:
-                raise ValueError("Malformed attribute vector")
-        except KeyError:
-            error(f'Could not find attribute "{active_scalar}"')
-
-        v3d.plot_3d(
-            self,
-            etype,
-            active_scalar=attribute_name,
-            cell_arrays=cell_arrays,
-            node_arrays=node_arrays,
-            scale=scale,
-            text=f"Nodes: {self.n_nodes}\nCells: {self.n_elements}",
-            screenshot=savefig,
-            show_edges=show_edges,
-            window_size=window_size,
-            show_bounds=show_bounds,
-            **kwargs,
-        )
 
     def save_exodusii(
         self,

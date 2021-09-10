@@ -47,14 +47,14 @@ x, y, Z = make_mesh(
 quad_mesh = tin.meshing.create_hillslope_mesh(
     Z, x_coords=x, y_coords=y
 )
-#quad_mesh.view()
+quad_mesh.plot()
 
 z_min = 0.0
 n_z = 11
 
 layers = [("snapped", z_min, n_z, 1),]
 hex_mesh = tin.meshing.extrude_mesh(quad_mesh, layers)
-#hex_mesh.view()
+hex_mesh.plot()
 
 surface_mesh = hex_mesh.surface_mesh()
 
@@ -72,5 +72,5 @@ test_sets = [
 ]
 surface_mesh.validate_sets(test_sets)
 
-hex_mesh.view(sets=sets)
+hex_mesh.plot(sets=sets)
 hex_mesh.save("Open-Book-3D.exo", sets=sets)

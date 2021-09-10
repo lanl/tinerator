@@ -11,7 +11,7 @@ from pyproj.crs import CRSError
 from shapely.ops import polygonize, linemerge
 from ..logging import log, warn, debug, error
 from .geometry import Geometry
-from ..visualize import plot as pl
+from ..visualize import plot2d, MapboxStyles
 from .geoutils import project_vector, unproject_vector, parse_crs
 from .raster_boundary import square_trace_boundary as st_boundary
 from ..constants import DEFAULT_NO_DATA_VALUE, DEFAULT_PROJECTION
@@ -325,25 +325,14 @@ class Raster:
     def plot(
         self,
         layers: list = None,
-        outfile: str = None,
-        title: str = None,
-        geometry: list = None,
-        hillshade: bool = False,
+        mapbox_style: str = MapboxStyles.OPEN_STREET_MAP,
+        show_legend: bool = False,
+        raster_cmap: list = None,
+        **kwargs,
     ):
         """
         Plots the raster object.
-
-        # Arguments
-        outfile (str): path to save figure
-        title (str): figure title
-        geometry (list): a list of geometrical objects to overlay
         """
-
-        if title is None:
-            title = (
-                f'Raster: "{os.path.basename(self.filename)}" | CRS: "{self.crs.name}"'
-            )
-
         objects = [self]
 
         if layers is not None:
@@ -351,14 +340,8 @@ class Raster:
                 layers = [layers]
             objects += layers
 
-        pl.plot_objects(
-            objects,
-            outfile=outfile,
-            title=title,
-            xlabel=f"Easting ({self.units})",
-            ylabel=f"Northing ({self.units})",
-            raster_hillshade=hillshade,
-        )
+        plot2d(objects, mapbox_style=mapbox_style, show_legend=show_legend, raster_cmap=raster_cmap, **kwargs)
+
 
     def get_boundary(self, distance: float = None) -> Geometry:
         """

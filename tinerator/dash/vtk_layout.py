@@ -8,6 +8,7 @@ import dash_bootstrap_components as dbc
 from dash_vtk.utils import to_mesh_state
 import plotly.express as px
 
+
 class Viz:
     def __init__(self):
         self.main = self.load("open-book.vtk", id="main")
@@ -19,7 +20,7 @@ class Viz:
             "top": self.load("open-book-TopFaces.vtk", id="top"),
             "west": self.load("open-book-west.vtk", id="west"),
         }
-    
+
     def load(self, f, id=None):
         d = "/Users/livingston/dev/lanl/plotly-port/notebooks/meshes"
         reader = vtk.vtkPolyDataReader()
@@ -28,9 +29,11 @@ class Viz:
         mesh_vtk = reader.GetOutput()
         return dash_vtk.Mesh("mesh-" + id, state=to_mesh_state(mesh_vtk))
 
+
 # -----------------------------------------------------------------------------
 # Control UI
 # -----------------------------------------------------------------------------
+
 
 def get_controls(mesh):
     high = 0.6
@@ -97,7 +100,7 @@ def get_controls(mesh):
                         html.P("Color Preset"),
                         dcc.Dropdown(
                             id="preset",
-                            #options=preset_as_options,
+                            # options=preset_as_options,
                             value="erdc_rainbow_bright",
                         ),
                     ]
@@ -123,34 +126,37 @@ def vtk_view(mesh):
     children = []
 
     for s in viz.sets.keys():
-        children.append(dash_vtk.GeometryRepresentation(
+        children.append(
+            dash_vtk.GeometryRepresentation(
                 id=s,
                 children=[viz.sets[s]],
                 property={
                     "edgeVisibility": True,
-                    #"color": (1, 0, 0),
+                    # "color": (1, 0, 0),
                     "opacity": 1,
                     "representation": SURFACE,
                 },
             )
         )
 
-    #children.append(
+    # children.append(
     #    dash_vtk.GeometryRepresentation(
     #        id="main",
     #        children=[viz.main],
     #        property={"representation": WIREFRAME}
     #    )
-    #)
+    # )
 
     return dash_vtk.View(
         id="vtk-view",
         children=children,
     )
 
+
 # -----------------------------------------------------------------------------
 # App UI
 # -----------------------------------------------------------------------------
+
 
 def create_layout(mesh, **kwargs):
     return dbc.Container(
@@ -163,7 +169,10 @@ def create_layout(mesh, **kwargs):
                     dbc.Col(
                         width=8,
                         children=[
-                            html.Div(vtk_view(mesh), style={"height": "100%", "width": "100%"})
+                            html.Div(
+                                vtk_view(mesh),
+                                style={"height": "100%", "width": "100%"},
+                            )
                         ],
                     ),
                 ],
@@ -172,11 +181,12 @@ def create_layout(mesh, **kwargs):
         ],
     )
 
+
 def create_app(mesh, **kwargs):
     app = dash.Dash(
         __name__,
-        #meta_tags=[{"name": "viewport", "content": "width=device-width"}],
-        external_stylesheets=[dbc.themes.BOOTSTRAP]
+        # meta_tags=[{"name": "viewport", "content": "width=device-width"}],
+        external_stylesheets=[dbc.themes.BOOTSTRAP],
     )
     app.title = "TINerator"
 

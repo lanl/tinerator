@@ -2,7 +2,6 @@ import numpy as np
 import pyvista as pv
 from scipy.spatial import distance
 from shapely.geometry import Polygon
-from ..constants import _in_notebook, JUPYTER_BACKEND_DEFAULT
 from ..logging import log, warn, debug, _pylagrit_verbosity
 from .mesh_metrics import get_cell_normals
 from .meshing_utils import (
@@ -42,13 +41,9 @@ class SurfaceMesh:
         """Writes the mesh to disk. Uses Meshio as a file writer."""
         self._mesh.save(outfile, **kwargs)
 
-    def view(self, **kwargs):
+    def view(self, *args, **kwargs):
         """Visualize the surface mesh."""
-        if _in_notebook():
-            jupyter_backend = JUPYTER_BACKEND_DEFAULT
-        else:
-            jupyter_backend = None
-        self._mesh.plot(jupyter_backend=jupyter_backend, **kwargs)
+        self._mesh.plot(*args, **kwargs)
 
     def __repr__(self):
         return f"SurfaceMesh<nodes={len(self.nodes)}, cells={len(self.cells)}>"
