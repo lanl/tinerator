@@ -143,7 +143,4 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg && \
     jupyter lab build
 
-# emacs
-COPY docker/files/emacs_d_init.el ${HOME}/.emacs.d/
-
 CMD ["jupyter", "lab", "--port=8899"]
