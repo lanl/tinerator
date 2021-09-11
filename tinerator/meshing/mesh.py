@@ -573,7 +573,7 @@ class Mesh:
         mat_id = self.material_id
         mat_id[cell_ids] = value
         self.material_id = mat_id
-    
+
     def view(self, *args, **kwargs):
         """
         Deprecated.
@@ -604,7 +604,7 @@ class Mesh:
             layer_number
             layer_number.sublayer_number
 
-        For example, to show layers between 1 and 3, 
+        For example, to show layers between 1 and 3,
 
         .. code::python
             show_layers_in_range = (1, 3)
@@ -629,8 +629,14 @@ class Mesh:
 
             sets = flatten_list(sets)
 
-        plot3d(mesh, sets=sets, attribute=attribute, show_cube_axes=show_cube_axes, show_layers_in_range=show_layers_in_range, **kwargs)
-
+        plot3d(
+            mesh,
+            sets=sets,
+            attribute=attribute,
+            show_cube_axes=show_cube_axes,
+            show_layers_in_range=show_layers_in_range,
+            **kwargs,
+        )
 
     def save_exodusii(
         self,

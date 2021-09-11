@@ -60,10 +60,10 @@ def load_raster(filename: str, no_data: float = None, to_crs: pyproj.CRS = None)
     """
 
     r = Raster(filename, no_data=no_data)
-    
+
     if to_crs is not None:
         r.reproject(to_crs)
-    
+
     return r
 
 
@@ -357,8 +357,13 @@ class Raster:
                 layers = [layers]
             objects += layers
 
-        plot2d(objects, mapbox_style=mapbox_style, show_legend=show_legend, raster_cmap=raster_cmap, **kwargs)
-
+        plot2d(
+            objects,
+            mapbox_style=mapbox_style,
+            show_legend=show_legend,
+            raster_cmap=raster_cmap,
+            **kwargs,
+        )
 
     def get_boundary(self, distance: float = None) -> Geometry:
         """
@@ -410,7 +415,9 @@ class Raster:
 
         log(f"Raster object saved to {outfile}")
 
-    def reproject(self, crs: Union[pyproj.CRS, str, dict, int], in_place: bool = False) -> Union['Raster', NoReturn]:
+    def reproject(
+        self, crs: Union[pyproj.CRS, str, dict, int], in_place: bool = False
+    ) -> Union["Raster", NoReturn]:
         """
         Reprojects a TINerator Raster object into the
         destination CRS.

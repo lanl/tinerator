@@ -584,7 +584,7 @@ class SurfaceMesh:
             sets.append(set)
 
         return sets
-    
+
     def validate_sets(self, sets):
         """
         Given a list of side sets, this function verifies their integrity.
@@ -601,16 +601,24 @@ class SurfaceMesh:
         union_test = sets[0]
         for s in sets[1:]:
             union_test = union_test.join(s)
-        
-        assert len(all_faces.primary_cells) == len(union_test.primary_cells), 'Malformed set(s): cell count mismatch'
-        assert len(all_faces.primary_faces) == len(union_test.primary_faces), 'Malformed set(s): face count mismatch'
+
+        assert len(all_faces.primary_cells) == len(
+            union_test.primary_cells
+        ), "Malformed set(s): cell count mismatch"
+        assert len(all_faces.primary_faces) == len(
+            union_test.primary_faces
+        ), "Malformed set(s): face count mismatch"
 
         log("[green]PASSED[/green]: union")
 
         difference_test = union_test.remove(all_faces)
 
-        assert len(difference_test.primary_cells) == 0, 'Malformed set(s): cell count mismatch'
-        assert len(difference_test.primary_faces) == 0, 'Malformed set(s): face count mismatch'
+        assert (
+            len(difference_test.primary_cells) == 0
+        ), "Malformed set(s): cell count mismatch"
+        assert (
+            len(difference_test.primary_faces) == 0
+        ), "Malformed set(s): face count mismatch"
 
         log("[green]PASSED[/green]: difference")
 
@@ -625,7 +633,11 @@ class SurfaceMesh:
                 intersection_test[-1].name = f"{sets[i].name} | {sets[j].name}"
 
         for intersection in intersection_test:
-            assert len(intersection.primary_cells) == 0, f'Malformed set(s): cell count mismatch ({intersection.name})'
-            assert len(intersection.primary_faces) == 0, f'Malformed set(s): face count mismatch ({intersection.name})'
+            assert (
+                len(intersection.primary_cells) == 0
+            ), f"Malformed set(s): cell count mismatch ({intersection.name})"
+            assert (
+                len(intersection.primary_faces) == 0
+            ), f"Malformed set(s): face count mismatch ({intersection.name})"
 
         log("[green]PASSED[/green]: intersection")

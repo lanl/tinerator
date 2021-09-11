@@ -105,7 +105,13 @@ class Shape:
                 layers = [layers]
             objects += layers
 
-        plot2d(objects, mapbox_style=mapbox_style, show_legend=show_legend, raster_cmap=raster_cmap, **kwargs)
+        plot2d(
+            objects,
+            mapbox_style=mapbox_style,
+            show_legend=show_legend,
+            raster_cmap=raster_cmap,
+            **kwargs,
+        )
 
     def save(self, filename: str):
         """

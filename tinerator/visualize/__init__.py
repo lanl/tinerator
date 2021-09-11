@@ -1,11 +1,12 @@
-#from .plot import plot_objects, plot_triangulation
-#from .view_3d import plot_3d
-#from .plot_facesets import plot_facesets
-#from .plot_sets import plot_sets
+# from .plot import plot_objects, plot_triangulation
+# from .view_3d import plot_3d
+# from .plot_facesets import plot_facesets
+# from .plot_sets import plot_sets
 
 from .config import run_server, ServerTypes, ServerSettings
 from .layout_2d import get_layout as get_layout_2d
 from .layout_3d import get_layout as get_layout_3d
+
 
 class MapboxStyles:
     NONE = "white-bg"
@@ -16,16 +17,18 @@ class MapboxStyles:
     STAMEN_TONER = "stamen-toner"
     STAMEN_WATERCOLOR = "stamen-watercolor"
 
+
 def mapbox_styles():
     """
     Prints available Mapbox styles. Pass one as
-    an argument to ``tinerator.plot2d``, 
+    an argument to ``tinerator.plot2d``,
     ``Raster.plot``, or ``Geometry.plot``.
     """
     mapbox_vars = vars(MapboxStyles)
     for key in mapbox_vars:
-        if not key.startswith('__'):
+        if not key.startswith("__"):
             print(mapbox_vars[key])
+
 
 def plot2d(
     objects: list,
@@ -58,9 +61,10 @@ def plot2d(
         objects,
         mapbox_style=mapbox_style,
         show_legend=show_legend,
-        raster_cmap=raster_cmap
+        raster_cmap=raster_cmap,
     )
     run_server(layout, **kwargs)
+
 
 def plot3d(
     mesh,
@@ -68,7 +72,7 @@ def plot3d(
     attribute: str = "Material Id",
     show_cube_axes: bool = False,
     show_layers_in_range: tuple = None,
-    **kwargs
+    **kwargs,
 ) -> None:
     """
     Renders a mesh in 3D using VTK.
@@ -77,18 +81,18 @@ def plot3d(
 
     .. code::python
         (layer_start, layer_stop)
-    
+
     where ``layer_start`` and ``layer_stop`` are in the form:
 
     .. code::python
         layer_number
         layer_number.sublayer_number
-    
-    For example, to show layers between 1 and 3, 
+
+    For example, to show layers between 1 and 3,
 
     .. code::python
         show_layers_in_range = (1, 3)
-    
+
     Or to only show the first three sublayers in layer 1:
 
     .. code::python
@@ -106,6 +110,6 @@ def plot3d(
         sets=sets,
         color_with_attribute=attribute,
         show_cube_axes=show_cube_axes,
-        show_layers_in_range=show_layers_in_range
+        show_layers_in_range=show_layers_in_range,
     )
     run_server(layout, **kwargs)

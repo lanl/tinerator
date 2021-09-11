@@ -28,6 +28,7 @@ try:
 except ImportError:
     import ogr
 
+
 class Geometry:
     """
     Creates a Geometry object. This object stores a collection
@@ -154,7 +155,13 @@ class Geometry:
                 layers = [layers]
             objects += layers
 
-        plot2d(objects, mapbox_style=mapbox_style, show_legend=show_legend, raster_cmap=raster_cmap, **kwargs)
+        plot2d(
+            objects,
+            mapbox_style=mapbox_style,
+            show_legend=show_legend,
+            raster_cmap=raster_cmap,
+            **kwargs,
+        )
 
     def save(self, outfile: str, driver: str = "ESRI Shapefile"):
         """
@@ -269,10 +276,10 @@ class Geometry:
             )
 
         return Geometry(shapes=[exterior_interp], crs=self.crs, properties=None)
-    
+
     def reproject(
         self, crs: Union[pyproj.CRS, str, int, dict], in_place: bool = False
-    ) -> Union['Geometry', NoReturn]:
+    ) -> Union["Geometry", NoReturn]:
         """
         Reprojects a Geometry object into the provided CRS and returns
         the new object.
@@ -290,6 +297,7 @@ class Geometry:
         new_shapes = [transform(project.transform, shp) for shp in self.shapes]
 
         return Geometry(shapes=new_shapes, crs=crs, properties=self.properties)
+
 
 def load_shapefile(filename: str) -> Geometry:
     """

@@ -2,12 +2,14 @@ import subprocess
 import sys
 from enum import Enum, auto
 
+
 class ExecEnvironment(Enum):
-    JUPYTER = auto() # Jupyter Notebook/Lab
-    IPYTHON = auto() # IPython REPL
-    DOCKER  = auto() # Docker container
-    COLAB   = auto() # Google Colab
-    SCRIPT  = auto() # Standard execution
+    JUPYTER = auto()  # Jupyter Notebook/Lab
+    IPYTHON = auto()  # IPython REPL
+    DOCKER = auto()  # Docker container
+    COLAB = auto()  # Google Colab
+    SCRIPT = auto()  # Standard execution
+
 
 def in_notebook():
     # https://stackoverflow.com/a/39662359/5150303
@@ -22,6 +24,7 @@ def in_notebook():
     except NameError:
         return False  # Probably standard Python interpreter
 
+
 def in_docker_container():
     """
     Checks if we are living in a Docker container or not.
@@ -35,8 +38,10 @@ def in_docker_container():
     except subprocess.CalledProcessError:
         return False
 
+
 def in_google_colab():
     return "google.colab" in sys.modules
+
 
 def get_environment():
     env = []
@@ -44,13 +49,13 @@ def get_environment():
 
     if in_google_colab():
         env.append(ee.COLAB)
-    
+
     if in_docker_container():
         env.append(ee.DOCKER)
-    
+
     if in_notebook():
         env.append(ee.JUPYTER)
-    
+
     return env
 
 

@@ -13,6 +13,7 @@ class MeshingConstants:
     BOTTOM_LAYER = -2  # The "botom layer" of a stacked mesh
     INTERIOR_LAYER = 0  # The interior layers of a stacked mesh
 
+
 def is_tinerator_object(obj, name: str):
     """
     Alternate method for ``isinstance()``, but with
@@ -28,4 +29,3 @@ def is_tinerator_object(obj, name: str):
         )
     except:
         return False
-

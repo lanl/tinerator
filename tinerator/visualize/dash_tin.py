@@ -7,6 +7,7 @@ from threading import Thread
 from retrying import retry
 import uuid
 
+
 class DashTIN(dash.Dash):
     _token = str(uuid.uuid4())
 
@@ -22,21 +23,21 @@ class DashTIN(dash.Dash):
         super(DashTIN, self).__init__(name=name, **kwargs)
 
         # Register route to shut down server
-        @self.server.route('/_shutdown_' + DashTIN._token, methods=['GET'])
+        @self.server.route("/_shutdown_" + DashTIN._token, methods=["GET"])
         def shutdown():
-            func = request.environ.get('werkzeug.server.shutdown')
+            func = request.environ.get("werkzeug.server.shutdown")
             if func is None:
-                raise RuntimeError('Not running with the Werkzeug Server')
+                raise RuntimeError("Not running with the Werkzeug Server")
             func()
-            return 'Server shutting down...'
+            return "Server shutting down..."
 
         # Register route that we can use to poll to see when server is running
-        @self.server.route('/_alive_' + DashTIN._token, methods=['GET'])
+        @self.server.route("/_alive_" + DashTIN._token, methods=["GET"])
         def alive():
-            return 'Alive'
-        
+            return "Alive"
+
         self.server.logger.disabled = False
-    
+
     def run_server(self, **kwargs):
         super_run_server = super(DashTIN, self).run_server
 
@@ -44,19 +45,19 @@ class DashTIN(dash.Dash):
         host = kwargs.get("host", os.getenv("HOST", "127.0.0.1"))
         port = kwargs.get("port", os.getenv("PORT", "8050"))
 
-        kwargs['host'] = host
-        kwargs['port'] = port
+        kwargs["host"] = host
+        kwargs["port"] = port
 
         # Terminate any existing server using this port
         self._terminate_server_for_port(host, port)
 
         # Compute server_url url
-        self.server_url = 'http://{host}:{port}'.format(host=host, port=port)
+        self.server_url = "http://{host}:{port}".format(host=host, port=port)
 
         @retry(
             stop_max_attempt_number=15,
             wait_exponential_multiplier=100,
-            wait_exponential_max=1000
+            wait_exponential_max=1000,
         )
         def run():
             super_run_server(**kwargs)
@@ -74,7 +75,7 @@ class DashTIN(dash.Dash):
         @retry(
             stop_max_attempt_number=15,
             wait_exponential_multiplier=10,
-            wait_exponential_max=1000
+            wait_exponential_max=1000,
         )
         def wait_for_app():
             res = requests.get(alive_url).content.decode()
@@ -84,16 +85,14 @@ class DashTIN(dash.Dash):
                 )
                 raise OSError(
                     "Address '{url}' already in use.\n"
-                    "    Try passing a different port to run_server.".format(
-                        url=url
-                    )
+                    "    Try passing a different port to run_server.".format(url=url)
                 )
 
         wait_for_app()
-    
+
     def getServerURL(self):
         return self.server_url
-    
+
     def shutdown(self):
         shutdown_url = f"{self.getServerURL()}/_shutdown_{DashTIN._token}"
 

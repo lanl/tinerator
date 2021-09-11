@@ -15,19 +15,23 @@ from ..logging import log, warn, error, debug
 WGS_84 = 4326  # EPSG code
 DEFAULT_RASTER_CMAP = cc.isolum
 
-def get_zoom_and_center(extent, zoom_scale=11.5):
+
+def get_zoom_and_center(extent, xp=None, fp=None):
     min_x, min_y, max_x, max_y = extent
     area = abs(max_x - min_x) * abs(max_y - min_y)
-    max_bound = max(abs(max_x - min_x), abs(max_y - min_y))
-    max_bound *= 111  # decimals to kilometers
 
-    zoom = zoom_scale - np.log(max_bound)
     center = (min_x + (max_x - min_x) / 2.0, min_y + (max_y - min_y) / 2.0)
+
+    if xp is None:
+        xp = [0, 5 ** -10, 4 ** -10, 3 ** -10, 2 ** -10, 1 ** -10, 1 ** -5]
+
+    if fp is None:
+        fp = [20, 15, 14, 13, 12, 7, 5]
 
     zoom = np.interp(
         x=area,
-        xp=[0, 5 ** -10, 4 ** -10, 3 ** -10, 2 ** -10, 1 ** -10, 1 ** -5],
-        fp=[20, 15, 14, 13, 12, 7, 5],
+        xp=xp,
+        fp=fp,
     )
 
     return zoom, center
@@ -92,10 +96,7 @@ def add_raster(raster, uid=None, colormap=None):
     raster = raster.reproject(WGS_84)
     min_x, max_y, max_x, min_y = raster.extent
 
-    img = tf.shade(
-        xarray.DataArray(raster.masked_data()),
-        cmap=colormap
-    )
+    img = tf.shade(xarray.DataArray(raster.masked_data()), cmap=colormap)
 
     # Invert and convert to Pillow image format
     img = img[::-1].to_pil()
@@ -144,7 +145,7 @@ def add_geometry(fig, obj, uid=None):
 
 
 def init_figure(
-    objects, raster_cmap = None, mapbox_style=None, show_legend=False, margin=7
+    objects, raster_cmap=None, mapbox_style=None, show_legend=False, margin=7
 ):
     fig = go.Figure()
 
@@ -154,15 +155,15 @@ def init_figure(
 
     if mapbox_style is None:
         mapbox_style = "white-bg"
-    
-    log(f"Mapbox style: \"{mapbox_style}\"")
+
+    log(f'Mapbox style: "{mapbox_style}"')
 
     if not isinstance(objects, Iterable):
         objects = [objects]
 
     if not isinstance(raster_cmap, Iterable):
         raster_cmap = [raster_cmap]
-    
+
     rcmap_idx = 0
 
     for (i, obj) in enumerate(objects):
@@ -183,7 +184,7 @@ def init_figure(
                 rcmap_idx += 1
             except IndexError as e:
                 pass
-            
+
             layer = add_raster(obj, uid=uid, colormap=r_cmap)
             mapbox_layers.append(layer)
         else:
@@ -214,12 +215,26 @@ def init_figure(
     return fig
 
 
-def get_layout(objects, mapbox_style = None, show_legend = False, raster_cmap = None, width: str = "100%", height: str = "calc(100vh - 0px)", **kwargs):
+def get_layout(
+    objects,
+    mapbox_style=None,
+    show_legend=False,
+    raster_cmap=None,
+    width: str = "100%",
+    height: str = "calc(100vh - 0px)",
+    **kwargs,
+):
     return html.Div(
         style={"width": width, "height": height},
         children=[
             dcc.Graph(
-                figure=init_figure(objects, raster_cmap=raster_cmap, mapbox_style=mapbox_style, show_legend=show_legend, **kwargs),
+                figure=init_figure(
+                    objects,
+                    raster_cmap=raster_cmap,
+                    mapbox_style=mapbox_style,
+                    show_legend=show_legend,
+                    **kwargs,
+                ),
                 config={
                     "showAxisDragHandles": True,
                     "watermark": False,
