@@ -1,14 +1,11 @@
 import numpy as np
-from enum import Enum
 from collections.abc import Iterable
 import xarray
-import datashader as ds
 import datashader.transfer_functions as tf
 import colorcet as cc
 import plotly.graph_objects as go
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_bootstrap_components as dbc
 from ..constants import is_tinerator_object
 from ..logging import log, warn, error, debug
 
@@ -16,7 +13,7 @@ WGS_84 = 4326  # EPSG code
 DEFAULT_RASTER_CMAP = cc.isolum
 
 
-def get_zoom_and_center(extent, xp=None, fp=None):
+def get_zoom_and_center(extent, zoom_scale: float = 1.0, xp=None, fp=None):
     min_x, min_y, max_x, max_y = extent
     area = abs(max_x - min_x) * abs(max_y - min_y)
 
@@ -34,7 +31,7 @@ def get_zoom_and_center(extent, xp=None, fp=None):
         fp=fp,
     )
 
-    return zoom, center
+    return zoom * zoom_scale, center
 
 
 def add_lines(fig, xy, uid=None):
@@ -88,7 +85,7 @@ def add_points(fig, xy, uid=None):
     )
 
 
-def add_raster(raster, uid=None, colormap=None):
+def add_raster(raster, name: str = None, colormap=None, uid=None, below="traces"):
 
     if colormap is None:
         colormap = DEFAULT_RASTER_CMAP
@@ -96,18 +93,14 @@ def add_raster(raster, uid=None, colormap=None):
     raster = raster.reproject(WGS_84)
     min_x, max_y, max_x, min_y = raster.extent
 
-    img = tf.shade(xarray.DataArray(raster.masked_data()), cmap=colormap)
-
-    # Invert and convert to Pillow image format
-    img = img[::-1].to_pil()
-
-    below = "" if not uid else f"{uid - 1}"
+    xarr = xarray.DataArray(raster.masked_data())
+    img = tf.shade(xarr, cmap=colormap)[::-1].to_pil()
 
     return {
+        "name": name,
         "sourcetype": "image",
         "source": img,
-        "below": "geometry",  # below,
-        "name": "raster",
+        "below": below,
         "coordinates": [
             [min_x, min_y],
             [max_x, min_y],
@@ -117,7 +110,7 @@ def add_raster(raster, uid=None, colormap=None):
     }
 
 
-def add_geometry(fig, obj, uid=None):
+def add_geometry(fig, obj):
     gt = obj.geometry_type.strip().lower()
     obj = obj.reproject(WGS_84)
 
@@ -126,7 +119,6 @@ def add_geometry(fig, obj, uid=None):
             add_polygon(
                 fig,
                 shp.exterior.coords[:],
-                uid=uid,
                 # xy_interior=shp.interior.coords[:]
             )
     elif "line" in gt:
@@ -136,21 +128,20 @@ def add_geometry(fig, obj, uid=None):
             coords.append(np.array(shp.coords[:])[:, :2])
             coords.append(np.array([[None, None]]))
 
-        add_lines(fig, np.vstack(coords), uid=uid)
+        add_lines(fig, np.vstack(coords))
     elif "point" in gt:
         for shp in obj.shapes:
-            add_points(fig, shp.coords[:], uid=uid)
+            add_points(fig, shp.coords[:])
     else:
         raise ValueError(f"Unknown geometry type: {obj.geometry_type}")
 
 
 def init_figure(
-    objects, raster_cmap=None, mapbox_style=None, show_legend=False, margin=7
+    objects, raster_cmap=None, mapbox_style=None, show_legend=False, margin=7, zoom_scale = 1.0,
 ):
     fig = go.Figure()
 
     map_extent = [+1e8, +1e8, -1e8, -1e8]
-    below = None
     mapbox_layers = []
 
     if mapbox_style is None:
@@ -167,7 +158,6 @@ def init_figure(
     rcmap_idx = 0
 
     for (i, obj) in enumerate(objects):
-        uid = len(objects) - i
         extent = obj.extent
         map_extent[0] = min(map_extent[0], extent[0])
         map_extent[1] = min(map_extent[1], extent[1])
@@ -175,7 +165,7 @@ def init_figure(
         map_extent[3] = max(map_extent[3], extent[3])
 
         if is_tinerator_object(obj, "Geometry"):
-            add_geometry(fig, obj, uid=uid)
+            add_geometry(fig, obj)
         elif is_tinerator_object(obj, "Raster"):
             r_cmap = None
 
@@ -185,15 +175,18 @@ def init_figure(
             except IndexError as e:
                 pass
 
-            layer = add_raster(obj, uid=uid, colormap=r_cmap)
+            layer = add_raster(obj, colormap=r_cmap)
             mapbox_layers.append(layer)
         else:
             raise ValueError(f"Unknown object type: {type(obj)}")
 
-    zoom, map_center = get_zoom_and_center(map_extent)
+    zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
-    fig.update_geos(fitbounds="locations")
+    #fig.update_geos(fitbounds="locations")
     fig.update_layout(
+        geo={
+            "fitbounds": "locations",
+        },
         margin={
             "r": margin,
             "t": margin,
@@ -222,6 +215,7 @@ def get_layout(
     raster_cmap=None,
     width: str = "100%",
     height: str = "calc(100vh - 0px)",
+    zoom_scale: float = 1.0,
     **kwargs,
 ):
     return html.Div(
@@ -233,6 +227,7 @@ def get_layout(
                     raster_cmap=raster_cmap,
                     mapbox_style=mapbox_style,
                     show_legend=show_legend,
+                    zoom_scale=zoom_scale,
                     **kwargs,
                 ),
                 config={

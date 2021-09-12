@@ -84,11 +84,9 @@ def run_server_default(
     app.layout = layout
     app.run_server(host=host, port=port, **kwargs)
     url = app.getServerURL()
-    log(f"Serving at {url=}")
-
+    debug(f"Serving at {url=}")
     # Anything to do here?
-
-    log(f"Shutting down server...")
+    debug(f"Shutting down server...")
     app.shutdown()
 
 
@@ -108,14 +106,14 @@ def run_server_windowed(
     app.layout = layout
     app.run_server(host=host, port=port, **kwargs)
     url = app.getServerURL()
-    log(f"Serving at {url=}")
+    debug(f"Serving at {url=}")
 
     exit_code = run_web_app(url, width=width, height=height, allow_resize=allow_resize)
 
     if exit_code != 0:
         warn(f"QtApplication exited with {exit_code=}")
 
-    log(f"Shutting down server...")
+    debug(f"Shutting down server...")
     app.shutdown()
 
 
@@ -128,7 +126,7 @@ def run_server_jupyter(layout, **kwargs):
 
 
 def run_server(layout, mode: ServerTypes = ServerSettings.mode, **kwargs):
-    log(f"Server mode: {mode=}")
+    debug(f"Server mode: {mode=}")
 
     if mode in [ServerTypes.DEFAULT, None]:
         run_server_default(layout, **kwargs)
@@ -139,4 +137,4 @@ def run_server(layout, mode: ServerTypes = ServerSettings.mode, **kwargs):
     else:
         raise ValueError(f"Server mode {mode} unknown")
 
-    log("Finished visualizing")
+    debug("Finished visualizing")

@@ -75,6 +75,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     conda update -n base -c defaults conda && \
     conda install -y pip pandas && \
     conda install -c conda-forge \
+    jupyterlab \
+    nodejs \
     boost \
     numpy \
     matplotlib \

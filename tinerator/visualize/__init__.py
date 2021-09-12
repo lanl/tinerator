@@ -3,6 +3,7 @@
 # from .plot_facesets import plot_facesets
 # from .plot_sets import plot_sets
 
+import warnings
 from .config import run_server, ServerTypes, ServerSettings
 from .layout_2d import get_layout as get_layout_2d
 from .layout_3d import get_layout as get_layout_3d
@@ -35,6 +36,7 @@ def plot2d(
     mapbox_style: str = MapboxStyles.STAMEN_TERRAIN,
     show_legend: bool = False,
     raster_cmap: list = None,
+    zoom_scale = 0.90,
     **kwargs,
 ):
     """
@@ -62,8 +64,14 @@ def plot2d(
         mapbox_style=mapbox_style,
         show_legend=show_legend,
         raster_cmap=raster_cmap,
+        zoom_scale=zoom_scale,
     )
-    run_server(layout, **kwargs)
+
+    # The current method of shutting down the Dash 
+    # server gives a warning
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        run_server(layout, **kwargs)
 
 
 def plot3d(
@@ -112,4 +120,9 @@ def plot3d(
         show_cube_axes=show_cube_axes,
         show_layers_in_range=show_layers_in_range,
     )
-    run_server(layout, **kwargs)
+
+    # The current method of shutting down the Dash 
+    # server gives a warning
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        run_server(layout, **kwargs)
