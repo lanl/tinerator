@@ -2,7 +2,6 @@ import dash
 import os
 import requests
 from flask import request
-import flask.cli
 from threading import Thread
 from retrying import retry
 import uuid

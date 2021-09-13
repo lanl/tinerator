@@ -4,6 +4,7 @@
 # from .plot_sets import plot_sets
 
 import warnings
+from typing import Union
 from .config import run_server, ServerTypes, ServerSettings
 from .layout_2d import get_layout as get_layout_2d
 from .layout_3d import get_layout as get_layout_3d
@@ -30,6 +31,32 @@ def mapbox_styles():
         if not key.startswith("__"):
             print(mapbox_vars[key])
 
+def get_fig(layout):
+    import dash_core_components as dcc
+
+    for child in layout.children:
+        if isinstance(child, dcc.Graph):
+            return child.figure
+    
+    raise ValueError("No figure exists in this layout")
+
+def write_image_2d(filename: str, layout):
+    fig = get_fig(layout)
+    fig.write_image(filename)
+
+def write_html_2d(filename: str, layout, **kwargs):
+    """
+
+    https://plotly.com/python/interactive-html-export/
+
+    Args:
+        filename (str): [description]
+        layout ([type]): [description]
+        kwargs (dict, optional): [description]. Defaults to None.
+    """
+    fig = get_fig(layout)
+    fig.write_html(filename, **kwargs)
+
 
 def plot2d(
     objects: list,
@@ -37,11 +64,22 @@ def plot2d(
     show_legend: bool = False,
     raster_cmap: list = None,
     zoom_scale = 0.90,
+    write_image: str = None,
+    write_html: Union[str, dict] = None,
     **kwargs,
 ):
     """
     Plots a geospatial 2D representation of TINerator
     Geometry and Raster objects.
+
+    ``write_image`` supports the following image formats:
+
+    **Raster:**
+    - PNG, JPEG, WebP
+
+    **Vector:**
+    - SVG, PDF
+    - EPS (if Poppler library is installed)
 
     Colormaps should be through the Colorcet package.
     For example,
@@ -67,6 +105,19 @@ def plot2d(
         zoom_scale=zoom_scale,
     )
 
+    if write_image:
+        write_image_2d(write_image, layout)
+        return
+    
+    if write_html:
+        if isinstance(write_html, str):
+            write_html_2d(write_html, layout)
+        else:
+            filename = write_html.pop("filename")
+            write_html_2d(filename, layout, **write_html)
+
+        return
+
     # The current method of shutting down the Dash 
     # server gives a warning
     with warnings.catch_warnings():
@@ -76,10 +127,13 @@ def plot2d(
 
 def plot3d(
     mesh,
+    write_image: str = None,
+    write_html: Union[str, dict] = None,
     sets: list = None,
     attribute: str = "Material Id",
     show_cube_axes: bool = False,
     show_layers_in_range: tuple = None,
+    bg_color: list = None,
     **kwargs,
 ) -> None:
     """
@@ -113,12 +167,17 @@ def plot3d(
         show_cube_axes (bool, optional): Shows cube axes around the mesh. Defaults to False.
         show_layers_in_range (tuple, optional): Only draw certain layer(s) of the mesh. Defaults to None.
     """
+
+    if write_html is not None or write_image is not None:
+        raise NotImplementedError("Writing 3D figures is not yet supported")
+
     layout = get_layout_3d(
         mesh,
         sets=sets,
         color_with_attribute=attribute,
         show_cube_axes=show_cube_axes,
         show_layers_in_range=show_layers_in_range,
+        bg_color=bg_color
     )
 
     # The current method of shutting down the Dash 

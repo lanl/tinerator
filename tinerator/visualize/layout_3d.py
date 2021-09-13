@@ -1,14 +1,8 @@
 import numpy as np
-from enum import Enum
 from collections.abc import Iterable
 
 import dash_vtk
-from jupyter_dash import JupyterDash
-import dash_core_components as dcc
 import dash_html_components as html
-import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-from dash_vtk.utils import to_volume_state
 from dash_vtk.utils import to_mesh_state
 
 
@@ -97,12 +91,16 @@ def vtk_view(
     sets=None,
     show_cube_axes=False,
     show_layers_in_range=None,
+    bg_color: list = None,
 ):
     children = []
     threshold = None
     primary_opacity = 1.0
     primary_color_attribute = color_attribute
     primary_representation = MeshViewType.SURFACE
+
+    if bg_color is None:
+        bg_color = [0.2, 0.3, 0.4]
 
     if sets or show_layers_in_range:
         primary_opacity = 0.25
@@ -153,8 +151,17 @@ def vtk_view(
                 )
             )
 
+    # cameraParallelProjection (boolean; default False): Use parallel projection (default: False).
+    # cameraPosition (list; default \[0, 0, 1\]): Initial camera position from an object in [0,0,0].
+    # cameraViewUp (list; default \[0, 1, 0\]): Initial camera position from an object in [0,0,0].
+
+    # savefig: https://discourse.vtk.org/t/save-window-rendering-results-to-image/3772/2
+    # or: https://kitware.github.io/vtk-js/api/Common_Core_ImageHelper.html
+    # or: https://github.com/Kitware/vtk-js/issues/1598
+
     return dash_vtk.View(
         children=children,
+        background = bg_color,
     )
 
 
@@ -164,6 +171,7 @@ def get_layout(
     color_with_attribute="Material Id",
     show_cube_axes=False,
     show_layers_in_range: tuple = None,
+    bg_color: list = None,
     height: str = "calc(100vh - 0px)",
     width: str = "100%",
 ):

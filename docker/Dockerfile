@@ -41,6 +41,8 @@ RUN apt-get update --fix-missing && \
     bison \
     libgl1-mesa-glx \
     xvfb \
+    nodejs \
+    npm \
     sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -102,6 +104,7 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     dash-html-components \
     dash-core-components \
     jupyter-dash \
+    python-kaleido \
     pytest && \
     conda clean -afy
 

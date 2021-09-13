@@ -182,7 +182,6 @@ def init_figure(
 
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
-    #fig.update_geos(fitbounds="locations")
     fig.update_layout(
         geo={
             "fitbounds": "locations",
