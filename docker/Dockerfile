@@ -41,8 +41,8 @@ RUN apt-get update --fix-missing && \
     bison \
     libgl1-mesa-glx \
     xvfb \
-    nodejs \
-    npm \
+    #nodejs \
+    #npm \
     sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -145,7 +145,7 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
     echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
-    echo "c.NotebookApp.token = u''" >> $jupyter_cfg && \
-    jupyter lab build
+    echo "c.NotebookApp.token = u''" >> $jupyter_cfg
+#    jupyter lab build
 
 CMD ["jupyter", "lab", "--port=8899"]
