@@ -18,15 +18,12 @@ def guess_mode():
 
     env = get_environment()
 
+    if ee.DOCKER in env:
+        ServerSettings.host = "0.0.0.0"
+
     # If we're in Jupyter, we want inline rendering
     if ee.JUPYTER in env:
         return ServerTypes.JUPYTER
-
-    # If we're in Docker and *not* Jupyter, all we can
-    # (safely) do is run as a web service -
-    # because port forwarding is easier than X Server setup
-    if ee.DOCKER in env:
-        return ServerTypes.DEFAULT
 
     # If pywebview isn't install, just run as default
     try:

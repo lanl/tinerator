@@ -1,6 +1,7 @@
 FROM ubuntu:20.04
 LABEL Description="TINerator Docker container"
 
+EXPOSE 8050-8100
 EXPOSE 8899
 ARG container_user=docker_user
 
@@ -40,9 +41,6 @@ RUN apt-get update --fix-missing && \
     unzip \
     bison \
     libgl1-mesa-glx \
-    #xvfb \
-    #nodejs \
-    #npm \
     sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -118,8 +116,7 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 # Build Watershed Workflow ========================== #
 # =================================================== #
 WORKDIR ${HOME}
-RUN python -m pip install GDAL==`gdal-config --version` && \
-    python -m pip --no-cache-dir install --upgrade \
+RUN python -m pip --no-cache-dir install --upgrade \
     dash-vtk \
     dash-bootstrap-components
 
@@ -143,6 +140,7 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
     echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
-#    jupyter lab build
+
+RUN jupyter-lab build
 
 CMD ["jupyter", "lab", "--port=8899"]
