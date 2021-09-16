@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union, List
 from .mesh import Mesh
 from .triangulation_jigsaw import triangulation_jigsaw
 from .triangulation_meshpy import triangulation_meshpy
@@ -21,10 +22,10 @@ def triangulate(
     raster: Raster,
     min_edge_length: float = None,
     max_edge_length: float = None,
-    refinement_feature: Geometry = None,
+    refinement_feature: Union[Geometry, List[Geometry]] = None,
     method: str = "default",
     scaling_type: str = "relative",
-    verbose: bool = True,
+    verbosity_level: int = 1,
     **kwargs,
 ) -> Mesh:
     """
@@ -53,7 +54,7 @@ def triangulate(
     - ``"meshpy"``: Uses `MeshPy <https://documen.tician.de/meshpy/index.html>`_ to generate a triangulation.
     - ``"gmsh"``: (in progress; not available yet). Uses `Gmsh <https://gmsh.info>`_ to generate a triangulation.
 
-    The default is ``"jigsaw"``.
+    The default is ``"meshpy"``.
 
     Args
     ----
@@ -63,6 +64,7 @@ def triangulate(
         refinement_feature (:obj:`Geometry`, optional): The Geometry object used to refine the triangulation around.
         method (:obj:`str`, optional): The triangulation kernel to use. Defaults to ``"jigsaw"``.
         scaling_type (:obj:`str`, optional): Defines how to interpret the provided edge lengths, as "relative" or "absolute".
+        verbosity_level (:obj:`int`, optional): The level of printed output on meshing progress. From 0 (none) to 3 (maximum).
         **kwargs: Optional parameters to pass into the triangulation kernel.
 
     Returns
@@ -104,7 +106,7 @@ def triangulate(
         )
 
     debug(f"Generating boundary for triangulation at distance = {boundary_dist}")
-    boundary = raster.get_boundary().polygon_exterior(spacing=boundary_dist)
+    boundary = raster.get_boundary()
 
     return triang_cb(
         raster,
@@ -113,5 +115,6 @@ def triangulate(
         min_edge_length=min_edge_length,
         max_edge_length=max_edge_length,
         scaling_type=scaling_type,
+        verbosity_level=verbosity_level,
         **kwargs,
     )

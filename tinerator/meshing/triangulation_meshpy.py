@@ -1,8 +1,5 @@
 import meshpy.triangle
 import numpy as np
-import random
-import os
-import tempfile
 from .mesh import load_mesh, Mesh
 from .meshing_types import ElementType
 from .meshing_utils import get_linestring_connectivity
@@ -17,14 +14,14 @@ def triangulation_meshpy(
     max_edge_length: float = None,
     refinement_feature: Geometry = None,
     scaling_type: str = "relative",
-    verbose: bool = True,
-    min_triangle_area: float = None,
-    max_triangle_area: float = None,
+    verbosity_level: int = 1,
     **kwargs,
 ):
     """
     Constructs a triangular mesh with the MeshPy
     meshing software.
+
+    Available kwargs: https://documen.tician.de/meshpy/tri-tet.html#meshpy.triangle.build
     """
 
     def ideal_triangle_area(edge_length):
@@ -38,23 +35,27 @@ def triangulation_meshpy(
     else:
         coeff = 1.0
 
-    if min_edge_length is None:
-        min_area = None
-    else:
+    boundary_spacing = None
+    min_area = max_area = None
+
+    if min_edge_length is None and max_edge_length is None:
+        raise ValueError(
+            "At least one of min_edge_length, max_edge_length must be provided"
+        )
+
+    # Determine the minimum and maximum triangle areas for meshing
+    if min_edge_length is not None:
+        boundary_spacing = coeff * min_edge_length
         min_area = ideal_triangle_area(min_edge_length * coeff)
 
-    if max_edge_length is None:
-        max_area = None
-    else:
+    if max_edge_length is not None:
+        boundary_spacing = coeff * max_edge_length
         max_area = ideal_triangle_area(max_edge_length * coeff)
-
-    if max_triangle_area is not None:
-        max_area = max_triangle_area
-    if min_triangle_area is not None:
-        min_area = min_triangle_area
 
     TARGET_AREA = max_area if max_area is not None else min_area
 
+    # Construct the refinement function for meshing:
+    # if True, split triangle, if False, then do not
     def refinement_callback(vertices, area):
         return area > TARGET_AREA
 
@@ -75,14 +76,16 @@ def triangulation_meshpy(
 
     kwargs["refinement_func"] = refinement_callback
 
-    vertices = np.array(raster_boundary.shapes[0].coords[:])[:, :2]
+    boundary = raster_boundary.polygon_exterior(spacing=boundary_spacing)
+
+    vertices = np.array(boundary.shapes[0].coords[:])[:, :2]
     segments = get_linestring_connectivity(vertices, closed=True, clockwise=True)
     segments -= 1
 
     mesh_info = meshpy.triangle.MeshInfo()
-    mesh_info.set_points(vertices)  # boundary points
-    mesh_info.set_facets(segments)  # connectivity
-    mesh = meshpy.triangle.build(mesh_info, verbose=verbose, **kwargs)
+    mesh_info.set_points(vertices)
+    mesh_info.set_facets(segments)
+    mesh = meshpy.triangle.build(mesh_info, verbose=verbosity_level, **kwargs)
 
     mesh_points = np.array(mesh.points).astype(float)
     mesh_points = np.hstack([mesh_points, np.zeros((mesh_points.shape[0], 1))])

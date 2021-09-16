@@ -104,7 +104,7 @@ def rasterize_geometry(raster: Raster, shape: Shape) -> Raster:
 
 
 def distance_map(
-    raster: Raster, shape: Geometry, min_dist: float = 0.0, max_dist: float = 1.0
+    raster: Raster, shapes: Geometry, min_dist: float = 0.0, max_dist: float = 1.0
 ) -> Raster:
     """
     Creates a distance map. A new raster will be returned, where
@@ -136,12 +136,24 @@ def distance_map(
 
     # Rasterize a shapefile onto the same dimensionality
     # and projection as `raster`
-    shape_raster = rasterize_geometry(raster, shape)
+    # If more than one shapefile, use bitwise-or to join together
+    if not isinstance(shapes, list):
+        shapes = [shapes]
 
-    data = np.array(shape_raster.data)
-    data[data < 0] = 0
-    data[data > 0] = 1
-    data = data.astype(bool)
+    data = None
+
+    for shape in shapes:
+        shape_raster = rasterize_geometry(raster, shape)
+
+        tmp_data = np.array(shape_raster.data)
+        tmp_data[tmp_data < 0] = 0
+        tmp_data[tmp_data > 0] = 1
+        tmp_data = tmp_data.astype(bool)
+
+        if data is None:
+            data = tmp_data
+        else:
+            data = data | tmp_data
 
     # Use Snowy to generate a signed distance field
     # (The weird "[:,:,None]" slicing is due to Snowy

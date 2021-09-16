@@ -37,9 +37,9 @@ jobs:
         name: Copy documentation from Docker container
         run: |
           docker run \
-                 -v $(pwd)/doc_deploy/:/tin-docs/ \
+                 -v $(pwd)/doc_deploy/:/home/docker_user/tmp/tin-docs/ \
                  ees16/tinerator:latest \
-                 /bin/bash -c "cp -r docs/* /tin-docs/"
+                 /bin/bash -c "cp -r /home/docker_user/tinerator/docs/* /home/docker_user/tmp/tin-docs/"
       -
         name: Deploy to GH Pages
         uses: peaceiris/actions-gh-pages@v3

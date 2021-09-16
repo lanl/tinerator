@@ -36,11 +36,11 @@ RUN apt-get update --fix-missing && \
     ca-certificates \
 
     # TINerator/Watershed Workflow
-    libgdal-dev \
+    #libgdal-dev \
     unzip \
     bison \
-    libgl1-mesa-glx \
-    xvfb \
+    #libgl1-mesa-glx \
+    #xvfb \
     #nodejs \
     #npm \
     sudo && \
@@ -129,7 +129,7 @@ RUN python -m pip install GDAL==`gdal-config --version` && \
 RUN git clone https://github.com/lanl/tinerator.git ${HOME}/tinerator --depth 1 && \
     cd ${HOME}/tinerator && \
     python -m pip install --no-cache-dir -r requirements.txt && \
-    #./tpls/build-tpls.sh -A -M && \
+    ./tpls/build-tpls.sh -A -M && \
     echo "export PYTHONPATH=${HOME}/tinerator:${HOME}/tinerator/tpls/seacas/install/lib:${HOME}/tinerator/tpls/jigsaw-python:\${PYTHONPATH}" >> ~/.bashrc
 
 ENV PYTHONPATH=${HOME}/tinerator:${HOME}/tinerator/tpls/seacas/install/lib:${HOME}/tinerator/tpls/jigsaw-python:${PYTHONPATH}

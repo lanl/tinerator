@@ -73,10 +73,6 @@ def triangulation_jigsaw(
     geom.vert2 = np.array([((pt[0], pt[1]), 0) for pt in vertices], dtype=geom.VERT2_t)
     geom.edge2 = np.array([((pt[0], pt[1]), 0) for pt in segments], dtype=geom.EDGE2_t)
 
-    import ipdb
-
-    ipdb.set_trace()
-
     # Construct JIGSAW opts object
     opts.hfun_scal = scaling_type  # Interpret HMIN/HMAX as relative or absolute?
     opts.hfun_hmin = min_edge_length

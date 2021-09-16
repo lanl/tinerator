@@ -141,8 +141,8 @@ done
 
 if [ "$_should_build_all" = true ]
 then
-    _should_build_pylagrit=true
-    _should_build_jigsaw=true
+    _should_build_pylagrit=false
+    _should_build_jigsaw=false
     _should_build_exodus=true
 fi
 
