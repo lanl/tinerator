@@ -41,8 +41,8 @@ def add_lines(fig, xy, uid=None):
         go.Scattermapbox(
             name="Lines",
             mode="lines+markers",
-            lon=xy[:, 0],
-            lat=xy[:, 1],
+            lat=xy[:, 0],
+            lon=xy[:, 1],
             opacity=1.0,
             showlegend=True,
             uid=uid,
@@ -60,8 +60,8 @@ def add_polygon(fig, xy_exterior, xy_interior=None, uid=None):
             name="Polygon",
             mode="lines",
             fill="toself",
-            lon=xy_exterior[:, 0],
-            lat=xy_exterior[:, 1],
+            lat=xy_exterior[:, 0],
+            lon=xy_exterior[:, 1],
             opacity=1.0,
             showlegend=True,
             uid=uid,
@@ -76,8 +76,9 @@ def add_points(fig, xy, uid=None):
         go.Scattermapbox(
             name="Points",
             mode="markers",
-            lon=xy[:, 0],
-            lat=xy[:, 1],
+            marker_size=10,
+            lat=xy[:, 0],
+            lon=xy[:, 1],
             opacity=1.0,
             showlegend=True,
             uid=uid,
@@ -85,16 +86,51 @@ def add_points(fig, xy, uid=None):
     )
 
 
-def add_raster(raster, name: str = None, colormap=None, uid=None, below="traces"):
+def add_raster(
+    raster,
+    name: str = None,
+    colormap=None,
+    uid=None,
+    below="traces",
+    hillshade: bool = False,
+):
 
     if colormap is None:
         colormap = DEFAULT_RASTER_CMAP
 
-    raster = raster.reproject(WGS_84)
-    min_x, max_y, max_x, min_y = raster.extent
+    img = None
+    min_lat, max_lon, max_lat, min_lon = raster.extent
 
-    xarr = xarray.DataArray(raster.masked_data())
-    img = tf.shade(xarr, cmap=colormap)[::-1].to_pil()
+    if hillshade:
+        from matplotlib.colors import LightSource
+        import matplotlib.pyplot as plt
+        from PIL import Image
+
+        data = raster.masked_data()
+        dx = dy = raster.cell_size
+        dy = 111200 * dy
+        dx = 111200 * dx * np.cos(np.radians(min_lon))
+        ls = LightSource(azdeg=315, altdeg=45)
+
+        cmap = plt.cm.gist_earth
+
+        rgb = ls.shade(
+            data,
+            cmap=cmap,
+            vmin=np.nanmin(data),
+            vmax=np.nanmax(data),
+            blend_mode="overlay",
+            vert_exag=5,
+            dx=dx,
+            dy=dy,
+        )
+        rgb[:, :, :3] *= 255
+        img = Image.fromarray(rgb[::-1], mode="RGBA")
+        img.show()
+    else:
+        xarr = xarray.DataArray(raster.masked_data())
+        img = tf.shade(xarr, cmap=colormap)
+        img = img[::-1].to_pil()
 
     return {
         "name": name,
@@ -102,17 +138,16 @@ def add_raster(raster, name: str = None, colormap=None, uid=None, below="traces"
         "source": img,
         "below": below,
         "coordinates": [
-            [min_x, min_y],
-            [max_x, min_y],
-            [max_x, max_y],
-            [min_x, max_y],
+            [min_lat, min_lon],
+            [max_lat, min_lon],
+            [max_lat, max_lon],
+            [min_lat, max_lon],
         ],
     }
 
 
 def add_geometry(fig, obj):
     gt = obj.geometry_type.strip().lower()
-    obj = obj.reproject(WGS_84)
 
     if "polygon" in gt:
         for shp in obj.shapes:
@@ -130,15 +165,29 @@ def add_geometry(fig, obj):
 
         add_lines(fig, np.vstack(coords))
     elif "point" in gt:
+        coords = []
+
         for shp in obj.shapes:
-            add_points(fig, shp.coords[:])
+            coords.append(np.array(shp.coords[:])[:, :2])
+            coords.append(np.array([[None, None]]))
+
+        add_points(fig, np.vstack(coords))
     else:
         raise ValueError(f"Unknown geometry type: {obj.geometry_type}")
 
 
 def init_figure(
-    objects, raster_cmap=None, mapbox_style=None, show_legend=False, margin=7, zoom_scale = 1.0,
+    objects,
+    raster_cmap=None,
+    mapbox_style=None,
+    show_legend=False,
+    margin=7,
+    zoom_scale=1.0,
 ):
+    debug(
+        f"Initializing figure. {objects=}, {raster_cmap=}, "
+        f"{mapbox_style=}, {show_legend=}, {zoom_scale=}"
+    )
     fig = go.Figure()
 
     map_extent = [+1e8, +1e8, -1e8, -1e8]
@@ -147,7 +196,7 @@ def init_figure(
     if mapbox_style is None:
         mapbox_style = "white-bg"
 
-    log(f'Mapbox style: "{mapbox_style}"')
+    debug(f'Mapbox style: "{mapbox_style}"')
 
     if not isinstance(objects, Iterable):
         objects = [objects]
@@ -158,15 +207,21 @@ def init_figure(
     rcmap_idx = 0
 
     for (i, obj) in enumerate(objects):
-        extent = obj.extent
-        map_extent[0] = min(map_extent[0], extent[0])
-        map_extent[1] = min(map_extent[1], extent[1])
-        map_extent[2] = max(map_extent[2], extent[2])
-        map_extent[3] = max(map_extent[3], extent[3])
+        obj = obj.reproject(WGS_84)
+
+        extent = list(obj.extent)
+        debug(f"{extent=}")
 
         if is_tinerator_object(obj, "Geometry"):
             add_geometry(fig, obj)
         elif is_tinerator_object(obj, "Raster"):
+            # ============================ #
+            # TODO: Raster extent needs to be flipped
+            # Band-aid
+            min_lon, min_lat, max_lon, max_lat = extent
+            extent = [min_lat, min_lon, max_lat, max_lon]
+            # ============================ #
+
             r_cmap = None
 
             try:
@@ -179,6 +234,11 @@ def init_figure(
             mapbox_layers.append(layer)
         else:
             raise ValueError(f"Unknown object type: {type(obj)}")
+
+        map_extent[0] = min(map_extent[0], extent[0])
+        map_extent[1] = min(map_extent[1], extent[1])
+        map_extent[2] = max(map_extent[2], extent[2])
+        map_extent[3] = max(map_extent[3], extent[3])
 
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
@@ -195,8 +255,8 @@ def init_figure(
         mapbox={
             "style": mapbox_style,
             "center": {
-                "lon": map_center[0],
-                "lat": map_center[1],
+                "lat": map_center[0],
+                "lon": map_center[1],
             },
             "zoom": zoom,
         },

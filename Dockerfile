@@ -77,10 +77,16 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     conda update -n base -c defaults conda && \
     conda install -y pip pandas && \
     conda install -c conda-forge \
+    gdal \
+    fiona \
+    pyproj \
+    rasterio \
+    shapely \
     jupyterlab \
     nodejs \
     boost \
     numpy \
+    jigsawpy \
     matplotlib \
     scipy \
     pandas \
@@ -114,17 +120,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 WORKDIR ${HOME}
 RUN python -m pip install GDAL==`gdal-config --version` && \
     python -m pip --no-cache-dir install --upgrade \
-    fiona \
-    rasterio \
-    shapely \
-    pyproj \
     dash-vtk \
-    dash-bootstrap-components \
-    && \
-    # PROJ_LIB to rasterio's version of proj, which seems to conflict otherwise
-    echo "export PROJ_LIB=/opt/conda/lib/python3.8/site-packages/rasterio/proj_data/" >> ~/.bashrc 
-
-ENV PROJ_LIB=/opt/conda/lib/python3.8/site-packages/rasterio/proj_data/
+    dash-bootstrap-components
 
 # =================================================== #
 # Build TINerator =================================== #
@@ -132,7 +129,7 @@ ENV PROJ_LIB=/opt/conda/lib/python3.8/site-packages/rasterio/proj_data/
 RUN git clone https://github.com/lanl/tinerator.git ${HOME}/tinerator --depth 1 && \
     cd ${HOME}/tinerator && \
     python -m pip install --no-cache-dir -r requirements.txt && \
-    ./tpls/build-tpls.sh -A -M && \
+    #./tpls/build-tpls.sh -A -M && \
     echo "export PYTHONPATH=${HOME}/tinerator:${HOME}/tinerator/tpls/seacas/install/lib:${HOME}/tinerator/tpls/jigsaw-python:\${PYTHONPATH}" >> ~/.bashrc
 
 ENV PYTHONPATH=${HOME}/tinerator:${HOME}/tinerator/tpls/seacas/install/lib:${HOME}/tinerator/tpls/jigsaw-python:${PYTHONPATH}

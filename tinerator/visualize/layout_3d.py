@@ -161,7 +161,7 @@ def vtk_view(
 
     return dash_vtk.View(
         children=children,
-        background = bg_color,
+        background=bg_color,
     )
 
 

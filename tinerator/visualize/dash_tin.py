@@ -10,7 +10,9 @@ import uuid
 class DashTIN(dash.Dash):
     _token = str(uuid.uuid4())
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(
+        self, name="TINerator", title: str = "TINerator: Data Visualization", **kwargs
+    ):
         """
         This is based heavily off of the JupyterDash subclass.
         It is needed to do async serving + being able to kill the server
@@ -19,7 +21,7 @@ class DashTIN(dash.Dash):
         Args:
             name (str, optional): Name. Defaults to None.
         """
-        super(DashTIN, self).__init__(name=name, **kwargs)
+        super(DashTIN, self).__init__(name=name, title=title, **kwargs)
 
         # Register route to shut down server
         @self.server.route("/_shutdown_" + DashTIN._token, methods=["GET"])
@@ -36,6 +38,10 @@ class DashTIN(dash.Dash):
             return "Alive"
 
         self.server.logger.disabled = False
+
+        # @self.server.route("/_isloaded_" + DashTIN._token, methods=["GET"])
+        # def loaded():
+        #    return "Loaded"
 
     def run_server(self, **kwargs):
         super_run_server = super(DashTIN, self).run_server
@@ -109,3 +115,24 @@ class DashTIN(dash.Dash):
             response = requests.get(shutdown_url)
         except Exception as e:
             pass
+
+
+def find_open_port(host: str, port_start: int, max_iter: int = 300) -> int:
+    port = int(port_start)
+
+    for _ in range(max_iter):
+        url = "http://{host}:{port}/_alive_{token}".format(
+            host=host, port=port, token=DashTIN._token
+        )
+        try:
+            res = requests.get(url).content.decode()
+            if res != "Alive":
+                return port
+        except Exception:
+            return port
+
+        port += 1
+
+    raise ValueError(
+        "Could not find an open port (checked ports in range: [{port_start}, {port}]"
+    )

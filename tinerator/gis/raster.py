@@ -345,6 +345,9 @@ class Raster:
         mapbox_style: str = MapboxStyles.OPEN_STREET_MAP,
         show_legend: bool = False,
         raster_cmap: list = None,
+        zoom_scale: float = 0.90,
+        write_image: str = None,
+        write_html: Union[str, dict] = None,
         **kwargs,
     ):
         """
@@ -362,6 +365,9 @@ class Raster:
             mapbox_style=mapbox_style,
             show_legend=show_legend,
             raster_cmap=raster_cmap,
+            zoom_scale=zoom_scale,
+            write_image=write_image,
+            write_html=write_html,
             **kwargs,
         )
 
@@ -413,7 +419,7 @@ class Raster:
         outdata.GetRasterBand(1).SetNoDataValue(self.no_data_value)
         outdata.FlushCache()
 
-        log(f"Raster object saved to {outfile}")
+        debug(f"Raster object saved to {outfile}")
 
     def reproject(
         self, crs: Union[pyproj.CRS, str, dict, int], in_place: bool = False
@@ -438,13 +444,11 @@ class Raster:
         """
 
         dst_crs = parse_crs(crs)
-        log(f"Reprojecting from {self.crs.name} into {dst_crs.name}")
+        debug(f"Reprojecting from {self.crs.name} into {dst_crs.name}")
 
         dst_crs = dst_crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
         dst_srs = osr.SpatialReference()
         dst_srs.ImportFromWkt(dst_crs)
-
-        debug(f"dst_crs = {dst_crs}")
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             debug(f"Temp directory created at: {tmp_dir}")

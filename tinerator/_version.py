@@ -1,3 +1,3 @@
 """Version info for tinerator"""
-version_info = (0, 9, 9)
+version_info = (1, 0, 0)
 __version__ = ".".join(map(str, version_info))

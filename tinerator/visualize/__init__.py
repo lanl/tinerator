@@ -5,7 +5,7 @@
 
 import warnings
 from typing import Union
-from .config import run_server, ServerTypes, ServerSettings
+from .config import run_server, ServerTypes, ServerSettings, set_server_settings
 from .layout_2d import get_layout as get_layout_2d
 from .layout_3d import get_layout as get_layout_3d
 
@@ -31,18 +31,21 @@ def mapbox_styles():
         if not key.startswith("__"):
             print(mapbox_vars[key])
 
+
 def get_fig(layout):
     import dash_core_components as dcc
 
     for child in layout.children:
         if isinstance(child, dcc.Graph):
             return child.figure
-    
+
     raise ValueError("No figure exists in this layout")
+
 
 def write_image_2d(filename: str, layout):
     fig = get_fig(layout)
     fig.write_image(filename)
+
 
 def write_html_2d(filename: str, layout, **kwargs):
     """
@@ -63,7 +66,7 @@ def plot2d(
     mapbox_style: str = MapboxStyles.STAMEN_TERRAIN,
     show_legend: bool = False,
     raster_cmap: list = None,
-    zoom_scale = 0.90,
+    zoom_scale=1.00,
     write_image: str = None,
     write_html: Union[str, dict] = None,
     **kwargs,
@@ -108,17 +111,16 @@ def plot2d(
     if write_image:
         write_image_2d(write_image, layout)
         return
-    
+
     if write_html:
         if isinstance(write_html, str):
             write_html_2d(write_html, layout)
         else:
             filename = write_html.pop("filename")
             write_html_2d(filename, layout, **write_html)
-
         return
 
-    # The current method of shutting down the Dash 
+    # The current method of shutting down the Dash
     # server gives a warning
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -177,10 +179,10 @@ def plot3d(
         color_with_attribute=attribute,
         show_cube_axes=show_cube_axes,
         show_layers_in_range=show_layers_in_range,
-        bg_color=bg_color
+        bg_color=bg_color,
     )
 
-    # The current method of shutting down the Dash 
+    # The current method of shutting down the Dash
     # server gives a warning
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")

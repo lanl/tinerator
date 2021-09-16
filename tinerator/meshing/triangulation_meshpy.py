@@ -17,7 +17,7 @@ def triangulation_meshpy(
     max_edge_length: float = None,
     refinement_feature: Geometry = None,
     scaling_type: str = "relative",
-    verbose: bool = False,
+    verbose: bool = True,
     min_triangle_area: float = None,
     max_triangle_area: float = None,
     **kwargs,
@@ -53,13 +53,12 @@ def triangulation_meshpy(
     if min_triangle_area is not None:
         min_area = min_triangle_area
 
-    if refinement_feature is None:
-        TARGET_AREA = max_area if max_area is not None else min_area
+    TARGET_AREA = max_area if max_area is not None else min_area
 
-        def refinement_callback(vertices, area):
-            return area > TARGET_AREA
+    def refinement_callback(vertices, area):
+        return area > TARGET_AREA
 
-    else:
+    if refinement_feature:
         dmap = distance_map(
             raster,
             refinement_feature,

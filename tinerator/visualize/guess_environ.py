@@ -1,4 +1,6 @@
 import subprocess
+import os
+import platform
 import sys
 from enum import Enum, auto
 
@@ -57,6 +59,15 @@ def get_environment():
         env.append(ee.JUPYTER)
 
     return env
+
+
+def open_file(filepath):
+    if platform.system() == "Darwin":  # macOS
+        subprocess.call(("open", filepath))
+    elif platform.system() == "Windows":  # Windows
+        os.startfile(filepath)
+    else:  # linux variants
+        subprocess.call(("xdg-open", filepath))
 
 
 def init_pyvista_framebuffer(force: bool = False):

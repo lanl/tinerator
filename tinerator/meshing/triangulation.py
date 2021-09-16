@@ -6,7 +6,7 @@ from ..logging import warn, debug, log
 from ..gis import Raster, Geometry
 
 TRIANGULATION_METHODS = {
-    "default": triangulation_jigsaw,
+    "default": triangulation_meshpy,
     "meshpy": triangulation_meshpy,
     "jigsaw": triangulation_jigsaw,
 }
@@ -24,6 +24,7 @@ def triangulate(
     refinement_feature: Geometry = None,
     method: str = "default",
     scaling_type: str = "relative",
+    verbose: bool = True,
     **kwargs,
 ) -> Mesh:
     """

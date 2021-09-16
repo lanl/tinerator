@@ -1,4 +1,6 @@
 from enum import Enum, auto
+from os import wait
+from tinerator.visualize.guess_environ import open_file
 from typing import Union, List
 import dash_bootstrap_components as dbc
 from ..logging import log, warn, debug, error
@@ -26,17 +28,14 @@ def guess_mode():
     if ee.DOCKER in env:
         return ServerTypes.DEFAULT
 
-    # If PyQt5 *and* QtWebEngine aren't available,
-    # just run as a web service
+    # If pywebview isn't install, just run as default
     try:
-        from PyQt5.QtCore import QUrl
-        from PyQt5.QtWebEngineWidgets import QWebEngineView
-        from PyQt5.QtWidgets import QApplication
+        import webview
+
+        # return ServerTypes.WINDOWED
+        return ServerTypes.DEFAULT
     except ModuleNotFoundError as e:
         return ServerTypes.DEFAULT
-
-    # Looks like we're running locally with a proper Qt setup
-    return ServerTypes.WINDOWED
 
 
 class ServerSettings:
@@ -74,20 +73,31 @@ def set_server_settings(
 
         ServerSettings.mode = mode
 
+    debug(f"{vars(ServerSettings)=}")
+
 
 def run_server_default(
     layout, host=ServerSettings.host, port: str = ServerSettings.port, **kwargs
 ):
-    from .dash_tin import DashTIN
+    from .dash_tin import DashTIN, find_open_port
+    from .guess_environ import open_file
+
+    # We want all Dash servers to exist in this mode
+    # So, find an open port
+    port = find_open_port(host, port)
 
     app = DashTIN(__name__, external_stylesheets=ServerSettings.css)
     app.layout = layout
     app.run_server(host=host, port=port, **kwargs)
     url = app.getServerURL()
     debug(f"Serving at {url=}")
-    # Anything to do here?
-    debug(f"Shutting down server...")
-    app.shutdown()
+
+    if not url.lower().startswith("http"):
+        url = f"http://{url}"
+
+    open_file(url)
+    # debug(f"Shutting down server...")
+    # app.shutdown()
 
 
 def run_server_windowed(
@@ -96,11 +106,14 @@ def run_server_windowed(
     port: str = ServerSettings.port,
     width: int = 1200,
     height: int = 900,
-    allow_resize: bool = True,
     **kwargs,
 ):
     from .dash_tin import DashTIN
-    from .qt_app import run_web_app
+
+    # from .qt_app import run_web_app
+    from .guiwebview import run_web_app
+
+    import flask
 
     app = DashTIN(__name__, external_stylesheets=ServerSettings.css)
     app.layout = layout
@@ -108,13 +121,39 @@ def run_server_windowed(
     url = app.getServerURL()
     debug(f"Serving at {url=}")
 
-    exit_code = run_web_app(url, width=width, height=height, allow_resize=allow_resize)
+    exit_code = run_web_app(url, width=width, height=height)
+
+    body = flask.request.get_json()
+    flask.g.inputs_list = inputs = body.get(  # pylint: disable=assigning-non-slot
+        "inputs", []
+    )
+    flask.g.states_list = state = body.get(  # pylint: disable=assigning-non-slot
+        "state", []
+    )
+    output = body["output"]
+    outputs_list = body.get("outputs") or split_callback_id(output)
+    flask.g.outputs_list = outputs_list  # pylint: disable=assigning-non-slot
+
+    flask.g.input_values = (  # pylint: disable=assigning-non-slot
+        input_values
+    ) = inputs_to_dict(inputs)
+    flask.g.state_values = inputs_to_dict(state)  # pylint: disable=assigning-non-slot
+    changed_props = body.get("changedPropIds", [])
+    flask.g.triggered_inputs = [  # pylint: disable=assigning-non-slot
+        {"prop_id": x, "value": input_values.get(x)} for x in changed_props
+    ]
+
+    response = (
+        flask.g.dash_response  # pylint: disable=assigning-non-slot
+    ) = flask.Response(mimetype="application/json")
+
+    args = inputs_to_vals(inputs + state)
 
     if exit_code != 0:
-        warn(f"QtApplication exited with {exit_code=}")
+        warn(f"GUI view exited with {exit_code=}")
 
-    debug(f"Shutting down server...")
-    app.shutdown()
+    # debug(f"Shutting down server...")
+    # app.shutdown()
 
 
 def run_server_jupyter(layout, **kwargs):
@@ -125,7 +164,11 @@ def run_server_jupyter(layout, **kwargs):
     app.run_server(mode="inline", **kwargs)
 
 
-def run_server(layout, mode: ServerTypes = ServerSettings.mode, **kwargs):
+def run_server(layout, mode: ServerTypes = None, **kwargs):
+
+    if mode is None:
+        mode = ServerSettings.mode
+
     debug(f"Server mode: {mode=}")
 
     if mode in [ServerTypes.DEFAULT, None]:

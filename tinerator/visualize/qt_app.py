@@ -1,7 +1,8 @@
 import sys
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QCoreApplication, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWebEngineWidgets import QWebEngineProfile
 
@@ -11,7 +12,6 @@ class MainWindowWeb(QMainWindow):
         super().__init__(*args, **kwargs)
         self.tw_title = "TINerator"
         self.browser = QWebEngineView()
-        self.profile = QWebEngineProfile.defaultProfile()
         self.browser.loadFinished.connect(self.onLoadFinished)
         self.setCentralWidget(self.browser)
         self.setWindowTitle(f"{self.tw_title} (Loading...)")
@@ -35,8 +35,14 @@ class MainWindowWeb(QMainWindow):
     def onLoadFinished(self):
         self.setWindowTitle(self.tw_title)
 
-    def onCloseEvent(self, event):
+    def closeEvent(self, event):
         self.setWindowTitle(f"{self.tw_title} (Closing...)")
+        self.browser.deleteLater()
+        self.browser.stop()
+        self.browser.destroy()
+        del self.browser
+        self.close()
+        QCoreApplication.quit()
 
 
 def run_web_app(
@@ -46,11 +52,12 @@ def run_web_app(
     height: int = 600,
     allow_resize: bool = True,
 ):
-    qt_app = QApplication(sys.argv)
-    qt_app.setOrganizationName("Los Alamos National Laboratory")
-    qt_app.setApplicationName("TINerator")
-    # qt_app.lastWindowClosed.connect(qt_app.quit)
-    qt_app.setStyle("Fusion")
+    qt_app = QtWidgets.QApplication.instance()
+
+    if qt_app is None:
+        qt_app = QApplication(sys.argv)
+
+    qt_app.setQuitOnLastWindowClosed(True)
 
     window = MainWindowWeb()
     window.setParams(
@@ -58,5 +65,9 @@ def run_web_app(
     )
     window.loadURL(url)
     window.show()
+    err = qt_app.exec_()
 
-    return qt_app.exec_()
+    del window
+    del qt_app
+
+    return err

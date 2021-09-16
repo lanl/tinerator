@@ -57,17 +57,10 @@ def triangulation_jigsaw(
         err += "  https://github.com/dengwirda/jigsaw-python"
         raise ModuleNotFoundError(err)
 
-    log("Triangulating raster with JIGSAW")
-
-    # TODO: does this respect nodes that aren't already ordered
-    # clockwise?
-    # vertices, segments = raster_boundary
-    vertices = np.array(raster_boundary.shapes[0].coords[:])
-    segments = get_linestring_connectivity(vertices, closed=True, clockwise=True)
-
-    verts = [((pt[0], pt[1]), 0) for pt in vertices]
-    conn = [((i, i + 1), 0) for i in range(len(vertices) - 1)]
-    conn += [((len(vertices) - 1, 0), 0)]
+    debug("Triangulating raster with JIGSAW")
+    vertices = np.array(raster_boundary.shapes[0].coords[:])[:, :2]
+    segments = get_linestring_connectivity(vertices, closed=True, clockwise=False)
+    segments -= 1
 
     opts = jigsawpy.jigsaw_jig_t()
     geom = jigsawpy.jigsaw_msh_t()
@@ -77,8 +70,12 @@ def triangulation_jigsaw(
     # Construct geometry object
     geom.mshID = "euclidean-mesh"
     geom.ndims = +2
-    geom.vert2 = np.array(verts, dtype=geom.VERT2_t)
-    geom.edge2 = np.array(conn, dtype=geom.EDGE2_t)
+    geom.vert2 = np.array([((pt[0], pt[1]), 0) for pt in vertices], dtype=geom.VERT2_t)
+    geom.edge2 = np.array([((pt[0], pt[1]), 0) for pt in segments], dtype=geom.EDGE2_t)
+
+    import ipdb
+
+    ipdb.set_trace()
 
     # Construct JIGSAW opts object
     opts.hfun_scal = scaling_type  # Interpret HMIN/HMAX as relative or absolute?

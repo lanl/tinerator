@@ -66,7 +66,7 @@ def rasterize_geometry(raster: Raster, shape: Shape) -> Raster:
         >>> rasterized_shape = tin.gis.rasterize_geometry(dem, watershed_flowline)
     """
 
-    log(f"Rasterizing {shape} to {raster}")
+    debug(f"Rasterizing {shape} to {raster}")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         debug(f"Temp directory created at: {tmp_dir}")
@@ -132,7 +132,7 @@ def distance_map(
         >>> dist = tin.gis.distance_map(dem, flowline)
     """
 
-    log("Creating distance map")
+    debug("Creating distance map")
 
     # Rasterize a shapefile onto the same dimensionality
     # and projection as `raster`
@@ -185,7 +185,7 @@ def clip_raster(raster: Raster, shape: Shape) -> Raster:
         >>> new_dem = tin.gis.clip_raster(dem, boundary)
     """
 
-    log("Clipping raster with shapefile")
+    debug("Clipping raster with shapefile")
 
     if shape.geometry_type not in [
         "Polygon",
@@ -242,7 +242,7 @@ def reproject_raster(raster: Raster, crs: Union[pyproj.CRS, str, dict, int]) -> 
     """
 
     dst_crs = parse_crs(crs)
-    log(f"Reprojecting from {raster.crs.name} into {dst_crs.name}")
+    debug(f"Reprojecting from {raster.crs.name} into {dst_crs.name}")
 
     dst_crs = dst_crs.to_wkt(version=pyproj.enums.WktVersion.WKT1_GDAL)
     dst_srs = osr.SpatialReference()

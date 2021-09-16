@@ -580,6 +580,11 @@ class Mesh:
         Wrapper around ``Mesh.plot()``.
         """
         warn("Mesh.view() is deprecated. Please use Mesh.plot().")
+
+        if "window_size" in kwargs:
+            warn("`window_size` has been removed. Ignoring.")
+            kwargs.pop("window_size")
+
         self.plot(*args, **kwargs)
 
     def plot(
