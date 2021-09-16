@@ -190,7 +190,6 @@ def init_figure(
     )
     fig = go.Figure()
 
-    map_extent = [+1e8, +1e8, -1e8, -1e8]
     mapbox_layers = []
 
     if mapbox_style is None:
@@ -201,45 +200,34 @@ def init_figure(
     if not isinstance(objects, Iterable):
         objects = [objects]
 
-    if not isinstance(raster_cmap, Iterable):
-        raster_cmap = [raster_cmap]
+    geom_objs = []
+    tile_objs = []
+    extents = []
 
-    rcmap_idx = 0
-
-    for (i, obj) in enumerate(objects):
-        obj = obj.reproject(WGS_84)
-
-        extent = list(obj.extent)
-        debug(f"{extent=}")
-
+    for obj in objects:
         if is_tinerator_object(obj, "Geometry"):
-            add_geometry(fig, obj)
+            geom_objs.append(obj)
         elif is_tinerator_object(obj, "Raster"):
-            # ============================ #
-            # TODO: Raster extent needs to be flipped
-            # Band-aid
-            min_lon, min_lat, max_lon, max_lat = extent
-            extent = [min_lat, min_lon, max_lat, max_lon]
-            # ============================ #
+            tile_objs.append(obj)
+    
+    for g in geom_objs:
+        g = g.reproject(WGS_84)
+        extents.append(g.extent)
+        add_geometry(fig, g)
+    
+    for (i, t) in enumerate(tile_objs):
+        t = t.reproject(WGS_84)
+        min_lon, min_lat, max_lon, max_lat = t.extent
+        extents.append([min_lat, min_lon, max_lat, max_lon])
+        mapbox_layers.append(add_raster(t, colormap=raster_cmap))
 
-            r_cmap = None
-
-            try:
-                r_cmap = raster_cmap[rcmap_idx]
-                rcmap_idx += 1
-            except IndexError as e:
-                pass
-
-            layer = add_raster(obj, colormap=r_cmap)
-            mapbox_layers.append(layer)
-        else:
-            raise ValueError(f"Unknown object type: {type(obj)}")
-
-        map_extent[0] = min(map_extent[0], extent[0])
-        map_extent[1] = min(map_extent[1], extent[1])
-        map_extent[2] = max(map_extent[2], extent[2])
-        map_extent[3] = max(map_extent[3], extent[3])
-
+    extents = np.array(extents)
+    map_extent = [
+        np.min(extents[:,0], axis=0),
+        np.min(extents[:,1], axis=0),
+        np.max(extents[:,2], axis=0),
+        np.max(extents[:,3], axis=0)
+    ]
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
     fig.update_layout(

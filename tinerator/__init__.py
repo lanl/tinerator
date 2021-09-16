@@ -19,10 +19,10 @@ from tinerator._version import __version__
 from tinerator.logging import set_logging_verbosity, debug_mode, LogLevel
 import tinerator.meshing as meshing
 import tinerator.gis as gis
+import tinerator.examples as examples
 
 # import tinerator.visualize as visualize
 from tinerator.visualize import plot2d, plot3d, mapbox_styles
-from tinerator.example_data import ExampleData
 
 from tinerator.meshing import Mesh
 from tinerator.meshing import SideSet, PointSet

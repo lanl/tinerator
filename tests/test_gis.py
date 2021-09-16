@@ -1,22 +1,23 @@
 import pytest
 import shapely
 import numpy as np
-import tinerator as tin
 
-data = tin.ExampleData
+import tinerator as tin
+from tinerator import examples
+
 WGS84 = 'EPSG:4326'
 
 @pytest.fixture
 def shp_flowline_nm():
-    return tin.gis.load_shapefile(data.NewMexico.flowline)
+    return tin.gis.load_shapefile(examples.new_mexico.flowline)
 
 @pytest.fixture
 def shp_boundary_nm():
-    yield tin.gis.load_shapefile(data.NewMexico.watershed_boundary)
+    yield tin.gis.load_shapefile(examples.new_mexico.boundary)
 
 @pytest.fixture
 def dem_nm():
-    return tin.gis.load_raster(data.NewMexico.dem)
+    return tin.gis.load_raster(examples.new_mexico.dem)
 
 @pytest.fixture
 def dem_clipped_nm():

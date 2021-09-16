@@ -39,7 +39,7 @@ RUN apt-get update --fix-missing && \
     #libgdal-dev \
     unzip \
     bison \
-    #libgl1-mesa-glx \
+    libgl1-mesa-glx \
     #xvfb \
     #nodejs \
     #npm \

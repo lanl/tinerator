@@ -179,6 +179,8 @@ class Geometry:
                 gtype = gtype.replace("MultiLineString", "LineString")
             elif "MultiPolygon" in gtype:
                 gtype = gtype.replace("MultiPolygon", "Polygon")
+            elif "MultiPoint" in gtype:
+                gtype = gtype.replace("MultiPoint", "Point")
 
         properties = self.properties["properties"]
         property_schema = self.properties["metadata"]["schema"]
