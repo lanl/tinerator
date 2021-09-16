@@ -33,13 +33,18 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+      - name: Test Docker
+        run: |
+          docker run -it ees16/tinerator:latest \
+          /bin/bash -c "cd tinerator/ && pytest -v"
       -
         name: Copy documentation from Docker container
         run: |
           docker run \
-                 -v $(pwd)/doc_deploy/:/home/docker_user/doc_deploy/ \
-                 ees16/tinerator:latest \
-                 /bin/bash -c "cp -r /home/docker_user/tinerator/docs/ /home/docker_user/doc_deploy/"
+            -v $(pwd)/doc_deploy/:/home/docker_user/doc_deploy/ \
+            --user root \
+            ees16/tinerator:latest \
+            /bin/bash -c "cp -r /home/docker_user/tinerator/docs/ /home/docker_user/doc_deploy/"
       -
         name: Deploy to GH Pages
         uses: peaceiris/actions-gh-pages@v3
