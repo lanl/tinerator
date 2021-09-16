@@ -17,7 +17,7 @@ def triangulation_jigsaw(
     scaling_type: str = "relative",
     meshing_kernel: str = "delfront",
     verbosity_level: int = 1,
-    **kwargs
+    **kwargs,
 ):
     """
     Uses JIGSAW to triangulate a raster.
@@ -79,9 +79,9 @@ def triangulation_jigsaw(
     vertices = np.array(boundary.shapes[0].coords[:])[:, :2]
     segments = get_linestring_connectivity(vertices, closed=True, clockwise=True)
     segments -= 1
-    #vertices = np.array(raster_boundary.shapes[0].coords[:])[:, :2]
-    #segments = get_linestring_connectivity(vertices, closed=True, clockwise=False)
-    #segments -= 1
+    # vertices = np.array(raster_boundary.shapes[0].coords[:])[:, :2]
+    # segments = get_linestring_connectivity(vertices, closed=True, clockwise=False)
+    # segments -= 1
 
     opts = jigsawpy.jigsaw_jig_t()
     geom = jigsawpy.jigsaw_msh_t()

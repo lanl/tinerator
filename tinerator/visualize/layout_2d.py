@@ -150,12 +150,11 @@ def add_geometry(fig, obj):
     gt = obj.geometry_type.strip().lower()
 
     if "polygon" in gt:
+        coords = []
         for shp in obj.shapes:
-            add_polygon(
-                fig,
-                shp.exterior.coords[:],
-                # xy_interior=shp.interior.coords[:]
-            )
+            coords.append(np.array(shp.exterior.coords[:])[:, :2])
+            coords.append(np.array([[None, None]]))
+        add_polygon(fig, np.vstack(coords))
     elif "line" in gt:
         coords = []
 
@@ -209,24 +208,33 @@ def init_figure(
             geom_objs.append(obj)
         elif is_tinerator_object(obj, "Raster"):
             tile_objs.append(obj)
-    
+
     for g in geom_objs:
         g = g.reproject(WGS_84)
         extents.append(g.extent)
         add_geometry(fig, g)
-    
+
     for (i, t) in enumerate(tile_objs):
         t = t.reproject(WGS_84)
         min_lon, min_lat, max_lon, max_lat = t.extent
         extents.append([min_lat, min_lon, max_lat, max_lon])
+        fig.add_trace(
+            go.Scattermapbox(
+                mode="markers",
+                marker_size=1,
+                lat=[t.centroid[0]],
+                lon=[t.centroid[1]],
+                opacity=0.0,
+            )
+        )
         mapbox_layers.append(add_raster(t, colormap=raster_cmap))
 
     extents = np.array(extents)
     map_extent = [
-        np.min(extents[:,0], axis=0),
-        np.min(extents[:,1], axis=0),
-        np.max(extents[:,2], axis=0),
-        np.max(extents[:,3], axis=0)
+        np.min(extents[:, 0], axis=0),
+        np.min(extents[:, 1], axis=0),
+        np.max(extents[:, 2], axis=0),
+        np.max(extents[:, 3], axis=0),
     ]
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
