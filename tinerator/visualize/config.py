@@ -1,6 +1,8 @@
 from enum import Enum, auto
 from os import wait
-from tinerator.visualize.guess_environ import open_file
+
+from distributed.core import Server
+from tinerator.visualize.guess_environ import get_environment, open_file
 from typing import Union, List
 import dash_bootstrap_components as dbc
 from ..logging import log, warn, debug, error
@@ -18,9 +20,6 @@ def guess_mode():
 
     env = get_environment()
 
-    if ee.DOCKER in env:
-        ServerSettings.host = "0.0.0.0"
-
     # If we're in Jupyter, we want inline rendering
     if ee.JUPYTER in env:
         return ServerTypes.JUPYTER
@@ -29,8 +28,8 @@ def guess_mode():
     try:
         import webview
 
-        # return ServerTypes.WINDOWED
-        return ServerTypes.DEFAULT
+        return ServerTypes.WINDOWED
+        #return ServerTypes.DEFAULT
     except ModuleNotFoundError as e:
         return ServerTypes.DEFAULT
 
@@ -106,11 +105,7 @@ def run_server_windowed(
     **kwargs,
 ):
     from .dash_tin import DashTIN
-
-    # from .qt_app import run_web_app
     from .guiwebview import run_web_app
-
-    import flask
 
     app = DashTIN(__name__, external_stylesheets=ServerSettings.css)
     app.layout = layout
@@ -120,37 +115,8 @@ def run_server_windowed(
 
     exit_code = run_web_app(url, width=width, height=height)
 
-    body = flask.request.get_json()
-    flask.g.inputs_list = inputs = body.get(  # pylint: disable=assigning-non-slot
-        "inputs", []
-    )
-    flask.g.states_list = state = body.get(  # pylint: disable=assigning-non-slot
-        "state", []
-    )
-    output = body["output"]
-    outputs_list = body.get("outputs") or split_callback_id(output)
-    flask.g.outputs_list = outputs_list  # pylint: disable=assigning-non-slot
-
-    flask.g.input_values = (  # pylint: disable=assigning-non-slot
-        input_values
-    ) = inputs_to_dict(inputs)
-    flask.g.state_values = inputs_to_dict(state)  # pylint: disable=assigning-non-slot
-    changed_props = body.get("changedPropIds", [])
-    flask.g.triggered_inputs = [  # pylint: disable=assigning-non-slot
-        {"prop_id": x, "value": input_values.get(x)} for x in changed_props
-    ]
-
-    response = (
-        flask.g.dash_response  # pylint: disable=assigning-non-slot
-    ) = flask.Response(mimetype="application/json")
-
-    args = inputs_to_vals(inputs + state)
-
     if exit_code != 0:
         warn(f"GUI view exited with {exit_code=}")
-
-    # debug(f"Shutting down server...")
-    # app.shutdown()
 
 
 def run_server_jupyter(layout, **kwargs):
@@ -159,9 +125,18 @@ def run_server_jupyter(layout, **kwargs):
     app = JupyterDash(__name__, external_stylesheets=ServerSettings.css)
     app.layout = layout
     app.run_server(mode="inline", **kwargs)
+    print(app.status())
 
 
 def run_server(layout, mode: ServerTypes = None, **kwargs):
+
+    from .guess_environ import get_environment
+    from .guess_environ import ExecEnvironment as ee
+
+    env = get_environment()
+
+    if ee.DOCKER in env:
+        ServerSettings.host = '0.0.0.0'
 
     if mode is None:
         mode = ServerSettings.mode

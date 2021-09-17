@@ -14,10 +14,11 @@ DEFAULT_RASTER_CMAP = cc.isolum
 
 
 def get_zoom_and_center(extent, zoom_scale: float = 1.0, xp=None, fp=None):
-    min_x, min_y, max_x, max_y = extent
-    area = abs(max_x - min_x) * abs(max_y - min_y)
+    min_lon, min_lat, max_lon, max_lat = extent
 
-    center = (min_x + (max_x - min_x) / 2.0, min_y + (max_y - min_y) / 2.0)
+    center = [np.mean([max_lon, min_lon]), np.mean([max_lat, min_lat])]
+
+    area = abs(max_lon - min_lon) * abs(max_lat - min_lat)
 
     if xp is None:
         xp = [0, 5 ** -10, 4 ** -10, 3 ** -10, 2 ** -10, 1 ** -10, 1 ** -5]
@@ -34,59 +35,43 @@ def get_zoom_and_center(extent, zoom_scale: float = 1.0, xp=None, fp=None):
     return zoom * zoom_scale, center
 
 
-def add_lines(fig, xy, uid=None):
+def add_scattermapbox(fig, xy, opacity=1.0, showlegend=True, uid=None, **kwargs):
     xy = np.array(xy)
-
     fig.add_trace(
         go.Scattermapbox(
-            name="Lines",
-            mode="lines+markers",
             lat=xy[:, 0],
             lon=xy[:, 1],
-            opacity=1.0,
-            showlegend=True,
+            opacity=opacity,
+            showlegend=showlegend,
             uid=uid,
+            **kwargs,
         )
     )
 
 
-def add_polygon(fig, xy_exterior, xy_interior=None, uid=None):
-    xy_exterior = np.array(xy_exterior)
-    # xy = np.array(shape.exterior.coords[:])
-    # xy1 = np.array(shape.interior.coords)
+def compute_hillshade(
+    array: np.ndarray,
+    azimuth: float = 315,
+    angle_altitude: float = 45,
+    cell_size: float = 1,
+    z_scale: float = 1,
+):
+    azimuth = 360.0 - azimuth
+    x, y = np.gradient(array * z_scale, cell_size, cell_size)
+    slope = np.pi / 2.0 - np.arctan(np.sqrt(x * x + y * y))
+    aspect = np.arctan2(-x, y)
+    azimuthrad = azimuth * np.pi / 180.0
+    altituderad = angle_altitude * np.pi / 180.0
 
-    fig.add_trace(
-        go.Scattermapbox(
-            name="Polygon",
-            mode="lines",
-            fill="toself",
-            lat=xy_exterior[:, 0],
-            lon=xy_exterior[:, 1],
-            opacity=1.0,
-            showlegend=True,
-            uid=uid,
-        )
-    )
+    shaded = np.sin(altituderad) * np.sin(slope) + np.cos(altituderad) * np.cos(
+        slope
+    ) * np.cos((azimuthrad - np.pi / 2.0) - aspect)
 
-
-def add_points(fig, xy, uid=None):
-    xy = np.array(xy)
-
-    fig.add_trace(
-        go.Scattermapbox(
-            name="Points",
-            mode="markers",
-            marker_size=10,
-            lat=xy[:, 0],
-            lon=xy[:, 1],
-            opacity=1.0,
-            showlegend=True,
-            uid=uid,
-        )
-    )
+    return 255 * (shaded + 1) / 2
 
 
 def add_raster(
+    fig,
     raster,
     name: str = None,
     colormap=None,
@@ -99,51 +84,43 @@ def add_raster(
         colormap = DEFAULT_RASTER_CMAP
 
     img = None
-    min_lat, max_lon, max_lat, min_lon = raster.extent
+    min_lon, min_lat, max_lon, max_lat = raster.extent
+    data = None
 
     if hillshade:
-        from matplotlib.colors import LightSource
-        import matplotlib.pyplot as plt
-        from PIL import Image
-
-        data = raster.masked_data()
-        dx = dy = raster.cell_size
-        dy = 111200 * dy
-        dx = 111200 * dx * np.cos(np.radians(min_lon))
-        ls = LightSource(azdeg=315, altdeg=45)
-
-        cmap = plt.cm.gist_earth
-
-        rgb = ls.shade(
-            data,
-            cmap=cmap,
-            vmin=np.nanmin(data),
-            vmax=np.nanmax(data),
-            blend_mode="overlay",
-            vert_exag=5,
-            dx=dx,
-            dy=dy,
-        )
-        rgb[:, :, :3] *= 255
-        img = Image.fromarray(rgb[::-1], mode="RGBA")
-        img.show()
+        data = compute_hillshade(raster.masked_data(), z_scale=5, cell_size=raster.cell_size)
     else:
-        xarr = xarray.DataArray(raster.masked_data())
-        img = tf.shade(xarr, cmap=colormap)
-        img = img[::-1].to_pil()
+        data = raster.masked_data()
 
-    return {
+    img = tf.shade(xarray.DataArray(data), cmap=colormap)
+    img = img[::-1].to_pil()
+
+    tile_layer = {
         "name": name,
         "sourcetype": "image",
         "source": img,
         "below": below,
         "coordinates": [
-            [min_lat, min_lon],
-            [max_lat, min_lon],
-            [max_lat, max_lon],
-            [min_lat, max_lon],
+            # top left
+            [min_lon, max_lat],
+            # top right
+            [max_lon, max_lat],
+            # bottom right
+            [max_lon, min_lat],
+            # bottom left
+            [min_lon, min_lat],
         ],
     }
+
+    fig.layout["mapbox_layers"] = list(fig.layout["mapbox_layers"]) + [tile_layer]
+
+    add_scattermapbox(
+        fig,
+        [[raster.centroid[0], raster.centroid[1]]],
+        name=f"{name} centroid",
+        opacity=0.0,
+        marker_size=1,
+    )
 
 
 def add_geometry(fig, obj):
@@ -154,7 +131,10 @@ def add_geometry(fig, obj):
         for shp in obj.shapes:
             coords.append(np.array(shp.exterior.coords[:])[:, :2])
             coords.append(np.array([[None, None]]))
-        add_polygon(fig, np.vstack(coords))
+
+        add_scattermapbox(
+            fig, np.vstack(coords), name="Polygon", mode="lines", fill="toself"
+        )
     elif "line" in gt:
         coords = []
 
@@ -162,7 +142,7 @@ def add_geometry(fig, obj):
             coords.append(np.array(shp.coords[:])[:, :2])
             coords.append(np.array([[None, None]]))
 
-        add_lines(fig, np.vstack(coords))
+        add_scattermapbox(fig, np.vstack(coords), name="Lines", mode="lines+markers")
     elif "point" in gt:
         coords = []
 
@@ -170,7 +150,9 @@ def add_geometry(fig, obj):
             coords.append(np.array(shp.coords[:])[:, :2])
             coords.append(np.array([[None, None]]))
 
-        add_points(fig, np.vstack(coords))
+        add_scattermapbox(
+            fig, np.vstack(coords), name="Points", mode="markers", marker_size=10
+        )
     else:
         raise ValueError(f"Unknown geometry type: {obj.geometry_type}")
 
@@ -187,9 +169,6 @@ def init_figure(
         f"Initializing figure. {objects=}, {raster_cmap=}, "
         f"{mapbox_style=}, {show_legend=}, {zoom_scale=}"
     )
-    fig = go.Figure()
-
-    mapbox_layers = []
 
     if mapbox_style is None:
         mapbox_style = "white-bg"
@@ -209,33 +188,22 @@ def init_figure(
         elif is_tinerator_object(obj, "Raster"):
             tile_objs.append(obj)
 
+    fig = go.Figure()
+    fig.layout["mapbox_layers"] = []
+
     for g in geom_objs:
         g = g.reproject(WGS_84)
-        extents.append(g.extent)
+        extent = g.extent
+        extents.append([extent[1], extent[0], extent[3], extent[2]])
         add_geometry(fig, g)
 
     for (i, t) in enumerate(tile_objs):
         t = t.reproject(WGS_84)
-        min_lon, min_lat, max_lon, max_lat = t.extent
-        extents.append([min_lat, min_lon, max_lat, max_lon])
-        fig.add_trace(
-            go.Scattermapbox(
-                mode="markers",
-                marker_size=1,
-                lat=[t.centroid[0]],
-                lon=[t.centroid[1]],
-                opacity=0.0,
-            )
-        )
-        mapbox_layers.append(add_raster(t, colormap=raster_cmap))
+        extents.append(t.extent)
+        add_raster(fig, t, colormap=raster_cmap)
 
-    extents = np.array(extents)
-    map_extent = [
-        np.min(extents[:, 0], axis=0),
-        np.min(extents[:, 1], axis=0),
-        np.max(extents[:, 2], axis=0),
-        np.max(extents[:, 3], axis=0),
-    ]
+    extents = np.vstack(extents)
+    map_extent = [*np.min(extents[:, :2], axis=0), *np.max(extents[:, 2:], axis=0)]
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
     fig.update_layout(
@@ -251,12 +219,11 @@ def init_figure(
         mapbox={
             "style": mapbox_style,
             "center": {
-                "lat": map_center[0],
-                "lon": map_center[1],
+                "lon": map_center[0],
+                "lat": map_center[1],
             },
             "zoom": zoom,
         },
-        mapbox_layers=mapbox_layers,
         showlegend=show_legend,
     )
 

@@ -1,3 +1,4 @@
+import re
 from typing import Any, Callable, List, Union, NoReturn
 import richdem as rd
 import numpy as np

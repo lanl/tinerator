@@ -1,6 +1,6 @@
 ![logo](docs/_static/logo-color-horiz.svg)
 
-[![build](https://github.com/lanl/tinerator/actions/workflows/docker-image.yml/badge.svg)](https://github.com/lanl/tinerator/actions/workflows/docker-image.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![build](https://github.com/lanl/tinerator/actions/workflows/docker-image.yml/badge.svg)](https://github.com/lanl/tinerator/actions/workflows/docker-image.yml) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lanl/tinerator/master)
 
 [![dockerhub](https://img.shields.io/static/v1?label=Docker&message=Download%20container&color=blue&style=for-the-badge&logo=docker)](https://hub.docker.com/r/ees16/tinerator) <br/>
 [![readthedocs](https://img.shields.io/static/v1?label=Documentation&message=Read%20online&color=blue&style=for-the-badge&logo=read-the-docs)](https://lanl.github.io/tinerator/) <br/>
@@ -22,12 +22,24 @@ TINerator has been designed to work well with [Amanzi-ATS](https://amanzi.github
 
 ### Quick Start
 
+#### Online Demo
+
+[![Binder](https://mybinder.org/badge_logo.svg)]()
+
+You can run TINerator Jupyter notebooks online with [MyBinder](https://mybinder.org/v2/gh/lanl/tinerator/master). It may take a few minutes for the container to initialize.
+
+#### Docker Container
+
 The easiest way to get started with TINerator is through [Docker](https://hub.docker.com/r/ees16/tinerator):
 
     $ docker pull ees16/tinerator:latest
-    $ docker run -it -p 8888:8888 -v $(pwd):/tinerator/work ees16/tinerator:latest
+    $ docker run -it \
+        -p 8899:8899 \
+        -p 8050:8050 \
+        -v $(pwd):/tinerator/work \
+        ees16/tinerator:latest
 
-After the container launches, navigate to `http://127.0.0.1:8888/lab` in a web browser to begin using TINerator within a Jupyter Lab instance. Example notebooks and HTML documentation are available within Jupyter.
+After the container launches, navigate to `http://127.0.0.1:8899/lab` in a web browser to begin using TINerator within a Jupyter Lab instance. Example notebooks and HTML documentation are available within Jupyter.
 
 ### Building TINerator
 
