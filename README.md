@@ -34,9 +34,9 @@ The easiest way to get started with TINerator is through [Docker](https://hub.do
 
     $ docker pull ees16/tinerator:latest
     $ docker run -it \
+        -v $(pwd):/docker_user/work \
         -p 8899:8899 \
         -p 8050:8050 \
-        -v $(pwd):/tinerator/work \
         ees16/tinerator:latest
 
 After the container launches, navigate to `http://127.0.0.1:8899/lab` in a web browser to begin using TINerator within a Jupyter Lab instance. Example notebooks and HTML documentation are available within Jupyter.
