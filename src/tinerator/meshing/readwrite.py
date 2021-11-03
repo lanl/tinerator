@@ -1,5 +1,4 @@
 import numpy as np
-from netCDF4 import Dataset
 from ..logging import debug, log
 from .meshing_types import AVS_TYPE_MAPPING, ElementType
 
@@ -8,6 +7,8 @@ def read_mpas(filename: str, load_dual_mesh: bool = True):
     """
     Reads an MPAS mesh.
     """
+    from netCDF4 import Dataset
+    
     with Dataset(filename, "r") as nc:
 
         try:
