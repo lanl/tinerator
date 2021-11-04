@@ -45,6 +45,33 @@ After the container launches, navigate to `http://127.0.0.1:8899/lab` in a web b
 
 To build TINerator from source, refer to the [documentation](https://lanl.github.io/tinerator/installation.html).
 
+#### Linux
+
+```sh
+$ apt-get install --no-install-recommends -y \
+  g++ \
+  gfortran \
+  make \
+  cmake \
+  libgl1-mesa-glx \
+  \
+  # NOTE: gdal on conda forge is *strongly* preferred
+  # to the apt version.
+  libdal-dev
+```
+
+#### macOS
+
+```sh
+$ brew install \
+    gdal \
+    gcc \
+    gfortran
+```
+
+Note that the module has not been tested on Apple Silicon yet.
+
 ### Contributing
 
 Pull requests of all manner are welcomed! Please read the [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
+
