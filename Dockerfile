@@ -37,7 +37,6 @@ RUN apt-get update --fix-missing && \
     ca-certificates \
 
     # TINerator/Watershed Workflow
-    #libgdal-dev \
     unzip \
     bison \
     libgl1-mesa-glx \
@@ -73,14 +72,16 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
     conda update -n base -c defaults conda && \
-    conda install -y pip pandas && \
-    pytest && \
+    conda install -y pip && \
+    conda install -c conda-forge gdal && \
     conda clean -afy
 
 # =================================================== #
 # Build TINerator =================================== #
 # =================================================== #
-RUN pip install tinerator[test]
+#RUN pip install tinerator
+RUN git clone git@github.com:lanl/tinerator.git "$(pwd)/tinerator/" && \
+    python -m pip install "$(pwd)/tinerator/"
 
 # Configure Jupyter Notebook/Jupyter Lab settings
 RUN mkdir ~/.jupyter && \
