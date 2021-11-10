@@ -74,62 +74,13 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     conda activate base && \
     conda update -n base -c defaults conda && \
     conda install -y pip pandas && \
-    conda install -c conda-forge \
-    gdal \
-    fiona \
-    pyproj \
-    rasterio \
-    shapely \
-    jupyterlab \
-    nodejs \
-    boost \
-    numpy \
-    jigsawpy \
-    matplotlib \
-    scipy \
-    pandas \
-    geopandas \
-    meshpy \
-    cartopy \
-    pyepsg \
-    descartes \
-    requests \
-    sortedcontainers \
-    attrs \
-    libarchive \
-    h5py \
-    netCDF4 \
-    xarray \
-    datashader \
-    colorcet \
-    plotly \
-    dash \
-    dash-renderer \
-    dash-html-components \
-    dash-core-components \
-    jupyter-dash \
-    python-kaleido \
     pytest && \
     conda clean -afy
 
 # =================================================== #
-# Build Watershed Workflow ========================== #
-# =================================================== #
-WORKDIR ${HOME}
-RUN python -m pip --no-cache-dir install --upgrade \
-    dash-vtk \
-    dash-bootstrap-components
-
-# =================================================== #
 # Build TINerator =================================== #
 # =================================================== #
-RUN git clone https://github.com/lanl/tinerator.git ${HOME}/tinerator --depth 1 && \
-    cd ${HOME}/tinerator && \
-    python -m pip install --no-cache-dir -r requirements.txt && \
-    ./tpls/build-tpls.sh -A -M && \
-    echo "export PYTHONPATH=${HOME}/tinerator:${HOME}/tinerator/tpls/seacas/install/lib:${HOME}/tinerator/tpls/jigsaw-python:\${PYTHONPATH}" >> ~/.bashrc
-
-ENV PYTHONPATH=${HOME}/tinerator:${HOME}/tinerator/tpls/seacas/install/lib:${HOME}/tinerator/tpls/jigsaw-python:${PYTHONPATH}
+RUN pip install tinerator[test]
 
 # Configure Jupyter Notebook/Jupyter Lab settings
 RUN mkdir ~/.jupyter && \
