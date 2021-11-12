@@ -1,0 +1,12 @@
+name: tinerator
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python >= 3.6
+  - numpy
+  - pytest
+  - gdal
+  - shapely
+  - fiona
+  - meshpy

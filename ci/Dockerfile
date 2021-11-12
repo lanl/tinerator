@@ -3,7 +3,7 @@ LABEL Description="TINerator Docker container"
 
 EXPOSE 8050-8100
 EXPOSE 8899
-ARG container_user=docker_user
+ARG container_user=feynman
 
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
@@ -18,7 +18,9 @@ RUN apt-get update --fix-missing && \
     apt-get install --no-install-recommends -y \
 
     # Shared
+    build-essential \
     apt-utils \
+    ssh-client \
     patch \
     g++ \
     gfortran \
@@ -56,8 +58,22 @@ ENTRYPOINT [ "/usr/bin/tini", "--" ]
 RUN groupadd -r $container_user && \
     useradd -r -m -g $container_user $container_user
 
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+RUN /bin/bash -c 'set -ex && \
+    ARCH=`uname -m` && \
+    MINICONDA_URL="" && \
+    if [[ "$ARCH" == "x86_64" ]]; then \
+        echo "Downloading miniconda: x86_64" && \
+        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh"; \
+    elif [[ "$ARCH" == "arm64" ]]; then \
+        echo "Downloading miniconda: aarch64" && \
+        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-aarch64.sh"; \
+    else \
+        echo "unknown arch: default x86" && \
+        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh"; \
+    fi && \
+    wget --quiet "$MINICONDA_URL" -O ~/miniconda.sh'
+
+RUN /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     rm ~/miniconda.sh && \
     /opt/conda/bin/conda clean -tipsy && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
@@ -79,20 +95,24 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 # =================================================== #
 # Build TINerator =================================== #
 # =================================================== #
-#RUN pip install tinerator
-RUN git clone git@github.com:lanl/tinerator.git "$(pwd)/tinerator/" && \
-    python -m pip install "$(pwd)/tinerator/"
+RUN git clone https://github.com/lanl/tinerator.git $HOME/tinerator && \
+    python -m pip install $HOME/tinerator/
 
-# Configure Jupyter Notebook/Jupyter Lab settings
-RUN mkdir ~/.jupyter && \
-    jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
-    echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
-    echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
-    echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
-    echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
-    echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
-    echo "c.NotebookApp.token = u''" >> $jupyter_cfg
+RUN python -c "import tinerator"
+#
+## Configure Jupyter Notebook/Jupyter Lab settings
+#RUN mkdir ~/.jupyter && \
+#    jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
+#    echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
+#    echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
+#    echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
+#    echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
+#    echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
+#    echo "c.NotebookApp.token = u''" >> $jupyter_cfg
+#
+#RUN jupyter-lab build
+#
+#CMD ["jupyter", "lab", "--port=8899"]
+#
 
-RUN jupyter-lab build
-
-CMD ["jupyter", "lab", "--port=8899"]
+CMD ["bash"]
