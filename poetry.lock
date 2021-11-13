@@ -226,6 +226,17 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "gdal"
+version = "3.4.0"
+description = "GDAL: Geospatial Data Abstraction Library"
+category = "main"
+optional = false
+python-versions = ">=3.6.0"
+
+[package.extras]
+numpy = ["numpy (>1.0.0)"]
+
+[[package]]
 name = "gmsh"
 version = "4.8.4"
 description = "Gmsh app and SDK installer. Gmsh is a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities."
@@ -255,7 +266,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "imageio"
-version = "2.10.3"
+version = "2.10.4"
 description = "Library for reading and writing a wide range of image, video, scientific, and volumetric data formats."
 category = "main"
 optional = false
@@ -806,7 +817,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "032bec0cf96f7865dbfe29aa439e36d94ba2c5dfa51b1bd0dcc8db1facfe9c7b"
+content-hash = "0176b07213eda2d223492c44cc185eaad2e52ec1bad70aa7e9a0ff28dac20e37"
 
 [metadata.files]
 aiohttp = [
@@ -1028,6 +1039,9 @@ frozenlist = [
     {file = "frozenlist-1.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:735f386ec522e384f511614c01d2ef9cf799f051353876b4c6fb93ef67a6d1ee"},
     {file = "frozenlist-1.2.0.tar.gz", hash = "sha256:68201be60ac56aff972dc18085800b6ee07973c49103a8aba669dee3d71079de"},
 ]
+gdal = [
+    {file = "GDAL-3.4.0.tar.gz", hash = "sha256:05c92a0fd262a9600bc6f896485e7f5f575f354957847ceb9fed7c1c616c189e"},
+]
 gmsh = [
     {file = "gmsh-4.8.4.tar.gz", hash = "sha256:48018fc6d62d79c5a8018c3229ec83d0a12f17284c338b9d8fa36dd01433d7ea"},
 ]
@@ -1039,8 +1053,8 @@ idna = [
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
 ]
 imageio = [
-    {file = "imageio-2.10.3-py3-none-any.whl", hash = "sha256:93ee376a8dc96182ead8d773c3ac2becf79c6f2b93d38f31d7ac036c62a6c72e"},
-    {file = "imageio-2.10.3.tar.gz", hash = "sha256:469c59fe71c81cdc41c84f842d62dd2739a08fac8cb85f5a518a92a6227e2ed6"},
+    {file = "imageio-2.10.4-py3-none-any.whl", hash = "sha256:3b0ce2bdf380c38d2686694870a85e92adc31c736bb8071596325b64d790661b"},
+    {file = "imageio-2.10.4.tar.gz", hash = "sha256:ec90094501fdb1ba3cc256f4cefbcefe0ad63ea9cf360a476383f97666b16c66"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-4.8.2-py3-none-any.whl", hash = "sha256:53ccfd5c134223e497627b9815d5030edf77d2ed573922f7a0b8f8bb81a1c100"},

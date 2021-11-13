@@ -1,9 +1,9 @@
 import numpy as np
 from collections.abc import Iterable
 
-import dash_vtk
-import dash_html_components as html
-from dash_vtk.utils import to_mesh_state
+#import dash_vtk
+#import dash_html_components as html
+#from dash_vtk.utils import to_mesh_state
 
 
 class MeshViewType:

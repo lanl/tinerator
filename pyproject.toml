@@ -1,3 +1,4 @@
+# https://python-poetry.org/docs/pyproject/
 [tool.poetry]
 name = "tinerator"
 version = "0.9.0"
@@ -23,6 +24,16 @@ richdem = {version = ">=0.3", optional = true}
 triangle = {version = ">2015", optional = true}
 pygmsh = {version = "~7", optional = true}
 rich = "~10"
+GDAL = ">=2.0.0"
+#GDAL = "2.3.3"
+#GDAL = [
+#    { url = "https://website.com/gdal-linux_x86_64.whl", platform = "linux", markers = "platform_machine == 'x86_64'" },
+#    { url = "https://website.com/gdal-linux_arm64.whl", platform = "linux", markers = "platform_machine == 'arm64'" },
+#    { url = "https://website.com/gdal-macOS_x86_64.whl", platform = "darwin", markers = "platform_machine == 'x86_64'" },
+#    { url = "https://website.com/gdal-macOS_arm64.whl", platform = "darwin", markers = "platform_machine == 'arm64'" },
+#    { url = "https://website.com/gdal-windows_x86_64.whl", platform = "win32", markers = "platform_machine == 'x86_64'" },
+#    { url = "https://website.com/gdal-windows_arm64.whl", platform = "win32", markers = "platform_machine == 'arm64'" },
+#]
 
 [tool.poetry.dev-dependencies]
 pytest = {version = "~6", allow-prereleases = true}

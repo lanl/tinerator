@@ -1,16 +1,16 @@
 import numpy as np
 from collections.abc import Iterable
-import xarray
-import datashader.transfer_functions as tf
-import colorcet as cc
+#import xarray
+#import datashader.transfer_functions as tf
+#import colorcet as cc
 import plotly.graph_objects as go
-import dash_core_components as dcc
-import dash_html_components as html
+#import dash_core_components as dcc
+#import dash_html_components as html
 from ..constants import is_tinerator_object
 from ..logging import log, warn, error, debug
 
 WGS_84 = 4326  # EPSG code
-DEFAULT_RASTER_CMAP = cc.isolum
+DEFAULT_RASTER_CMAP = None#cc.isolum
 
 
 def get_zoom_and_center(extent, zoom_scale: float = 1.0, xp=None, fp=None):
