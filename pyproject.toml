@@ -24,7 +24,7 @@ richdem = {version = ">=0.3", optional = true}
 triangle = {version = ">2015", optional = true}
 pygmsh = {version = "~7", optional = true}
 rich = "~10"
-GDAL = ">=2.0.0"
+GDAL = "*"
 #GDAL = "2.3.3"
 #GDAL = [
 #    { url = "https://website.com/gdal-linux_x86_64.whl", platform = "linux", markers = "platform_machine == 'x86_64'" },
