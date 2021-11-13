@@ -22,6 +22,7 @@ plotly = "~5"
 richdem = {version = ">=0.3", optional = true}
 triangle = {version = ">2015", optional = true}
 pygmsh = {version = "~7", optional = true}
+rich = "~10"
 
 [tool.poetry.dev-dependencies]
 pytest = {version = "~6", allow-prereleases = true}

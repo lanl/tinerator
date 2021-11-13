@@ -176,6 +176,17 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "commonmark"
+version = "0.9.1"
+description = "Python parser for the CommonMark Markdown spec"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+
+[[package]]
 name = "cycler"
 version = "0.11.0"
 description = "Composable style cycles"
@@ -478,6 +489,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "pygments"
+version = "2.10.0"
+description = "Pygments is a syntax highlighting package written in Python."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "pygmsh"
 version = "7.1.13"
 description = "Python frontend for Gmsh"
@@ -593,6 +612,23 @@ description = "Alternative regular expression module, to replace re."
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "rich"
+version = "10.13.0"
+description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+category = "main"
+optional = false
+python-versions = ">=3.6.2,<4.0.0"
+
+[package.dependencies]
+colorama = ">=0.4.0,<0.5.0"
+commonmark = ">=0.9.0,<0.10.0"
+pygments = ">=2.6.0,<3.0.0"
+typing-extensions = {version = ">=3.7.4,<4.0.0", markers = "python_version < \"3.8\""}
+
+[package.extras]
+jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
 
 [[package]]
 name = "richdem"
@@ -770,7 +806,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "0ff6cc4589032300428880caff1466c397e4f0b6d566923465eab3afbaf52792"
+content-hash = "032bec0cf96f7865dbfe29aa439e36d94ba2c5dfa51b1bd0dcc8db1facfe9c7b"
 
 [metadata.files]
 aiohttp = [
@@ -898,6 +934,10 @@ cligj = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+commonmark = [
+    {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
+    {file = "commonmark-0.9.1.tar.gz", hash = "sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60"},
 ]
 cycler = [
     {file = "cycler-0.11.0-py3-none-any.whl", hash = "sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3"},
@@ -1301,6 +1341,10 @@ py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
 ]
+pygments = [
+    {file = "Pygments-2.10.0-py3-none-any.whl", hash = "sha256:b8e67fe6af78f492b3c4b3e2970c0624cbf08beb1e493b2c99b9fa1b67a20380"},
+    {file = "Pygments-2.10.0.tar.gz", hash = "sha256:f398865f7eb6874156579fdf36bc840a03cab64d1cde9e93d68f46a425ec52c6"},
+]
 pygmsh = [
     {file = "pygmsh-7.1.13-py3-none-any.whl", hash = "sha256:d417f75840d585d481b55762624c9b7d7bd13c34aa371213bef17d83422009aa"},
     {file = "pygmsh-7.1.13.tar.gz", hash = "sha256:b8d13e88b2b8b4efb43969e18483f577aa2ddd4c678933535e99ef7efba99c8b"},
@@ -1399,6 +1443,10 @@ regex = [
     {file = "regex-2021.11.10-cp39-cp39-win32.whl", hash = "sha256:3b5df18db1fccd66de15aa59c41e4f853b5df7550723d26aa6cb7f40e5d9da5a"},
     {file = "regex-2021.11.10-cp39-cp39-win_amd64.whl", hash = "sha256:83ee89483672b11f8952b158640d0c0ff02dc43d9cb1b70c1564b49abe92ce29"},
     {file = "regex-2021.11.10.tar.gz", hash = "sha256:f341ee2df0999bfdf7a95e448075effe0db212a59387de1a70690e4acb03d4c6"},
+]
+rich = [
+    {file = "rich-10.13.0-py3-none-any.whl", hash = "sha256:96d15285b64dbf8154e0717298d2fdfdbbe03da26a392632c23820068f06c3b3"},
+    {file = "rich-10.13.0.tar.gz", hash = "sha256:d80fc76f34d819c481a48f73ec9ac396bed3bd6a16ecd57f9e0654cd89a8fb56"},
 ]
 richdem = [
     {file = "richdem-0.3.4-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:52ba15f974110e967318c96878cb1d9f9be2370133327319454650fb6464b45c"},
