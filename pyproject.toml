@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "tinerator"
+version = "0.9.0"
+description = "Easy GIS-based 3D mesh generation"
+authors = ["Daniel Livingston <daniel.livingston@live.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "~1"
+scipy = "~1"
+Fiona = "~1"
+pyproj = "~3"
+Shapely = "~1"
+snowy = "^0.0.9"
+pyshp = "~2"
+vtk = "~9"
+pyvista = ">=0.30"
+meshio = ">4.0.0"
+MeshPy = ">=2020.0"
+plotly = "~5"
+richdem = {version = ">=0.3", optional = true}
+triangle = {version = ">2015", optional = true}
+pygmsh = {version = "~7", optional = true}
+
+[tool.poetry.dev-dependencies]
+pytest = {version = "~6", allow-prereleases = true}
+black = {version = "^21.10b0", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
