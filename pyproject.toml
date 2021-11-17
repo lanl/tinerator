@@ -2,12 +2,32 @@
 [tool.poetry]
 name = "tinerator"
 version = "0.9.0"
-description = "Easy GIS-based 3D mesh generation"
+description = "Intuitive and powerful unstructured geospatial mesh generation from GIS data."
 authors = ["Daniel Livingston <daniel.livingston@live.com>"]
-license = "MIT"
+license = "BSD 3-Clause"
+readme = "README.md"
+homepage = "https://lanl.github.io/tinerator"
+repository = "https://github.com/lanl/tinerator"
+keywords = ["gis", "meshing", "fem", "finite-element", "geospatial", "gridding"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: Public Domain",
+    "Environment :: Console",
+    "Framework :: Jupyter :: JupyterLab",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Hydrology",
+    "Topic :: Scientific/Engineering :: Visualization"
+]
+include = [
+    "LICENSE",
+]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 pip = ">=20.0"
 numpy = "~1"
 scipy = "~1"
@@ -25,6 +45,7 @@ richdem = {version = ">=0.3", optional = true}
 triangle = {version = ">2015", optional = true}
 pygmsh = {version = "~7", optional = true}
 rich = "~10"
+llvmlite = {version = "~0", allow-prereleases = true}
 #GDAL = "*"
 #GDAL = "2.3.3"
 #GDAL = [
