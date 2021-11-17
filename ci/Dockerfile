@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-LABEL Description="TINerator Docker container"
+LABEL Description="TINerator (Jupyter Lab)"
 
 EXPOSE 8050-8100
 EXPOSE 8899
