@@ -5,9 +5,10 @@
 
 import warnings
 from typing import Union
-from .config import run_server, ServerTypes, ServerSettings, set_server_settings
-from .layout_2d import get_layout as get_layout_2d
-from .layout_3d import get_layout as get_layout_3d
+from .render_3D import get_layout as get_layout_3d
+#from .config import run_server, ServerTypes, ServerSettings, set_server_settings
+#from .layout_2d import get_layout as get_layout_2d
+#from .layout_3d import get_layout as get_layout_3d
 
 
 class MapboxStyles:
@@ -170,7 +171,7 @@ def plot3d(
         show_layers_in_range (tuple, optional): Only draw certain layer(s) of the mesh. Defaults to None.
     """
 
-    if write_html is not None or write_image is not None:
+    if write_html is not None:
         raise NotImplementedError("Writing 3D figures is not yet supported")
 
     layout = get_layout_3d(
@@ -182,8 +183,8 @@ def plot3d(
         bg_color=bg_color,
     )
 
-    # The current method of shutting down the Dash
-    # server gives a warning
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        run_server(layout, **kwargs)
+    if write_image:
+        layout.save_graphic(write_image, title="TINerator")
+        pass
+    else:
+        layout.show()
