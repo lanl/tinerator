@@ -100,7 +100,6 @@ RUN git clone https://github.com/lanl/tinerator.git $HOME/tinerator && \
     cd $HOME/tinerator/ && \
     python -m pip install --upgrade pip && \
     python -m pip install . -vv
-    #python -m pip install --no-cache -e .
 # =================================================== #
 
 # === Configure Jupyter Lab settings ================ #

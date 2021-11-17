@@ -28,7 +28,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ees16/tinerator:latest
+          tags: ees16/tinerator:dev
+          file: {context}/ci/Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       - name: Test Docker
