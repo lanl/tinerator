@@ -233,8 +233,7 @@ LAYERING_FUNCS = {
 
 
 def extrude_mesh(
-    surface_mesh: Mesh,
-    layers: List[List[Any]],
+    surface_mesh: Mesh, layers: List[List[Any]],
 ):
     """
     Regularly extrude a 2D mesh to make a 3D mesh.

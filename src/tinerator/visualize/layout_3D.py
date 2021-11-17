@@ -2,6 +2,7 @@ import pyvista as pv
 import numpy as np
 from collections.abc import Iterable
 
+
 class MeshViewType:
     POINTS = 0
     WIREFRAME = 1
@@ -20,6 +21,7 @@ class ScalarMode:
 class GetArray:
     BY_ID = 0
     BY_NAME = 1
+
 
 def prepare_vtk_mesh(
     plotter: pv.Plotter,
@@ -55,11 +57,11 @@ def prepare_vtk_mesh(
 
     if color_attribute is None:
         active_scalar = None
-        #mesh_state = to_mesh_state(vtk_mesh)
+        # mesh_state = to_mesh_state(vtk_mesh)
         color_range = [0, 1]
     else:
         active_scalar = color_attribute
-        #mesh_state = to_mesh_state(vtk_mesh, field_to_keep=color_attribute)
+        # mesh_state = to_mesh_state(vtk_mesh, field_to_keep=color_attribute)
 
         if color_range is None:
             try:
@@ -69,7 +71,7 @@ def prepare_vtk_mesh(
                 ]
             except KeyError:
                 pass
-    
+
     plotter.add_mesh(
         vtk_mesh,
         opacity=opacity,
@@ -78,7 +80,7 @@ def prepare_vtk_mesh(
         scalars=active_scalar,
     )
 
-    #return dash_vtk.GeometryRepresentation(
+    # return dash_vtk.GeometryRepresentation(
     #    showCubeAxes=showCubeAxes,
     #    colorMapPreset=colorMapPreset,
     #    colorDataRange=color_range,
@@ -88,7 +90,7 @@ def prepare_vtk_mesh(
     #        "opacity": opacity,
     #        "representation": representation,
     #    },
-    #)
+    # )
 
 
 def vtk_view(
@@ -149,9 +151,7 @@ def vtk_view(
                 plotter,
                 set_mesh,
                 color_attribute="set_id",
-                custom_fields={
-                    "set_id": np.array([set_id + 1] * num_cells, dtype=int)
-                },
+                custom_fields={"set_id": np.array([set_id + 1] * num_cells, dtype=int)},
                 color_range=[1, len(sets)],
                 opacity=1.0,
                 representation=MeshViewType.SURFACE,
@@ -165,8 +165,9 @@ def vtk_view(
     # savefig: https://discourse.vtk.org/t/save-window-rendering-results-to-image/3772/2
     # or: https://kitware.github.io/vtk-js/api/Common_Core_ImageHelper.html
     # or: https://github.com/Kitware/vtk-js/issues/1598
-    
+
     return plotter
+
 
 def get_layout(
     mesh,
@@ -175,7 +176,7 @@ def get_layout(
     show_cube_axes=False,
     show_layers_in_range: tuple = None,
     bg_color: list = None,
-    window_size: tuple = (600, 400)
+    window_size: tuple = (600, 400),
 ):
 
     if isinstance(color_with_attribute, str):
@@ -196,5 +197,5 @@ def get_layout(
         color_attribute=color_with_attribute,
         show_cube_axes=show_cube_axes,
         show_layers_in_range=show_layers_in_range,
-        window_size=window_size
+        window_size=window_size,
     )

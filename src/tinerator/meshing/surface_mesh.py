@@ -116,11 +116,7 @@ class SurfaceMesh:
 
         primary_nodes = node_map[surf_nodes]
 
-        return PointSet(
-            self.parent_mesh,
-            primary_nodes,
-            name=set_name,
-        )
+        return PointSet(self.parent_mesh, primary_nodes, name=set_name,)
 
     @property
     def top_nodes(self):
@@ -174,12 +170,7 @@ class SurfaceMesh:
             [[len(fc), *node_map[fc.astype(int)]] for fc in captured_surf_faces]
         )
 
-        return SideSet(
-            self.parent_mesh,
-            captured_cells,
-            captured_faces,
-            name=set_name,
-        )
+        return SideSet(self.parent_mesh, captured_cells, captured_faces, name=set_name,)
 
     @property
     def side_faces(self):
@@ -264,11 +255,7 @@ class SurfaceMesh:
         else:
             primary_nodes = node_map[idx]
 
-            ps = PointSet(
-                self.parent_mesh,
-                primary_nodes,
-                name=set_name,
-            )
+            ps = PointSet(self.parent_mesh, primary_nodes, name=set_name,)
             return ps.remove(self.top_nodes).remove(self.bottom_nodes)
 
     def discretize_top(self, attribute_name: str):

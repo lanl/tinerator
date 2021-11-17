@@ -8,7 +8,7 @@ def read_mpas(filename: str, load_dual_mesh: bool = True):
     Reads an MPAS mesh.
     """
     from netCDF4 import Dataset
-    
+
     with Dataset(filename, "r") as nc:
 
         try:
@@ -39,9 +39,7 @@ def read_mpas(filename: str, load_dual_mesh: bool = True):
     return vertices, connectivity
 
 
-def read_avs(
-    inp_filename: str,
-):
+def read_avs(inp_filename: str,):
     """
     Reads an AVS-UCD mesh file (extension: `.inp`) and returns a Mesh object.
     """

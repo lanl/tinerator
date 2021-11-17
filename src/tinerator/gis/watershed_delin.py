@@ -124,10 +124,7 @@ def pysheds_watershed_delineation(
             raise ValueError("Could not generate feature. Threshold may be too high.")
 
         # Put data into Geometry object
-        xy = Geometry(
-            shapes=shapes,
-            crs=parse_crs(grid.crs),
-        )
+        xy = Geometry(shapes=shapes, crs=parse_crs(grid.crs),)
 
         if return_matrix:
             return (xy, accum_matrix)
@@ -223,10 +220,7 @@ def watershed_delineation(
         lines.append(LineString(coords))
 
     # Put data into Geometry object
-    xy = Geometry(
-        shapes=lines,
-        crs=raster.crs,
-    )
+    xy = Geometry(shapes=lines, crs=raster.crs,)
 
     if return_matrix:
         return (xy, accum_matrix)

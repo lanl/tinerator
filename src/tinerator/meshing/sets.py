@@ -172,11 +172,7 @@ class SideSet(object):
 
 class PointSet(object):
     def __init__(
-        self,
-        primary_mesh,
-        primary_mesh_nodes,
-        name: str = None,
-        set_id: int = None,
+        self, primary_mesh, primary_mesh_nodes, name: str = None, set_id: int = None,
     ):
         """
         Object that represents a collection of points from

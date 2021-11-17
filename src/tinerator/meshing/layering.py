@@ -300,10 +300,7 @@ def stack_layers(surfmesh: Mesh, layers: List[Layer], matids: list = None) -> Me
 
 
 def extrude_surface(
-    surfmesh: Mesh,
-    layers: list,
-    matids: list = None,
-    layer_type=TranslatedSublayering,
+    surfmesh: Mesh, layers: list, matids: list = None, layer_type=TranslatedSublayering,
 ) -> Mesh:
     """
     Simple multilayer extrusion. `layers` can either be a list of depths, or

@@ -30,23 +30,9 @@ _ex = ExodusElements
 EXODUS_CELL_FACES = {
     # ExodusII API: https://gsjaardema.github.io/seacas-docs/exodusII-new.pdf
     # pp. 28
-    _ex.QUAD: {
-        (1, 2): 1,
-        (2, 3): 2,
-        (3, 4): 3,
-        (1, 4): 4,
-    },
-    _ex.TRIANGLE: {
-        (1, 2): 1,
-        (2, 3): 2,
-        (1, 3): 3,
-    },
-    _ex.TETRA: {
-        (1, 2, 4): 1,
-        (2, 3, 4): 2,
-        (1, 3, 4): 3,
-        (1, 2, 3): 4,
-    },
+    _ex.QUAD: {(1, 2): 1, (2, 3): 2, (3, 4): 3, (1, 4): 4,},
+    _ex.TRIANGLE: {(1, 2): 1, (2, 3): 2, (1, 3): 3,},
+    _ex.TETRA: {(1, 2, 4): 1, (2, 3, 4): 2, (1, 3, 4): 3, (1, 2, 3): 4,},
     _ex.WEDGE: {
         (1, 2, 4, 5): 1,
         (2, 3, 5, 6): 2,
@@ -70,13 +56,8 @@ AVS_TYPE_MAPPING = {"tri": ElementType.TRIANGLE, "prism": ElementType.PRISM}
 # Schema:
 # face_type = VTK_CELL_FACES[parent_cell_type][num_nodes_in_face]
 VTK_CELL_FACES = {
-    vtk.VTK_WEDGE: {
-        3: vtk.VTK_TRIANGLE,
-        4: vtk.VTK_QUAD,
-    },
-    vtk.VTK_TRIANGLE: {
-        2: vtk.VTK_LINE,
-    },
+    vtk.VTK_WEDGE: {3: vtk.VTK_TRIANGLE, 4: vtk.VTK_QUAD,},
+    vtk.VTK_TRIANGLE: {2: vtk.VTK_LINE,},
 }
 
 
