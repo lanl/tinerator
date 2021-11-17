@@ -5,11 +5,9 @@
 
 import warnings
 from typing import Union
-from .render_3D import get_layout as get_layout_3d
+from .layout_3D import get_layout as get_layout_3d
 #from .config import run_server, ServerTypes, ServerSettings, set_server_settings
 #from .layout_2d import get_layout as get_layout_2d
-#from .layout_3d import get_layout as get_layout_3d
-
 
 class MapboxStyles:
     NONE = "white-bg"
@@ -187,4 +185,5 @@ def plot3d(
         layout.save_graphic(write_image, title="TINerator")
         pass
     else:
+        # TODO: handle backends
         layout.show()
