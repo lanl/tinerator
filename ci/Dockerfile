@@ -80,6 +80,9 @@ RUN /bin/bash ~/miniconda.sh -b -p /opt/conda && \
     chown -R $container_user /opt/ && \
     chgrp -R $container_user /opt/
 
+# Install Poetry
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+
 USER $container_user
 ENV HOME=/home/$container_user
 
@@ -96,7 +99,10 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 # Build TINerator =================================== #
 # =================================================== #
 RUN git clone https://github.com/lanl/tinerator.git $HOME/tinerator && \
-    python -m pip install $HOME/tinerator/
+    cd $HOME/tinerator/ && \
+    poetry shell && \
+    poetry install
+    #python -m pip install $HOME/tinerator/
 
 RUN python -c "import tinerator"
 

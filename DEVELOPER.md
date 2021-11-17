@@ -142,3 +142,9 @@ act -n
 # Enable verbose-logging (can be used with any of the above commands)
 act -v
 ```
+
+
+
+```sh
+$ docker build --platform linux/x86_64 -f ci/Dockerfile -t ees16/tinerator:dev ./
+```
