@@ -16,6 +16,62 @@ It was created at Los Alamos National Laboratory and funded primarily through th
 
 TINerator has been designed to work well with [Amanzi-ATS](https://amanzi.github.io).
 
+### Quick Start
+
+TINerator is available on [Conda Forge](https://anaconda.org/conda-forge/tinerator):
+
+```sh
+$ conda install -c conda-forge tinerator
+```
+
+as well as [PyPI](https://pypi.org/project/tinerator/):
+
+```sh
+$ pip install tinerator
+```
+
+Alternatively, you can build directly from this repo:
+
+```sh
+$ git clone git@github.com:lanl/tinerator.git
+$ cd tinerator/
+$ python -m pip install .[test] -vv
+```
+
+#### INSTALLATION NOTE:
+
+The most common point-of-failure installing TINerator is 
+installation/build errors with GDAL.
+
+Before installing TINerator, it is recommended that you install GDAL first.
+
+##### (RECOMMENDED) Building GDAL through Conda
+
+```sh
+$ conda install gdal
+```
+
+##### Installing GDAL through `pip`
+
+This method requires (i) building the GDAL system libraries, and (ii) installing the Python wrapping module.
+
+```sh
+# Installing GDAL libs
+$ brew install gdal # on macOS
+$ apt-get install -y gdal-bin libgdal-dev # Ubuntu/Debian Linux
+
+# Installing Python module - 
+#   explicitly install wrappers for the version
+#   of GDAL built above
+$ pip install GDAL==`gdal-config --version`
+```
+
+If the above fails, you may have success with PyGDAL:
+
+```sh
+$ pip install pygdal
+```
+
 ### Documentation
 
 - [Read the documentation online](https://lanl.github.io/tinerator)
