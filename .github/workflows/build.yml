@@ -21,7 +21,7 @@ jobs:
     - name: Build TINerator
       run: |
         conda install -y pip gdal
-        pip install -vv -e ".[test]"
+        pip install -v -e ".[test]"
       #python -m pip install . -vv
     #- name: Lint with flake8
     #  run: |

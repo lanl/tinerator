@@ -4,8 +4,6 @@ from collections.abc import Iterable
 #import datashader.transfer_functions as tf
 #import colorcet as cc
 import plotly.graph_objects as go
-#import dash_core_components as dcc
-#import dash_html_components as html
 from ..constants import is_tinerator_object
 from ..logging import log, warn, error, debug
 
