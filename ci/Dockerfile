@@ -95,6 +95,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     conda clean -afy
 # =================================================== #
 
+# TODO: add LaGriT/etc.
+
 # === Build TINerator =============================== #
 RUN git clone https://github.com/lanl/tinerator.git $HOME/tinerator && \
     cd $HOME/tinerator/ && \
