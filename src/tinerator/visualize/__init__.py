@@ -8,8 +8,6 @@ from typing import Union
 from .layout_3D import get_layout as get_layout_3d
 
 # from .config import run_server, ServerTypes, ServerSettings, set_server_settings
-# from .layout_2d import get_layout as get_layout_2d
-
 
 class MapboxStyles:
     NONE = "white-bg"
@@ -31,35 +29,6 @@ def mapbox_styles():
     for key in mapbox_vars:
         if not key.startswith("__"):
             print(mapbox_vars[key])
-
-
-def get_fig(layout):
-    import dash_core_components as dcc
-
-    for child in layout.children:
-        if isinstance(child, dcc.Graph):
-            return child.figure
-
-    raise ValueError("No figure exists in this layout")
-
-
-def write_image_2d(filename: str, layout):
-    fig = get_fig(layout)
-    fig.write_image(filename)
-
-
-def write_html_2d(filename: str, layout, **kwargs):
-    """
-
-    https://plotly.com/python/interactive-html-export/
-
-    Args:
-        filename (str): [description]
-        layout ([type]): [description]
-        kwargs (dict, optional): [description]. Defaults to None.
-    """
-    fig = get_fig(layout)
-    fig.write_html(filename, **kwargs)
 
 
 def plot2d(
@@ -101,7 +70,10 @@ def plot2d(
         show_legend (bool, optional): [description]. Defaults to False.
         raster_cmap (list, optional): [description]. Defaults to None.
     """
-    layout = get_layout_2d(
+
+    from .plotly import save, render, figure
+
+    layout = figure(
         objects,
         mapbox_style=mapbox_style,
         show_legend=show_legend,
@@ -109,24 +81,7 @@ def plot2d(
         zoom_scale=zoom_scale,
     )
 
-    if write_image:
-        write_image_2d(write_image, layout)
-        return
-
-    if write_html:
-        if isinstance(write_html, str):
-            write_html_2d(write_html, layout)
-        else:
-            filename = write_html.pop("filename")
-            write_html_2d(filename, layout, **write_html)
-        return
-
-    # The current method of shutting down the Dash
-    # server gives a warning
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        run_server(layout, **kwargs)
-
+    render(layout)
 
 def plot3d(
     mesh,
@@ -171,10 +126,9 @@ def plot3d(
         show_layers_in_range (tuple, optional): Only draw certain layer(s) of the mesh. Defaults to None.
     """
 
-    if write_html is not None:
-        raise NotImplementedError("Writing 3D figures is not yet supported")
+    from .pyvista import figure, save, display
 
-    layout = get_layout_3d(
+    layout = figure(
         mesh,
         sets=sets,
         color_with_attribute=attribute,
@@ -184,8 +138,6 @@ def plot3d(
     )
 
     if write_image:
-        layout.save_graphic(write_image, title="TINerator")
-        pass
+        save(figure, **kwargs)
     else:
-        # TODO: handle backends
-        layout.show()
+        display(figure)

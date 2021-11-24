@@ -2,7 +2,6 @@ import pyvista as pv
 import numpy as np
 from collections.abc import Iterable
 
-
 class MeshViewType:
     POINTS = 0
     WIREFRAME = 1
@@ -169,7 +168,7 @@ def vtk_view(
     return plotter
 
 
-def get_layout(
+def figure(
     mesh,
     sets=None,
     color_with_attribute="Material Id",
