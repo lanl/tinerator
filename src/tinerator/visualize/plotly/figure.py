@@ -4,8 +4,8 @@ from collections.abc import Iterable
 #import datashader.transfer_functions as tf
 #import colorcet as cc
 import plotly.graph_objects as go
-from ..constants import is_tinerator_object
-from ..logging import log, warn, error, debug
+from ...constants import is_tinerator_object
+from ...logging import log, warn, error, debug
 
 WGS_84 = 4326  # EPSG code
 DEFAULT_RASTER_CMAP = None#cc.isolum
@@ -164,8 +164,8 @@ def init_figure(
     zoom_scale=1.0,
 ):
     debug(
-        f"Initializing figure. {objects=}, {raster_cmap=}, "
-        f"{mapbox_style=}, {show_legend=}, {zoom_scale=}"
+        f"Initializing figure. {objects}, {raster_cmap}, "
+        f"{mapbox_style}, {show_legend}, {zoom_scale}"
     )
 
     if mapbox_style is None:
@@ -228,7 +228,7 @@ def init_figure(
     return fig
 
 
-def get_layout(
+def figure(
     objects,
     mapbox_style=None,
     show_legend=False,
@@ -238,27 +238,13 @@ def get_layout(
     zoom_scale: float = 1.0,
     **kwargs,
 ):
-    return html.Div(
-        style={"width": width, "height": height},
-        children=[
-            dcc.Graph(
-                figure=init_figure(
-                    objects,
-                    raster_cmap=raster_cmap,
-                    mapbox_style=mapbox_style,
-                    show_legend=show_legend,
-                    zoom_scale=zoom_scale,
-                    **kwargs,
-                ),
-                config={
-                    "showAxisDragHandles": True,
-                    "watermark": False,
-                    "autosizable": True,
-                    "displaylogo": False,
-                    "fillFrame": True,
-                    "responsive": True,
-                    "staticPlot": False,
-                },
-            ),
-        ],
+
+    figure=init_figure(
+        objects,
+        raster_cmap=raster_cmap,
+        mapbox_style=mapbox_style,
+        show_legend=show_legend,
+        zoom_scale=zoom_scale,
+        **kwargs,
     )
+    return figure
