@@ -1,11 +1,11 @@
 echo "Current directory: $(pwd)"
 echo "Python information: $(python --version); $(which python)"
 
-conda install -y \
-  pip \
-  gdal \
-  fiona \
-  shapely
+#conda install -y \
+#  pip \
+#  gdal \
+#  fiona \
+#  shapely
 
 # Install TINerator
 python -m pip install .
