@@ -5,7 +5,6 @@
 
 import warnings
 from typing import Union
-from .layout_3D import get_layout as get_layout_3d
 
 # from .config import run_server, ServerTypes, ServerSettings, set_server_settings
 
