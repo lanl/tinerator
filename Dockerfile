@@ -90,13 +90,14 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc && \
     . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
-    #TODO:uncomment
-    #conda config --add channels conda-forge && \
+    conda config --add channels conda-forge && \
     conda update -n base -c defaults conda && \
-    conda install -y pip && \
-    conda install -c conda-forge gdal && \
+    conda install -y \
+        pip \
+        gdal \
+        nodejs && \
     conda clean -afy
-# =================================================== #
+
 # === Configure Jupyter Lab settings ================ #
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
@@ -106,12 +107,14 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
     echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
-RUN conda install -y -c conda-forge "nodejs>=12.0" && \
-    conda install -y jupyterlab && \
+
+RUN conda install -y jupyterlab && \
     jupyter-lab build
 # =================================================== #
 
 COPY . .
-RUN . ci/build_tinerator.sh
+
+RUN python -m pip install .
+RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
 
 CMD ["jupyter", "lab", "--port=8899"]

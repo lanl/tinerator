@@ -11,4 +11,4 @@ echo "Python information: $(python --version); $(which python)"
 python -m pip install .
 
 # Install TPLs
-cd util/tpls/ && ./build-tpls.sh -e -M && source ~/.bashrc
+cd util/tpls/ && ./build-tpls.sh -e -M && . ~/.bashrc
