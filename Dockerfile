@@ -114,6 +114,7 @@ RUN conda install -y jupyterlab && \
 
 COPY . .
 
+WORKDIR $HOME
 RUN python -m pip install .
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
 
