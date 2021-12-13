@@ -1,9 +1,10 @@
 FROM ubuntu:20.04
-LABEL Description="TINerator (Jupyter Lab)"
+LABEL Description="TINerator"
+
+ARG container_user=feynman
 
 EXPOSE 8050-8100
 EXPOSE 8899
-ARG container_user=feynman
 
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
@@ -89,21 +90,13 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc && \
     . /opt/conda/etc/profile.d/conda.sh && \
     conda activate base && \
+    #TODO:uncomment
+    #conda config --add channels conda-forge && \
     conda update -n base -c defaults conda && \
     conda install -y pip && \
     conda install -c conda-forge gdal && \
     conda clean -afy
 # =================================================== #
-
-# TODO: add LaGriT/etc.
-
-# === Build TINerator =============================== #
-RUN git clone https://github.com/lanl/tinerator.git $HOME/tinerator && \
-    cd $HOME/tinerator/ && \
-    python -m pip install --upgrade pip && \
-    python -m pip install . -vv
-# =================================================== #
-
 # === Configure Jupyter Lab settings ================ #
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
@@ -113,7 +106,12 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
     echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
-RUN jupyter-lab build
+RUN conda install -y -c conda-forge "nodejs>=12.0" && \
+    conda install -y jupyterlab && \
+    jupyter-lab build
 # =================================================== #
+
+COPY . .
+RUN . ci/build_tinerator.sh
 
 CMD ["jupyter", "lab", "--port=8899"]
