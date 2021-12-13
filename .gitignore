@@ -12,6 +12,7 @@ lagrit.out
 outx3dgen
 logx3dgen
 .vscode/
+.idea/
 .ipynb_checkpoints/
 docs/_build/
 *.exo

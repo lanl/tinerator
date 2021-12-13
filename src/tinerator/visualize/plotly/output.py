@@ -5,7 +5,11 @@ def save(fig, filename: str, **kwargs):
         fig.write_image(filename, **kwargs)
 
 def render(fig, context: str = 'ipython'):
-    if context == 'ipython':
-        img_bytes = fig.to_image(format="png")
-        from IPython.display import Image, display
-        display(Image(img_bytes))
+    fig.show()
+    #if context == 'ipython':
+    #    import plotly.express as px
+    #    img_bytes = fig.to_image(format="png")
+    #    t_fig = px.imshow(img_bytes, binary_format="png")#, binary_compression_level=0)
+    #    t_fig.show()
+    #    from IPython.display import Image, display
+    #    display(Image(img_bytes))

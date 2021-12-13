@@ -29,7 +29,7 @@ jobs:
         with:
           push: true
           tags: ees16/tinerator:dev
-          file: ci/Dockerfile
+          file: Dockerfile
 
       - name: Image digest
         run: |

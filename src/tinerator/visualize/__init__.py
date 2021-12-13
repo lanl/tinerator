@@ -6,6 +6,7 @@
 import warnings
 from typing import Union
 
+
 # from .config import run_server, ServerTypes, ServerSettings, set_server_settings
 
 class MapboxStyles:
@@ -31,14 +32,14 @@ def mapbox_styles():
 
 
 def plot2d(
-    objects: list,
-    mapbox_style: str = MapboxStyles.STAMEN_TERRAIN,
-    show_legend: bool = False,
-    raster_cmap: list = None,
-    zoom_scale=1.00,
-    write_image: str = None,
-    write_html: Union[str, dict] = None,
-    **kwargs,
+        objects: list,
+        mapbox_style: str = MapboxStyles.STAMEN_TERRAIN,
+        show_legend: bool = False,
+        raster_cmap: list = None,
+        zoom_scale=1.00,
+        write_image: str = None,
+        write_html: Union[str, dict] = None,
+        **kwargs,
 ):
     """
     Plots a geospatial 2D representation of TINerator
@@ -82,16 +83,17 @@ def plot2d(
 
     render(layout)
 
+
 def plot3d(
-    mesh,
-    write_image: str = None,
-    write_html: Union[str, dict] = None,
-    sets: list = None,
-    attribute: str = "Material Id",
-    show_cube_axes: bool = False,
-    show_layers_in_range: tuple = None,
-    bg_color: list = None,
-    **kwargs,
+        mesh,
+        write_image: str = None,
+        write_html: Union[str, dict] = None,
+        sets: list = None,
+        attribute: str = "Material Id",
+        show_cube_axes: bool = False,
+        show_layers_in_range: tuple = None,
+        bg_color: list = None,
+        **kwargs,
 ) -> None:
     """
     Renders a mesh in 3D using VTK.

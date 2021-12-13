@@ -1,14 +1,14 @@
 import numpy as np
 from collections.abc import Iterable
-#import xarray
-#import datashader.transfer_functions as tf
-#import colorcet as cc
+import xarray
+import datashader.transfer_functions as tf
+import colorcet as cc
 import plotly.graph_objects as go
 from ...constants import is_tinerator_object
 from ...logging import log, warn, error, debug
 
 WGS_84 = 4326  # EPSG code
-DEFAULT_RASTER_CMAP = None#cc.isolum
+DEFAULT_RASTER_CMAP = cc.isolum
 
 
 def get_zoom_and_center(extent, zoom_scale: float = 1.0, xp=None, fp=None):
@@ -48,11 +48,11 @@ def add_scattermapbox(fig, xy, opacity=1.0, showlegend=True, uid=None, **kwargs)
 
 
 def compute_hillshade(
-    array: np.ndarray,
-    azimuth: float = 315,
-    angle_altitude: float = 45,
-    cell_size: float = 1,
-    z_scale: float = 1,
+        array: np.ndarray,
+        azimuth: float = 315,
+        angle_altitude: float = 45,
+        cell_size: float = 1,
+        z_scale: float = 1,
 ):
     azimuth = 360.0 - azimuth
     x, y = np.gradient(array * z_scale, cell_size, cell_size)
@@ -69,15 +69,14 @@ def compute_hillshade(
 
 
 def add_raster(
-    fig,
-    raster,
-    name: str = None,
-    colormap=None,
-    uid=None,
-    below="traces",
-    hillshade: bool = False,
+        fig,
+        raster,
+        name: str = None,
+        colormap=None,
+        uid=None,
+        below="traces",
+        hillshade: bool = False,
 ):
-
     if colormap is None:
         colormap = DEFAULT_RASTER_CMAP
 
@@ -156,12 +155,12 @@ def add_geometry(fig, obj):
 
 
 def init_figure(
-    objects,
-    raster_cmap=None,
-    mapbox_style=None,
-    show_legend=False,
-    margin=7,
-    zoom_scale=1.0,
+        objects,
+        raster_cmap=None,
+        mapbox_style=None,
+        show_legend=False,
+        margin=7,
+        zoom_scale=1.0,
 ):
     debug(
         f"Initializing figure. {objects}, {raster_cmap}, "
@@ -192,7 +191,8 @@ def init_figure(
     for g in geom_objs:
         g = g.reproject(WGS_84)
         extent = g.extent
-        extents.append([extent[1], extent[0], extent[3], extent[2]])
+        extents.append(g.extent)
+        # extents.append([extent[1], extent[0], extent[3], extent[2]])
         add_geometry(fig, g)
 
     for (i, t) in enumerate(tile_objs):
@@ -201,7 +201,11 @@ def init_figure(
         add_raster(fig, t, colormap=raster_cmap)
 
     extents = np.vstack(extents)
+    assert [180. >= x >= -180.0 for x in extents[:, 0]], 'Longitude extent: malformed'
+    assert [90. >= x >= -90.0 for x in extents[:, 1]], 'Latitude extent: malformed'
+
     map_extent = [*np.min(extents[:, :2], axis=0), *np.max(extents[:, 2:], axis=0)]
+
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
     fig.update_layout(
@@ -229,17 +233,16 @@ def init_figure(
 
 
 def figure(
-    objects,
-    mapbox_style=None,
-    show_legend=False,
-    raster_cmap=None,
-    width: str = "100%",
-    height: str = "calc(100vh - 0px)",
-    zoom_scale: float = 1.0,
-    **kwargs,
+        objects,
+        mapbox_style=None,
+        show_legend=False,
+        raster_cmap=None,
+        width: str = "100%",
+        height: str = "calc(100vh - 0px)",
+        zoom_scale: float = 1.0,
+        **kwargs,
 ):
-
-    figure=init_figure(
+    figure = init_figure(
         objects,
         raster_cmap=raster_cmap,
         mapbox_style=mapbox_style,
