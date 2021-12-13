@@ -95,7 +95,7 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     conda install -y \
         pip \
         gdal \
-        nodejs && \
+        "nodejs>=12.0" && \
     conda clean -afy
 
 # === Configure Jupyter Lab settings ================ #
