@@ -112,9 +112,8 @@ RUN conda install -y jupyterlab && \
     jupyter-lab build
 # =================================================== #
 
+WORKDIR $HOME/tinerator
 COPY . .
-
-WORKDIR $HOME
 RUN python -m pip install .
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
 
