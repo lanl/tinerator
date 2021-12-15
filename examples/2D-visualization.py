@@ -21,6 +21,21 @@ can be plotted together simultaneously.
 # ------------------------
 # This is the first section!
 
+dem = tin.gis.load_raster()
+dem.plot()
+
+boundary = tin.gis.load_shapefile()
+boundary.plot()
+
+flowline = tin.gis.load_shapefile()
+flowline.plot([boundary, dem])
+
+# %%
+# Alternately, the following syntax also works:
+# 
+
+tin.plot2d([dem, boundary, flowline])
+
 # %%
 # Source: ``2D-visualization.py``
 # ------------------
