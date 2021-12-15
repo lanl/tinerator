@@ -40,6 +40,10 @@ $ pip install tinerator
 #### Source Code
 
 ```sh
+$ pip install -e git+https://github.com/lanl/tinerator.git#egg=tinerator
+```
+
+```sh
 $ git clone git@github.com:lanl/tinerator.git
 $ cd tinerator/
 $ python -m pip install ".[all]"
