@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir public/ &&
           docker run \
-            -v $(pwd)/public:$HOME/public/ \
+            -v $(pwd)/public:/home/feynman/public/ \
             ees16/tinerator:dev \
             /bin/bash -c \
             'cd ~/tinerator/ && python -m pip install ".[docs]" && make -C docs/ html && cp -r docs/_build/html/ ~/public/'
