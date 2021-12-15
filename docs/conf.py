@@ -74,7 +74,7 @@ html_theme_options = {
     "dark_logo": "logo-color-vert.svg",
     "sidebar_hide_name": True,
     "navigation_with_keys": True,
-    "announcement": "&#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389;",
+    #"announcement": "&#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389;",
 }
 
 
