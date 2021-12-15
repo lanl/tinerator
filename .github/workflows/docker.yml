@@ -40,10 +40,9 @@ jobs:
         run: |
           mkdir public/ &&
           docker run \
-            -v $(pwd)/public:/home/feynman/public/ \
+            -v $(pwd)/public:/public/ \
             ees16/tinerator:dev \
-            /bin/bash -c \
-            'cd ~/tinerator/ && python -m pip install ".[docs]" && make -C docs/ html && cp -r docs/_build/html/ ~/public/'
+            /bin/bash -c 'cp -r ~/tinerator/docs/* /public/'
 
       - name: Deploy Documentation
         uses: peaceiris/actions-gh-pages@v3

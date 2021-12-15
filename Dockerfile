@@ -114,9 +114,19 @@ RUN conda install -y jupyterlab && \
     jupyter-lab build
 # =================================================== #
 
-WORKDIR $HOME/tinerator
+ENV SRC_DIR=$HOME/.tinerator-src/
+ENV INSTALL_DIR=$HOME/tinerator/
+
+# Install TINerator and dependencies
+WORKDIR ${SRC_DIR}
 COPY . .
 RUN python -m pip install .
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
+RUN make -C docs/ html
+
+# Copy docmentation and examples to new user-facing directory
+WORKDIR ${INSTALL_DIR}
+RUN cp -r ${SRC_DIR}/docs/_build/html ./docs/ && \
+    cp -r ${SRC_DIR}/examples/ ./examples/
 
 CMD ["jupyter", "lab", "--port=8899"]
