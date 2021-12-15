@@ -102,6 +102,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
     echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
+    echo "c.NotebookApp.token = ''" >> $jupyter_cfg && \
+    echo "c.NotebookApp.password = ''" >> $jupyter_cfg && \
     echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \

@@ -6,7 +6,9 @@
 import warnings
 from typing import Union
 
+from .matplotlib import PyPlotKernel
 
+KERNELS = []
 # from .config import run_server, ServerTypes, ServerSettings, set_server_settings
 
 
