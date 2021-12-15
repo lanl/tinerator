@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Examples
-========
+Mesh Attributes
+===============
 
 
 """
@@ -10,3 +10,11 @@ Examples
 # This is a section header
 # ------------------------
 # This is the first section!
+
+# %%
+# Source: ``mesh-attributes.py``
+# ------------------
+#
+# .. literalinclude:: mesh-attributes.py
+#
+#
