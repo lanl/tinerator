@@ -792,7 +792,10 @@ class Mesh:
         cell_data = {"materialID": [self.material_id]}
 
         mesh = meshio.Mesh(
-            points=self.nodes, cells=cells, cell_data=cell_data, point_data=None,
+            points=self.nodes,
+            cells=cells,
+            cell_data=cell_data,
+            point_data=None,
         )
 
         return mesh

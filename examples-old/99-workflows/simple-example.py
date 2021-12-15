@@ -1,14 +1,14 @@
 import tinerator as tin
 
-#data = tin.examples.new_mexico
+# data = tin.examples.new_mexico
 
-#dem = tin.gis.load_raster(data.dem)
-#flowline = tin.gis.load_shapefile(data.flowline)
-#boundary = tin.gis.load_shapefile(data.boundary)
+# dem = tin.gis.load_raster(data.dem)
+# flowline = tin.gis.load_shapefile(data.flowline)
+# boundary = tin.gis.load_shapefile(data.boundary)
 
 nm = tin.examples.NewMexico()
 
-#tin.plot2d([dem, flowline, boundary], mapbox_style="stamen-watercolor")
+# tin.plot2d([dem, flowline, boundary], mapbox_style="stamen-watercolor")
 tin.plot2d([nm.flowline, nm.boundary], mapbox_style="stamen-watercolor")
 
 dem = tin.gis.clip_raster(nm.dem, nm.boundary)

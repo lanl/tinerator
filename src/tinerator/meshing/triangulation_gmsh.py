@@ -27,7 +27,8 @@ def triangulation_gmsh(algorithm: str = "delaunay", verbosity_level: int = 0):
 
     with pygmsh.geo.Geometry() as geom:
         geom.add_polygon(
-            boundary, mesh_size=mesh_size,
+            boundary,
+            mesh_size=mesh_size,
         )
 
         # Distance field:

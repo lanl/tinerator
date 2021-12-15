@@ -61,7 +61,10 @@ def triangulation_meshpy(
 
     if refinement_feature:
         dmap = distance_map(
-            raster, refinement_feature, min_dist=min_area, max_dist=max_area,
+            raster,
+            refinement_feature,
+            min_dist=min_area,
+            max_dist=max_area,
         )
 
         def refinement_callback(vertices, area):
