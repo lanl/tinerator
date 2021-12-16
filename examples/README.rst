@@ -1,14 +1,6 @@
 .. _examples_py:
 
-Examples & Workflows
-====================
+TINerator Examples
+==================
 
-A collection of downloadable Python code.
-
-Workflows
----------
-
-.. toctree::
-
-    notebooks/Borden-Workflow.ipynb
-    notebooks/NewMexico-Workflow.ipynb
+Examples demonstrating basic usage of TINerator.
