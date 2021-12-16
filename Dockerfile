@@ -120,7 +120,7 @@ ENV INSTALL_DIR=$HOME/tinerator/
 # Install TINerator and dependencies
 WORKDIR ${SRC_DIR}
 COPY . .
-RUN python -m pip install .
+RUN python -m pip install ".[all]"
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
 RUN make -C docs/ html
 
