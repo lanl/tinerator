@@ -17,3 +17,6 @@ logx3dgen
 docs/_build/
 *.exo
 *.vtk
+docs/workflows/*.ipynb
+docs/examples-py/
+docs/auto_examples/
