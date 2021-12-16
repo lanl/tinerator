@@ -61,6 +61,7 @@ Contents:
 
    user_guide/index
    examples-py/index
+   workflows/index
    api/index
    license
 
