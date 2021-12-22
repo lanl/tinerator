@@ -99,6 +99,8 @@ RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
 RUN mkdir ~/.jupyter && \
     jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
     echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
+    echo "c.NotebookApp.token = ''" >> $jupyter_cfg && \
+    echo "c.NotebookApp.password = ''" >> $jupyter_cfg && \
     echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
     echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
@@ -109,9 +111,19 @@ RUN conda install -y jupyterlab && \
     jupyter-lab build
 # =================================================== #
 
-WORKDIR $HOME/tinerator
+ENV SRC_DIR=$HOME/.tinerator-src/
+ENV INSTALL_DIR=$HOME/tinerator/
+
+# Install TINerator and dependencies
+WORKDIR ${SRC_DIR}
 COPY . .
-RUN python -m pip install .
+RUN python -m pip install ".[all]"
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
+RUN make -C docs/ html
+
+# Copy docmentation and examples to new user-facing directory
+WORKDIR ${INSTALL_DIR}
+RUN cp -r ${SRC_DIR}/docs/_build/html ./docs/ && \
+    cp -r ${SRC_DIR}/examples/ ./examples/
 
 CMD ["jupyter", "lab", "--port=8899"]

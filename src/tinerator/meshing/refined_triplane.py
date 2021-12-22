@@ -10,7 +10,11 @@ def get_edges(tris: np.ndarray) -> np.ndarray:
     Gets the edges from a triangular connectivity array.
     """
     all_edges = np.vstack(
-        (tris[:, :2], tris[:, 1:3], np.transpose(np.array([tris[:, 0], tris[:, 2]])),)
+        (
+            tris[:, :2],
+            tris[:, 1:3],
+            np.transpose(np.array([tris[:, 0], tris[:, 2]])),
+        )
     )
     edges = []
 
@@ -86,7 +90,10 @@ def get_refined_triplane(
 
     # Create an initial 'uniform' triangular mesh
     t = tr.triangulate(
-        {"vertices": list(vertices[:, :2]), "segments": list(connectivity - 1),},
+        {
+            "vertices": list(vertices[:, :2]),
+            "segments": list(connectivity - 1),
+        },
         # p enforces boundary connectivity,
         # q gives a quality mesh,
         # and aX is max edge length

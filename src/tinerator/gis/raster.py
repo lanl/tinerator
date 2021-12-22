@@ -385,13 +385,19 @@ class Raster:
 
         distance /= self.cell_size
         vertices, connectivity = st_boundary(
-            self.masked_data(), np.nan, dist=distance, connect_ends=connect_ends,
+            self.masked_data(),
+            np.nan,
+            dist=distance,
+            connect_ends=connect_ends,
         )
 
         vertices = project_vector(vertices, self)
         polygons = polygonize(linemerge(vertices[connectivity - 1].tolist()))
 
-        return Geometry(shapes=list(polygons), crs=self.crs,)
+        return Geometry(
+            shapes=list(polygons),
+            crs=self.crs,
+        )
 
     def save(self, outfile: str):
         """

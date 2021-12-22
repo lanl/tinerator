@@ -2,6 +2,7 @@ import pyvista as pv
 import numpy as np
 from collections.abc import Iterable
 
+
 class MeshViewType:
     POINTS = 0
     WIREFRAME = 1
