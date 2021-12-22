@@ -69,3 +69,13 @@ def test_reproject_raster(dem_nm):
     r2 = r.reproject(WGS84)
 
     assert True
+
+
+def test_visualize(dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
+    dem = dem_clipped_nm
+    boundary = shp_boundary_nm
+    flowline = shp_flowline_nm
+
+    # /Users/livingston/dev/lanl/tinerator/tinerator/tmp
+
+    tin.plot(dem, boundary, flowline)

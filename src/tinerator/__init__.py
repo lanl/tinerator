@@ -22,7 +22,7 @@ import tinerator.gis as gis
 import tinerator.examples as examples
 
 # import tinerator.visualize as visualize
-from tinerator.visualize import plot2d, plot3d, mapbox_styles
+from tinerator.visualize import plot, plot2d, plot3d, mapbox_styles
 
 from tinerator.meshing import Mesh
 from tinerator.meshing import SideSet, PointSet

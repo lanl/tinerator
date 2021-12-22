@@ -121,6 +121,7 @@ RUN python -m pip install ".[all]"
 
 # Make TPLs
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
+RUN conda install -c conda-forge jigsawpy
 
 # Run unit tests
 RUN pytest --pyargs tinerator.tests
