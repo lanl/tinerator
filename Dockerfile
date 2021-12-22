@@ -118,7 +118,14 @@ ENV INSTALL_DIR=$HOME/tinerator/
 WORKDIR ${SRC_DIR}
 COPY . .
 RUN python -m pip install ".[all]"
+
+# Make TPLs
 RUN cd util/tpls && ./build-tpls.sh -e -M && . ~/.bashrc
+
+# Run unit tests
+RUN pytest --pyargs tinerator.tests
+
+# Build documentation
 RUN make -C docs/ html
 
 # Copy docmentation and examples to new user-facing directory

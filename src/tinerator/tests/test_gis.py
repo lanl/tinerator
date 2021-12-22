@@ -6,21 +6,22 @@ import tinerator as tin
 from tinerator import examples
 
 WGS84 = "EPSG:4326"
+NM = tin.examples.NewMexico()
 
 
 @pytest.fixture
 def shp_flowline_nm():
-    return tin.gis.load_shapefile(examples.new_mexico.flowline)
+    return NM.flowline
 
 
 @pytest.fixture
 def shp_boundary_nm():
-    yield tin.gis.load_shapefile(examples.new_mexico.boundary)
+    yield NM.boundary
 
 
 @pytest.fixture
 def dem_nm():
-    return tin.gis.load_raster(examples.new_mexico.dem)
+    return NM.dem
 
 
 @pytest.fixture

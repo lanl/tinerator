@@ -5,20 +5,22 @@ import numpy as np
 import tinerator as tin
 from tinerator import examples
 
+NM = tin.examples.NewMexico()
+
 
 @pytest.fixture(scope="module")
 def shp_flowline():
-    yield tin.gis.load_shapefile(examples.new_mexico.flowline)
+    yield NM.flowline
 
 
 @pytest.fixture(scope="module")
 def shp_boundary():
-    yield tin.gis.load_shapefile(examples.new_mexico.boundary)
+    yield NM.boundary
 
 
 @pytest.fixture(scope="module")
 def dem(shp_boundary):
-    r = tin.gis.load_raster(examples.new_mexico.dem)
+    r = NM.dem
     yield tin.gis.clip_raster(r, shp_boundary)
 
 
