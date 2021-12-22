@@ -3,7 +3,6 @@ LABEL Description="TINerator"
 
 ARG container_user=feynman
 
-EXPOSE 8050-8100
 EXPOSE 8899
 
 ENV LANG=C.UTF-8 \
@@ -11,8 +10,6 @@ ENV LANG=C.UTF-8 \
     DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true \
     PYTHONDONTWRITEBYTECODE=true \
-    https_proxy=$https_proxy \
-    http_proxy=$http_proxy \
     PATH=/opt/conda/bin:$PATH
 
 RUN apt-get update --fix-missing && \
