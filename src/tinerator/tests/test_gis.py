@@ -1,4 +1,6 @@
 import pytest
+import tempfile
+import hashlib
 import shapely
 import numpy as np
 
@@ -7,6 +9,22 @@ from tinerator import examples
 
 WGS84 = "EPSG:4326"
 NM = tin.examples.NewMexico()
+
+HASHES = {
+    "visualization": {
+        "plotly": {
+            "jpg": "0000000",
+            "png": "0000000",
+            "svg": "0000000",
+            "html": "0000000",
+        },
+    },
+}
+
+MIN_LATITUDE = -90.0
+MAX_LATITUDE = 90.0
+MIN_LONGITUDE = -180.0
+MAX_LONGITUDE = 180.0
 
 
 @pytest.fixture
@@ -71,11 +89,39 @@ def test_reproject_raster(dem_nm):
     assert True
 
 
-def test_visualize(dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
+def test_gis_extent(dem_nm, dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
+    """Test that extents within WGS-84 are calculated and returned correctly."""
+
+    for layer in (dem_nm, dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
+        lat_min, lat_max, lon_min, lon_max = layer.reproject(WGS84).extent
+        assert all([
+            MAX_LATITUDE >= lat_min >= MIN_LATITUDE,
+            MAX_LATITUDE >= lat_max >= MIN_LATITUDE,
+            MAX_LONGITUDE >= lon_min >= MIN_LONGITUDE,
+            MAX_LONGITUDE >= lon_max >= MIN_LONGITUDE,
+        ])
+
+def test_visualize2D_plotly(dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
+    """Tests that Plotly is rendering and saving figures correctly."""
     dem = dem_clipped_nm
     boundary = shp_boundary_nm
     flowline = shp_flowline_nm
 
-    # /Users/livingston/dev/lanl/tinerator/tinerator/tmp
+    with tempfile.TemporaryDirectory() as d:
+        for (fmt, hash) in HASHES["visualization"]["plotly"].items():
+            outfile = os.path.join(d, f"image.{fmt}")
+            fig.save(outfile)
 
-    tin.plot(dem, boundary, flowline)
+            with open(outfile, 'rb') as f:
+                assert hashlib.md5(f.read()).hexdigest() == hash, f'Image write "{fmt}" failed'
+
+    #tin.plot(dem, boundary, flowline)
+
+def test_isinstance_tinerator(dem_clipped_nm, shp_boundary_nm):
+    """Tests that the 'isinstance_*' function behaves correctly."""
+    assert tin.util.isinstance_geometry(shp_boundary_nm) == True
+    assert tin.util.isinstance_geometry(dem_clipped_nm) == False
+    assert tin.util.isinstance_geometry("fail") == False
+    assert tin.util.isinstance_raster(dem_clipped_nm) == True
+    assert tin.util.isinstance_raster(dem_clipped_nm) == False
+    assert tin.util.isinstance_raster("fail") == False
