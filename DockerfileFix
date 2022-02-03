@@ -1,0 +1,23 @@
+FROM jupyter/base-notebook:latest
+
+# ref: https://github.com/jupyter/docker-stacks/blob/79169618d571506304934a7b29039085e77db78c/datascience-notebook/Dockerfile
+
+MAINTAINER Jupyter Project <jupyter@googlegroups.com>
+
+# TODO: delete this pls :)
+USER root
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    gcc \
+    g++ \
+    gfortran \
+    libgl1-mesa-glx && apt-get clean
+
+RUN conda install --yes \
+    gdal \
+    "vtk=9.1*" && conda clean -yt
+
+# TODO: replace with "COPY . ."
+RUN python -m pip install https://github.com/lanl/tinerator/archive/RC-1.0.0.zip
