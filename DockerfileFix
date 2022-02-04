@@ -2,22 +2,40 @@ FROM jupyter/base-notebook:latest
 
 # ref: https://github.com/jupyter/docker-stacks/blob/79169618d571506304934a7b29039085e77db78c/datascience-notebook/Dockerfile
 
-MAINTAINER Jupyter Project <jupyter@googlegroups.com>
-
-# TODO: delete this pls :)
+MAINTAINER Daniel Livingston <daniel.livingston@live.com>
 USER root
 
+# Read by TINerator to tweak Docker-specific settings
+ENV TIN_CONTAINER="docker"
+
+# Copy files to a safe location for installing
+ENV TIN_ROOT=/opt/tinerator/
+COPY . ${TIN_ROOT}
+
+# Install missing system tools
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    # Version control
     git \
+    # Compilers
     gcc \
     g++ \
     gfortran \
-    libgl1-mesa-glx && apt-get clean
+    # Graphics & rendering
+    libgl1-mesa-glx \
+    xvfb \
+    && apt-get clean
 
-RUN conda install --yes \
+# Install Docker-specific packages
+RUN conda install --yes --verbose \
+    # Easiest & most stable way to install GDAL
     gdal \
-    "vtk=9.1*" && conda clean -yt
+    # Jupyter backend 3D renderer
+    pythreejs \
+    # Workaround: pip (via setup.py) is missing VTK wheels for Python > 3.8
+    "vtk>=9.1,<10" \
+    && conda clean -yt
 
-# TODO: replace with "COPY . ."
-RUN python -m pip install https://github.com/lanl/tinerator/archive/RC-1.0.0.zip
+# Install TINerator
+RUN python -m pip install --verbose --no-cache-dir ${TIN_ROOT}
+
