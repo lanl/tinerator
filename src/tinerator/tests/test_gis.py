@@ -94,12 +94,15 @@ def test_gis_extent(dem_nm, dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
 
     for layer in (dem_nm, dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
         lat_min, lat_max, lon_min, lon_max = layer.reproject(WGS84).extent
-        assert all([
-            MAX_LATITUDE >= lat_min >= MIN_LATITUDE,
-            MAX_LATITUDE >= lat_max >= MIN_LATITUDE,
-            MAX_LONGITUDE >= lon_min >= MIN_LONGITUDE,
-            MAX_LONGITUDE >= lon_max >= MIN_LONGITUDE,
-        ])
+        assert all(
+            [
+                MAX_LATITUDE >= lat_min >= MIN_LATITUDE,
+                MAX_LATITUDE >= lat_max >= MIN_LATITUDE,
+                MAX_LONGITUDE >= lon_min >= MIN_LONGITUDE,
+                MAX_LONGITUDE >= lon_max >= MIN_LONGITUDE,
+            ]
+        )
+
 
 def test_visualize2D_plotly(dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
     """Tests that Plotly is rendering and saving figures correctly."""
@@ -112,10 +115,13 @@ def test_visualize2D_plotly(dem_clipped_nm, shp_boundary_nm, shp_flowline_nm):
             outfile = os.path.join(d, f"image.{fmt}")
             fig.save(outfile)
 
-            with open(outfile, 'rb') as f:
-                assert hashlib.md5(f.read()).hexdigest() == hash, f'Image write "{fmt}" failed'
+            with open(outfile, "rb") as f:
+                assert (
+                    hashlib.md5(f.read()).hexdigest() == hash
+                ), f'Image write "{fmt}" failed'
 
-    #tin.plot(dem, boundary, flowline)
+    # tin.plot(dem, boundary, flowline)
+
 
 def test_isinstance_tinerator(dem_clipped_nm, shp_boundary_nm):
     """Tests that the 'isinstance_*' function behaves correctly."""
