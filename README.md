@@ -6,7 +6,7 @@
 [![readthedocs](https://img.shields.io/static/v1?label=Documentation&message=Read%20online&color=blue&style=for-the-badge&logo=read-the-docs)](https://lanl.github.io/tinerator/) <br/>
 [![jupyter](https://img.shields.io/static/v1?label=Jupyter%20Notebook&message=View%20examples&color=blue&style=for-the-badge&logo=jupyter)](https://github.com/lanl/tinerator/tree/master/examples)
 
-### About TINerator
+## About TINerator
 
 **TINerator** is a Python module for the easy creation of unstructured 3D and 2.5D meshes from GIS data sources. Digital Elevation Maps (DEMs) can be quickly turned into unstructured triangulated meshes, and then further refined by the import of flowline shapefiles or automatically through watershed delineation. Advanced layering and attribute functions then allow for a complex subsurface to be defined. 
 
@@ -16,35 +16,69 @@ It was created at Los Alamos National Laboratory and funded primarily through th
 
 TINerator has been designed to work well with [Amanzi-ATS](https://amanzi.github.io).
 
-### Documentation
+## Documentation
 
-- [Read the documentation online](https://lanl.github.io/tinerator)
+Documentation is available at [https://lanl.github.io/tinerator/](https://lanl.github.io/tinerator).
 
-### Quick Start
+## Installing TINerator
+#### Conda
 
-#### Online Demo
+TINerator is available on [Conda Forge](https://anaconda.org/conda-forge/tinerator):
 
-[![Binder](https://mybinder.org/badge_logo.svg)]()
+```sh
+$ conda install -c conda-forge tinerator
+```
 
-You can run TINerator Jupyter notebooks online with [MyBinder](https://mybinder.org/v2/gh/lanl/tinerator/master). It may take a few minutes for the container to initialize.
+#### PyPI / `pip`
 
-#### Docker Container
+To install through [PyPI](https://pypi.org/project/tinerator/):
 
-The easiest way to get started with TINerator is through [Docker](https://hub.docker.com/r/ees16/tinerator):
+```sh
+$ pip install tinerator
+```
 
-    $ docker pull ees16/tinerator:latest
-    $ docker run -it \
-        -v $(pwd):/docker_user/work \
-        -p 8899:8899 \
-        -p 8050:8050 \
-        ees16/tinerator:latest
+#### Source Code
 
-After the container launches, navigate to `http://127.0.0.1:8899/lab` in a web browser to begin using TINerator within a Jupyter Lab instance. Example notebooks and HTML documentation are available within Jupyter.
+```sh
+$ pip install -e git+https://github.com/lanl/tinerator.git#egg=tinerator
+```
 
-### Building TINerator
+```sh
+$ git clone git@github.com:lanl/tinerator.git
+$ cd tinerator/
+$ python -m pip install ".[all]"
+```
 
-To build TINerator from source, refer to the [documentation](https://lanl.github.io/tinerator/installation.html).
+#### Docker
 
-### Contributing
+TINerator is available as a Docker container,
+complete with Jupyter Lab integration, functioning
+as a complete mesh generation environment:
+
+```sh
+$ docker pull ees16/tinerator:latest
+```
+
+## Troubleshooting
+### Building GDAL
+
+The most common point of failure is installing GDAL.
+The Conda Forge recipe is the easiest way to get GDAL
+working:
+
+```sh
+$ conda install gdal
+```
+
+If you have GDAL installed independently (i.e., through
+`brew` or `apt`), you may install Python bindings through
+PyPI:
+
+```sh
+$ pip install GDAL==`gdal-config --version`
+```
+
+## Contributing
 
 Pull requests of all manner are welcomed! Please read the [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
+

@@ -105,7 +105,7 @@ class DashTIN(dash.Dash):
             response = requests.get(shutdown_url)
         except Exception:
             pass
-    
+
     def status(self):
         return request.get_json()
 

@@ -1,10 +1,11 @@
 from enum import Enum, auto
 from os import wait
 
-from distributed.core import Server
+# from distributed.core import Server
 from tinerator.visualize.guess_environ import get_environment, open_file
 from typing import Union, List
-import dash_bootstrap_components as dbc
+
+# import dash_bootstrap_components as dbc
 from ..logging import log, warn, debug, error
 
 
@@ -29,7 +30,7 @@ def guess_mode():
         import webview
 
         return ServerTypes.WINDOWED
-        #return ServerTypes.DEFAULT
+        # return ServerTypes.DEFAULT
     except ModuleNotFoundError as e:
         return ServerTypes.DEFAULT
 
@@ -38,7 +39,7 @@ class ServerSettings:
     port = "8050"
     host = "127.0.0.1"
     mode = guess_mode()
-    css = [dbc.themes.BOOTSTRAP]
+    css = []  # [dbc.themes.BOOTSTRAP]
 
 
 def set_server_settings(
@@ -136,7 +137,7 @@ def run_server(layout, mode: ServerTypes = None, **kwargs):
     env = get_environment()
 
     if ee.DOCKER in env:
-        ServerSettings.host = '0.0.0.0'
+        ServerSettings.host = "0.0.0.0"
 
     if mode is None:
         mode = ServerSettings.mode

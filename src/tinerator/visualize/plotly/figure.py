@@ -4,10 +4,8 @@ import xarray
 import datashader.transfer_functions as tf
 import colorcet as cc
 import plotly.graph_objects as go
-import dash_core_components as dcc
-import dash_html_components as html
-from ..constants import is_tinerator_object
-from ..logging import log, warn, error, debug
+from ...constants import is_tinerator_object
+from ...logging import log, warn, error, debug
 
 WGS_84 = 4326  # EPSG code
 DEFAULT_RASTER_CMAP = cc.isolum
@@ -79,7 +77,6 @@ def add_raster(
     below="traces",
     hillshade: bool = False,
 ):
-
     if colormap is None:
         colormap = DEFAULT_RASTER_CMAP
 
@@ -88,7 +85,9 @@ def add_raster(
     data = None
 
     if hillshade:
-        data = compute_hillshade(raster.masked_data(), z_scale=5, cell_size=raster.cell_size)
+        data = compute_hillshade(
+            raster.masked_data(), z_scale=5, cell_size=raster.cell_size
+        )
     else:
         data = raster.masked_data()
 
@@ -166,8 +165,8 @@ def init_figure(
     zoom_scale=1.0,
 ):
     debug(
-        f"Initializing figure. {objects=}, {raster_cmap=}, "
-        f"{mapbox_style=}, {show_legend=}, {zoom_scale=}"
+        f"Initializing figure. {objects}, {raster_cmap}, "
+        f"{mapbox_style}, {show_legend}, {zoom_scale}"
     )
 
     if mapbox_style is None:
@@ -194,7 +193,8 @@ def init_figure(
     for g in geom_objs:
         g = g.reproject(WGS_84)
         extent = g.extent
-        extents.append([extent[1], extent[0], extent[3], extent[2]])
+        extents.append(g.extent)
+        # extents.append([extent[1], extent[0], extent[3], extent[2]])
         add_geometry(fig, g)
 
     for (i, t) in enumerate(tile_objs):
@@ -203,7 +203,11 @@ def init_figure(
         add_raster(fig, t, colormap=raster_cmap)
 
     extents = np.vstack(extents)
+    assert [180.0 >= x >= -180.0 for x in extents[:, 0]], "Longitude extent: malformed"
+    assert [90.0 >= x >= -90.0 for x in extents[:, 1]], "Latitude extent: malformed"
+
     map_extent = [*np.min(extents[:, :2], axis=0), *np.max(extents[:, 2:], axis=0)]
+
     zoom, map_center = get_zoom_and_center(map_extent, zoom_scale=zoom_scale)
 
     fig.update_layout(
@@ -230,7 +234,7 @@ def init_figure(
     return fig
 
 
-def get_layout(
+def figure(
     objects,
     mapbox_style=None,
     show_legend=False,
@@ -240,27 +244,12 @@ def get_layout(
     zoom_scale: float = 1.0,
     **kwargs,
 ):
-    return html.Div(
-        style={"width": width, "height": height},
-        children=[
-            dcc.Graph(
-                figure=init_figure(
-                    objects,
-                    raster_cmap=raster_cmap,
-                    mapbox_style=mapbox_style,
-                    show_legend=show_legend,
-                    zoom_scale=zoom_scale,
-                    **kwargs,
-                ),
-                config={
-                    "showAxisDragHandles": True,
-                    "watermark": False,
-                    "autosizable": True,
-                    "displaylogo": False,
-                    "fillFrame": True,
-                    "responsive": True,
-                    "staticPlot": False,
-                },
-            ),
-        ],
+    figure = init_figure(
+        objects,
+        raster_cmap=raster_cmap,
+        mapbox_style=mapbox_style,
+        show_legend=show_legend,
+        zoom_scale=zoom_scale,
+        **kwargs,
     )
+    return figure

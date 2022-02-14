@@ -1,0 +1,69 @@
+[tool.poetry]
+name = "tinerator"
+version = "0.9.0"
+description = "Intuitive and powerful unstructured geospatial mesh generation from GIS data."
+authors = ["Daniel Livingston <daniel.livingston@live.com>"]
+license = "BSD 3-Clause"
+readme = "README.md"
+homepage = "https://lanl.github.io/tinerator"
+repository = "https://github.com/lanl/tinerator"
+keywords = ["gis", "meshing", "fem", "finite-element", "geospatial", "gridding"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Operating System :: MacOS",
+    "Operating System :: Unix",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Intended Audience :: Science/Research",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Hydrology",
+    "Topic :: Scientific/Engineering :: Visualization"
+]
+include = [
+    "LICENSE",
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+pip = "^20.0"
+numpy = "~1"
+scipy = "~1"
+Fiona = "~1"
+pyproj = "~3"
+Shapely = "~1"
+snowy = "^0.0.9"
+pyshp = "~2"
+vtk = "~9"
+pyvista = ">=0.30"
+meshio = "^4.0.0"
+MeshPy = ">=2020.0"
+plotly = "~5"
+richdem = {version = "^0.3", optional = true}
+triangle = {version = ">=2015", optional = true}
+pygmsh = {version = "~7", optional = true}
+rich = "~10"
+#llvmlite = {version = "~0", allow-prereleases = true}
+#GDAL = "*"
+#GDAL = "2.3.3"
+#GDAL = [
+#    { url = "https://website.com/gdal-linux_x86_64.whl", platform = "linux", markers = "platform_machine == 'x86_64'" },
+#    { url = "https://website.com/gdal-linux_arm64.whl", platform = "linux", markers = "platform_machine == 'arm64'" },
+#    { url = "https://website.com/gdal-macOS_x86_64.whl", platform = "darwin", markers = "platform_machine == 'x86_64'" },
+#    { url = "https://website.com/gdal-macOS_arm64.whl", platform = "darwin", markers = "platform_machine == 'arm64'" },
+#    { url = "https://website.com/gdal-windows_x86_64.whl", platform = "win32", markers = "platform_machine == 'x86_64'" },
+#    { url = "https://website.com/gdal-windows_arm64.whl", platform = "win32", markers = "platform_machine == 'arm64'" },
+#]
+
+[tool.poetry.dev-dependencies]
+pytest = {version = "~6", allow-prereleases = true}
+black = {version = ">=20.8b0", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

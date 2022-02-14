@@ -42,9 +42,50 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinx_inline_tabs",
+    "sphinx_gallery.gen_gallery",
+    "nbsphinx"
 ]
 
-source_suffix = ".rst"
+sphinx_gallery_conf = {
+    "examples_dirs": "../examples",  # path to your example scripts
+    "gallery_dirs": "examples-py",  # path to where to save gallery generated output
+}
+
+# Don't add .txt suffix to source files:
+#html_sourcelink_suffix = ''
+
+# List of arguments to be passed to the kernel that executes the notebooks:
+#nbsphinx_execute_arguments = [
+#    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+#    "--InlineBackend.rc=figure.dpi=96",
+#]
+
+print("Copy example notebooks into docs/_examples")
+
+def all_but_ipynb(dir, contents):
+    result = []
+    for c in contents:
+        if os.path.isfile(os.path.join(dir,c)) and (not c.endswith(".ipynb")):
+            result += [c]
+    return result
+
+def copy_notebooks(notebook_dir, target_dir):
+    import shutil
+
+    for root, dir, files in os.walk(notebook_dir):
+        for file in files:
+            if file.lower().endswith('.ipynb'):
+                new_dir = root.replace(notebook_dir, target_dir)
+                print('>>', root, notebook_dir, target_dir, new_dir)
+                os.makedirs(new_dir, exist_ok=True)
+                shutil.copyfile(os.path.join(root, file), os.path.join(new_dir, file))
+
+script_path = os.path.realpath(__file__).replace('conf.py', '')
+notebook_source_path = os.path.join(script_path, '..', 'examples/', 'notebooks/')
+notebook_target_path = os.path.join(script_path, 'workflows/')
+copy_notebooks(notebook_source_path, notebook_target_path)
+
+source_suffix = ".rst" #[".rst", ".ipynb"]
 master_doc = "index"
 
 # Add any paths that contain templates here, relative to this directory.
@@ -68,7 +109,7 @@ html_theme_options = {
     "dark_logo": "logo-color-vert.svg",
     "sidebar_hide_name": True,
     "navigation_with_keys": True,
-    "announcement": "&#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389;",
+    #"announcement": "&#x1F389; <em>TINerator v1.0.0</em> has been released! &#x1F389;",
 }
 
 

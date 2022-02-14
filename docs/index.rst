@@ -60,7 +60,8 @@ Contents:
    :maxdepth: 2
 
    user_guide/index
-   examples/index
+   examples-py/index
+   workflows/index
    api/index
    license
 

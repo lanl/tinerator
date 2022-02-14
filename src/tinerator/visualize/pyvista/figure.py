@@ -1,9 +1,6 @@
+import pyvista as pv
 import numpy as np
 from collections.abc import Iterable
-
-import dash_vtk
-import dash_html_components as html
-from dash_vtk.utils import to_mesh_state
 
 
 class MeshViewType:
@@ -26,13 +23,14 @@ class GetArray:
     BY_NAME = 1
 
 
-def to_dash_vtk_mesh(
+def prepare_vtk_mesh(
+    plotter: pv.Plotter,
     mesh,
     representation=MeshViewType.SURFACE,
     opacity=1.0,
     color_attribute=None,
     showCubeAxes=False,
-    colorMapPreset="erdc_rainbow_bright",
+    colorMapPreset="gist_earth",
     color_range=None,
     custom_fields: dict = None,
     threshold: dict = None,
@@ -58,10 +56,12 @@ def to_dash_vtk_mesh(
     mesh_state = None
 
     if color_attribute is None:
-        mesh_state = to_mesh_state(vtk_mesh)
+        active_scalar = None
+        # mesh_state = to_mesh_state(vtk_mesh)
         color_range = [0, 1]
     else:
-        mesh_state = to_mesh_state(vtk_mesh, field_to_keep=color_attribute)
+        active_scalar = color_attribute
+        # mesh_state = to_mesh_state(vtk_mesh, field_to_keep=color_attribute)
 
         if color_range is None:
             try:
@@ -72,17 +72,25 @@ def to_dash_vtk_mesh(
             except KeyError:
                 pass
 
-    return dash_vtk.GeometryRepresentation(
-        showCubeAxes=showCubeAxes,
-        colorMapPreset=colorMapPreset,
-        colorDataRange=color_range,
-        children=[dash_vtk.Mesh(state=mesh_state)],
-        property={
-            "edgeVisibility": True,
-            "opacity": opacity,
-            "representation": representation,
-        },
+    plotter.add_mesh(
+        vtk_mesh,
+        opacity=opacity,
+        show_edges=True,
+        cmap=colorMapPreset,
+        scalars=active_scalar,
     )
+
+    # return dash_vtk.GeometryRepresentation(
+    #    showCubeAxes=showCubeAxes,
+    #    colorMapPreset=colorMapPreset,
+    #    colorDataRange=color_range,
+    #    children=[dash_vtk.Mesh(state=mesh_state)],
+    #    property={
+    #        "edgeVisibility": True,
+    #        "opacity": opacity,
+    #        "representation": representation,
+    #    },
+    # )
 
 
 def vtk_view(
@@ -92,8 +100,12 @@ def vtk_view(
     show_cube_axes=False,
     show_layers_in_range=None,
     bg_color: list = None,
+    window_size: tuple = None,
 ):
-    children = []
+    plotter = pv.Plotter(window_size=window_size)
+    plotter.background_color = bg_color
+    plotter.enable_anti_aliasing()
+
     threshold = None
     primary_opacity = 1.0
     primary_color_attribute = color_attribute
@@ -107,48 +119,43 @@ def vtk_view(
         primary_representation = MeshViewType.WIREFRAME
         primary_color_attribute = None
 
-    children.append(
-        to_dash_vtk_mesh(
-            mesh,
-            opacity=primary_opacity,
-            representation=primary_representation,
-            color_attribute=primary_color_attribute,
-            showCubeAxes=show_cube_axes,
-        )
+    prepare_vtk_mesh(
+        plotter,
+        mesh,
+        opacity=primary_opacity,
+        representation=primary_representation,
+        color_attribute=primary_color_attribute,
+        showCubeAxes=show_cube_axes,
     )
 
     if show_layers_in_range:
-        children.append(
-            to_dash_vtk_mesh(
-                mesh,
-                opacity=1.0,
-                representation=MeshViewType.SURFACE,
-                color_attribute=color_attribute,
-                threshold={
-                    "value": show_layers_in_range,
-                    "scalars": "cell_layer_id",
-                    "invert": True,
-                    "continuous": True,
-                },
-            )
+        prepare_vtk_mesh(
+            plotter,
+            mesh,
+            opacity=1.0,
+            representation=MeshViewType.SURFACE,
+            color_attribute=color_attribute,
+            threshold={
+                "value": show_layers_in_range,
+                "scalars": "cell_layer_id",
+                "invert": True,
+                "continuous": True,
+            },
         )
 
     if isinstance(sets, Iterable):
         for (set_id, set_mesh) in enumerate(sets):
             num_cells = len(set_mesh.primary_cells)
 
-            children.append(
-                to_dash_vtk_mesh(
-                    set_mesh,
-                    color_attribute="set_id",
-                    custom_fields={
-                        "set_id": np.array([set_id + 1] * num_cells, dtype=int)
-                    },
-                    color_range=[1, len(sets)],
-                    opacity=1.0,
-                    representation=MeshViewType.SURFACE,
-                    showCubeAxes=False,
-                )
+            prepare_vtk_mesh(
+                plotter,
+                set_mesh,
+                color_attribute="set_id",
+                custom_fields={"set_id": np.array([set_id + 1] * num_cells, dtype=int)},
+                color_range=[1, len(sets)],
+                opacity=1.0,
+                representation=MeshViewType.SURFACE,
+                showCubeAxes=False,
             )
 
     # cameraParallelProjection (boolean; default False): Use parallel projection (default: False).
@@ -159,21 +166,17 @@ def vtk_view(
     # or: https://kitware.github.io/vtk-js/api/Common_Core_ImageHelper.html
     # or: https://github.com/Kitware/vtk-js/issues/1598
 
-    return dash_vtk.View(
-        children=children,
-        background=bg_color,
-    )
+    return plotter
 
 
-def get_layout(
+def figure(
     mesh,
     sets=None,
     color_with_attribute="Material Id",
     show_cube_axes=False,
     show_layers_in_range: tuple = None,
     bg_color: list = None,
-    height: str = "calc(100vh - 0px)",
-    width: str = "100%",
+    window_size: tuple = (600, 400),
 ):
 
     if isinstance(color_with_attribute, str):
@@ -188,15 +191,11 @@ def get_layout(
         if mat == "materialid":
             color_with_attribute = "Material Id"
 
-    return html.Div(
-        style={"width": width, "height": height},
-        children=[
-            vtk_view(
-                mesh,
-                sets=sets,
-                color_attribute=color_with_attribute,
-                show_cube_axes=show_cube_axes,
-                show_layers_in_range=show_layers_in_range,
-            ),
-        ],
+    return vtk_view(
+        mesh,
+        sets=sets,
+        color_attribute=color_with_attribute,
+        show_cube_axes=show_cube_axes,
+        show_layers_in_range=show_layers_in_range,
+        window_size=window_size,
     )
