@@ -19,7 +19,7 @@ RUN apt-get update -y && \
     build-essential openssl vim gfortran cmake git \
     wget libz-dev m4 bison r-base  \
     software-properties-common curl libgl1-mesa-glx xvfb \
-    python3 python3-pip python3-setuptools && \
+    python3 python3-distutils python3-pip python3-setuptools python-is-python3 && \
     \
     # Make Python 3 the default Python
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 && \
@@ -48,9 +48,10 @@ RUN mkdir ~/.jupyter && \
     echo "c.NotebookApp.token = u''" >> $jupyter_cfg
 
 # Build all TPLs
-RUN ./tpls/build-tpls.sh -A -M && \
-    echo "export PYTHONPATH=/tinerator-install/:$PYTHONPATH" >> ~/.bashrc && \
-    echo "export PYTHONPATH=/tinerator-install/tpls/seacas/install/lib/:$PYTHONPATH" >> ~/.bashrc
+RUN ./tpls/build-tpls.sh -A -M
+
+# Update PYTHONPATH to make TPLs available
+ENV PYTHONPATH=/tinerator-install:/tinerator-install/tpls/seacas/install/lib:/tinerator-install/tpls/jigsaw-python:{PYTHONPATH} 
 
 # Test TINerator
 #RUN cd /tinerator-install/tests && \
@@ -62,9 +63,6 @@ RUN cd /tinerator-install/docs/ && \
     mkdir -p /tinerator/ && \
     cp -r /tinerator-install/docs/_build/html /tinerator/docs && \
     cp -r /tinerator-install/examples /tinerator/examples
-
-# Generate the PYTHONPATH so that it's visible to Jupyter on launch
-ENV PYTHONPATH "/tinerator-install/:/tinerator-install/tpls/seacas/install/lib/:${PYTHONPATH}"
 
 WORKDIR /tinerator/
 
