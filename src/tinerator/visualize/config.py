@@ -125,8 +125,7 @@ def run_server_jupyter(layout, **kwargs):
     app = JupyterDash(__name__, external_stylesheets=ServerSettings.css)
     app.layout = layout
     app.run_server(mode="inline", **kwargs)
-    print(app.status())
-
+    # print(app.status()) - attribute no longer exists
 
 def run_server(layout, mode: ServerTypes = None, **kwargs):
 
