@@ -1,0 +1,148 @@
+FROM ubuntu:20.04
+LABEL Description="TINerator and ATS Docker container"
+
+EXPOSE 8050
+EXPOSE 8899
+
+ARG container_user=tin_user
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    DEBIAN_FRONTEND=noninteractive \
+    DEBCONF_NONINTERACTIVE_SEEN=true \
+    PYTHONDONTWRITEBYTECODE=true \
+    https_proxy=$https_proxy \
+    http_proxy=$http_proxy \
+    PATH=/opt/conda/bin:$PATH
+
+RUN apt-get update --fix-missing && \
+    apt-get install --no-install-recommends -y \
+
+    # Shared
+    apt-utils \
+    patch \
+    g++ \
+    gfortran \
+    git \
+    make \
+    cmake \
+    emacs \
+    vim \
+    less \
+    curl \
+    wget \
+    libz-dev \
+    openssl \
+    m4 \
+    bzip2 \
+    ca-certificates \
+
+    # Amanzi/ATS
+    groff \
+    rsync \
+    mpich \
+    libblas-dev \
+    liblapack-dev \
+    libmpich-dev \
+    libssl-dev \
+    zlib1g-dev \
+    libcurl4-openssl-dev \
+
+    # TINerator/Watershed Workflow
+    unzip \
+    bison \
+    libgl1-mesa-glx \
+    xvfb \
+    sudo && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# =================================================== #
+# Build Miniconda =================================== #
+# =================================================== #
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
+RUN chmod +x /usr/bin/tini
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
+
+# Add an unprivileged user and group
+RUN groupadd -r $container_user && \
+    useradd -r -m -g $container_user $container_user
+
+# https://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Linux-x86_64.sh -O ~/miniconda.sh
+# https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh -O ~/miniconda.sh 
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh -O ~/miniconda.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -tipsy && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    chown -R $container_user /opt/ && \
+    chgrp -R $container_user /opt/
+
+USER $container_user
+ENV HOME=/home/$container_user
+
+# Setup Conda
+#
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc && \
+    . /opt/conda/etc/profile.d/conda.sh && \
+    conda activate base && \
+    conda update -n base -c defaults conda && \
+    conda install -y pip pandas && \
+    conda clean -afy
+
+# Install packages needed by TINerator
+#
+# - gdal on conda-forge seems broken, install it first from the base
+# - richdem seems to constrain the environment the most, works well to get it done next
+#
+RUN conda install -y gdal && \
+    conda install -y -c conda-forge richdem=2.3.0 && \
+    conda install -y -c conda-forge meshio meshpy cartopy pyepsg descartes && \
+    conda install -y -c conda-forge geopandas && \
+    conda install -y -c conda-forge sortedcontainers attrs libarchive xarray datashader rich && \
+    conda install -y -c conda-forge plotly dash dash-renderer dash-bootstrap-components jupyter-dash && \
+    conda install -y -c conda-forge jupyter jupyterlab && \
+    conda install -y -c conda-forge nodejs=12.1
+
+# PIP install the remaining packages
+#
+# - had trouble with vtk from conda-forge
+# - dash-vtk and snowy are only on PIP
+#
+RUN pip install vtk pyvista dash-vtk && \ 
+    pip install snowy
+
+# Configure Jupyter Notebook/Jupyter Lab settings
+#
+RUN mkdir ~/.jupyter && \
+    jupyter_cfg=~/.jupyter/jupyter_notebook_config.py && \
+    echo "c.JupyterApp.config_file = ''" >> $jupyter_cfg && \
+    echo "c.NotebookApp.allow_root = True" >> $jupyter_cfg && \
+    echo "c.NotebookApp.allow_remote_access = True" >> $jupyter_cfg && \
+    echo "c.NotebookApp.ip = '*'" >> $jupyter_cfg && \
+    echo "c.NotebookApp.terminado_settings = { \"shell_command\": [\"/usr/bin/bash\"] }" >> $jupyter_cfg && \
+    echo "c.NotebookApp.token = u''" >> $jupyter_cfg
+
+# Update Jupyter build and load extensions
+#
+RUN jupyter lab build && \
+    jupyter labextension list
+
+
+# TINerator
+#
+ENV TIN_ROOT_DIR=${HOME}/tinerator
+ENV TIN_TPLS_DIR=${TIN_ROOT_DIR}/tpls-install
+
+RUN git clone https://github.com/lanl/tinerator.git ${TIN_ROOT_DIR} --depth 1 && \
+    cd ${TIN_ROOT_DIR} && \
+    ./util/tpls/build-tpls.sh -j -e -d ${TIN_TPLS_DIR}
+    
+ENV PYTHONPATH=${TIN_ROOT_DIR}/src:${TIN_TPLS_DIR}/seacas/install/lib:${TIN_TPLS_DIR}/jigsaw-python:${PYTHONPATH}
+
+# Jupyter lab is default
+#
+CMD ["jupyter", "lab", "--port=8899"]
+
