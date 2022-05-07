@@ -1,0 +1,14 @@
+name: tinerator
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - jupyterlab=3.3
+  - plotly=5.7
+  - jupyter-dash=0.4
+  - pip:
+    - dash-vtk
+variables:
+  TIN_DASH_PORT: TODO-enter-port-here-and-configure-in-tinerator
