@@ -37,7 +37,8 @@ RUN apt-get update && apt-get install -y \
 # ==== USER CONFIGURATION ========================================= #
 # Add an unprivileged user and group
 RUN groupadd -r $container_user && \
-    useradd -r -m -g $container_user $container_user
+    useradd -r -m -g $container_user $container_user && \
+    chmod -R 777 /tmp/docker/
 
 USER $container_user
 
@@ -46,11 +47,9 @@ USER $container_user
 RUN curl -o /tmp/miniconda.sh -sSf "https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-${CONDA_ARCH}.sh" && \
     bash /tmp/miniconda.sh -b -p /home/$container_user/miniconda && \
     # The '-b' flag doesn't modify ~/.bashrc: do that now
-    /home/$container_user/miniconda/bin/conda init bash && \
-    # Activate conda
-    . /home/$container_user/.bashrc && \
+    /home/$container_user/miniconda/bin/conda init --all && \
     # Create the conda environment with the copied YAML file
-    conda env create --file environment.yml && \
+    /home/$container_user/miniconda/bin/conda env create --file /tmp/docker/environment.yml && \
     # Change the on-launch environment
     echo "conda activate tinerator" >> /home/$container_user/.bashrc
 
@@ -63,10 +62,8 @@ EXPOSE ${PORT_JUPYTER} ${PORT_DASH}
 HEALTHCHECK  --interval=15s --timeout=3s --start-period=5s --retries=3 \
     CMD wget -O- --no-verbose --tries=1 http://localhost:${PORT_JUPYTER}{JUPYTERHUB_SERVICE_PREFIX:-/}api || exit 1
 
-ENTRYPOINT [ "tini", "-g", "--", \
-             "jupyter", "lab", \
-                "--ip=0.0.0.0", \
-                "-y", \
-                "--log-level='INFO'", \
-                "--port=${PORT_JUPYTER}" ]
-WORKDIR "${HOME}"
+# ENTRYPOINT can only take environment variables, not ARGs,
+# so we have to set the port numbers here.
+ENV PORT_JUPYTER=${PORT_JUPYTER} CONTAINER_USER=${container_user}
+WORKDIR "/home/$container_user"
+ENTRYPOINT [ "tini", "-g", "--", "/tmp/docker-entrypoint.sh" ]
