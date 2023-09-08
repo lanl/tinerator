@@ -12,7 +12,8 @@ class MeshAttribute:
     INTEGER_TYPE = int
     FLOAT_TYPE = float
 
-    INTEGER_TYPE_ALIAS = ("integer", "int", int, np.int, np.int64)
+    # This list and how its used needs a bit of cleanup.
+    INTEGER_TYPE_ALIAS = ("integer", "int", int, np.int_, np.int64)
     FLOAT_TYPE_ALIAS = ("float", "double", "real", float, np.double)
 
     NODE_TYPE = "node"
@@ -79,7 +80,7 @@ class MeshAttribute:
                 return data.astype(self.data_type)
             elif isinstance(data, (tuple, list)):
                 return np.array(data, dtype=self.data_type)
-            elif isinstance(data, (int, np.int, np.int64, float, np.double)):
+            elif isinstance(data, (int, np.int_, np.int64, float, np.double)):
                 return np.full((target_size,), data, dtype=dtype)
             else:
                 warn("Could not parse data")

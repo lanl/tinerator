@@ -148,7 +148,7 @@ def write_avs(
             write_list(f, [n_node_atts] + [1] * n_node_atts)
 
             for name in att_names:
-                if np.issubdtype(atts[name].dtype, np.integer):
+                if np.issubdtype(atts[name].dtype, np.int_):
                     f.write(f"{name}, integer\n")
                 elif np.issubdtype(atts[name].dtype, np.inexact):
                     f.write(f"{name}, real\n")
@@ -165,7 +165,7 @@ def write_avs(
             write_list(f, [n_cell_atts] + [1] * n_cell_atts)
 
             for name in att_names:
-                if np.issubdtype(atts[name].dtype, np.integer):
+                if np.issubdtype(atts[name].dtype, np.int_):
                     f.write(f"{name}, integer\n")
                 elif np.issubdtype(atts[name].dtype, np.inexact):
                     f.write(f"{name}, real\n")

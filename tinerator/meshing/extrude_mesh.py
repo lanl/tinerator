@@ -131,7 +131,7 @@ def compute_material_id(mat_ids: list, layering_stride: list, cells_per_layer: i
 
         if mat_id is None:
             mat_id = [i + 1] * stride
-        elif isinstance(mat_id, (int, np.int)):
+        elif isinstance(mat_id, (int, np.int_)):
             mat_id = [mat_id] * stride
 
         assert len(mat_id) == stride

@@ -11,7 +11,7 @@ def __line_connectivity(nodes: np.ndarray, connect_ends: bool = False) -> np.nda
 
     delta = 0 if connect_ends else -1
     size = np.shape(nodes)[0]
-    connectivity = np.empty((size + delta, 2), dtype=np.int)
+    connectivity = np.empty((size + delta, 2), dtype=np.int_)
     for i in range(size - 1):
         connectivity[i] = np.array((i + 1, i + 2))
     if connect_ends:

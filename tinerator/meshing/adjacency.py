@@ -9,8 +9,8 @@ from typing import Union, List
 from scipy.spatial import distance
 from scipy.sparse import lil_matrix, coo_matrix, triu
 from vtk.util.numpy_support import numpy_to_vtk, vtk_to_numpy
-from pyvista.utilities.helpers import vtk_id_list_to_array as vtkID_to_arr
-
+#from pyvista.utilities.helpers import vtk_id_list_to_array as vtkID_to_arr
+from pyvista.core.utilities import vtk_id_list_to_array as vtkID_to_arr
 
 def adjacency_matrix(
     mesh: vtk.vtkPolyData,
