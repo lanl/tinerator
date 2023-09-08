@@ -39,7 +39,7 @@ def pysheds_watershed_delineation(
             'D8' : D8 flow directions
             'dinf' : D-infinity flow directions
 
-        recusionlimit (int): Recursion limit. May need to be raised if recursion limit is reached.
+        recursion_limit (int): Recursion limit. May need to be raised if recursion limit is reached.
         dirmap (List[int]): List of integer values representing the following
             cardinal and intercardinal directions (in order):
                     [N, NE, E, SE, S, SW, W, NW]
@@ -217,7 +217,7 @@ def watershed_delineation(
     multiline = linemerge(MultiLineString(xy[conn].tolist()))
 
     lines = []
-    for line in multiline:
+    for line in multiline.geoms:
         coords = np.array(line.coords[:])
         coords = project_vector(coords, raster)
         lines.append(LineString(coords))
