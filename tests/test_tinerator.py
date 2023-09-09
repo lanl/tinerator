@@ -44,7 +44,7 @@ def test_geometry_read():
     assert np.allclose(shp.centroid, [-107.57728379, 36.41307757])
     assert shp.ndim == 3
     assert shp.geometry_type == "3D MultiLineString"
-    assert all([shape.type == "LineString" for shape in shp.shapes])
+    assert all([shape.geom_type == "LineString" for shape in shp.shapes])
 
 
 def test_geometry_write():

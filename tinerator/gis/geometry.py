@@ -1,5 +1,5 @@
 import fiona
-from distutils.version import LooseVersion
+from packaging import version
 from itertools import chain
 from collections import OrderedDict
 import pyproj
@@ -166,7 +166,7 @@ class Geometry:
         property_schema = self.properties["metadata"]["schema"]
         schema = {"geometry": gtype, "properties": property_schema}
 
-        if LooseVersion(fiona.__gdal_version__) < LooseVersion("3.0.0"):
+        if version.parse(fiona.__gdal_version__) < version.parse("3.0.0"):
             crs = self.crs.to_wkt(pyproj.enums.WktVersion.WKT1_GDAL)
         else:
             # GDAL 3+ can use WKT2
@@ -213,7 +213,7 @@ class Geometry:
         Returns the geometry type of this object in GeoJSON
         format.
         """
-        s_types = np.unique([shp.type for shp in self.shapes])
+        s_types = np.unique([shp.geom_type for shp in self.shapes])
 
         if len(s_types) > 1:
             geom = "GeometryCollection"
