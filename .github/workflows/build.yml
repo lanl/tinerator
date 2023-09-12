@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu", "macos"]
+        os: ["ubuntu"]
         python-version: ["3.11", "3.10", "3.9", "3.8"]
 
     steps:
@@ -20,9 +20,15 @@ jobs:
     - uses: conda-incubator/setup-miniconda@v2
       with: 
         activate-environment: tinerator-v1
+        mamba-version: "*"
+        channels: conda-forge,defaults
+        channel-priority: strict
         environment-file: environment.yml
         python-version: ${{ matrix.python-version }}
         auto-activate-base: false
+    - name: Build TPLs
+      run: |
+        echo "This is a placeholder."
     - name: Build TINerator
       run: |
         conda install pip
