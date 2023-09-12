@@ -1,0 +1,30 @@
+name: tinerator-v1
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - dash-renderer
+  - plotly
+  - richdem
+  - jupyterlab
+  - dash
+  - geopandas
+  - meshpy
+  - sortedcontainers
+  - pandas
+  - gdal
+  - nodejs
+  - descartes
+  - xarray
+  - libnetcdf=4.8.1
+  - dash-bootstrap-components
+  - meshio
+  - pyepsg
+  - datashader
+  - pytest
+  - pip:
+    - vtk
+    - pyvista
+    - cartopy
+    - snowy
+    - dash-vtk
