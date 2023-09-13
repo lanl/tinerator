@@ -28,10 +28,9 @@ jobs:
         auto-activate-base: false
     - name: Build TPLs
       run: |
-        echo "This is a placeholder."
+        ./tpls/build-tpls.sh -je 
     - name: Build TINerator
       run: |
-        conda install pip
         python -m pip install . -vv
     #- name: Lint with flake8
     #  run: |
