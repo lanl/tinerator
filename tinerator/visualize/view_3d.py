@@ -15,7 +15,7 @@ def _mesh_to_vtk_unstructured(
     mesh,
     element_type: str,
     scale: tuple = (1, 1, 1),
-    cell_arrays=None,
+    cell_data=None,
     node_arrays=None,
 ):
     """
@@ -72,9 +72,9 @@ def _mesh_to_vtk_unstructured(
     else:
         grid = pv.UnstructuredGrid(offset, cells, cell_type, nodes, deep=True)
 
-    if cell_arrays is not None:
-        for key in cell_arrays:
-            grid.cell_arrays[key] = cell_arrays[key]
+    if cell_data is not None:
+        for key in cell_data:
+            grid.cell_data[key] = cell_data[key]
 
     if node_arrays is not None:
         for key in node_arrays:
@@ -87,7 +87,7 @@ def plot_3d(
     mesh,
     element_type: str,
     active_scalar: str = None,
-    cell_arrays: dict = None,
+    cell_data: dict = None,
     node_arrays: dict = None,
     scale: tuple = (1, 1, 1),
     window_size: tuple = (1024, 1080),
@@ -114,7 +114,7 @@ def plot_3d(
         mesh,
         element_type,
         scale=scale,
-        cell_arrays=cell_arrays,
+        cell_data=cell_data,
         node_arrays=node_arrays,
     )
 

@@ -646,7 +646,7 @@ class Mesh:
         else:
             raise ValueError("Unknown `self.element_type`...is mesh object malformed?")
 
-        cell_arrays = None
+        cell_data = None
         node_arrays = None
 
         try:
@@ -661,7 +661,7 @@ class Mesh:
             if len(attrb) == self.n_nodes:
                 node_arrays = {attribute_name: attrb}
             elif len(attrb) == self.n_elements:
-                cell_arrays = {attribute_name: attrb}
+                cell_data = {attribute_name: attrb}
             else:
                 raise ValueError("Malformed attribute vector")
         except KeyError:
@@ -671,7 +671,7 @@ class Mesh:
             self,
             etype,
             active_scalar=attribute_name,
-            cell_arrays=cell_arrays,
+            cell_data=cell_data,
             node_arrays=node_arrays,
             scale=scale,
             text=f"Nodes: {self.n_nodes}\nCells: {self.n_elements}",
