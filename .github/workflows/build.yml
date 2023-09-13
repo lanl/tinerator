@@ -20,7 +20,6 @@ jobs:
     - uses: conda-incubator/setup-miniconda@v2
       with: 
         activate-environment: tinerator-v1
-        mamba-version: "*"
         channels: conda-forge,defaults
         channel-priority: strict
         environment-file: environment.yml
@@ -28,7 +27,8 @@ jobs:
         auto-activate-base: false
     - name: Build TPLs
       run: |
-        ./tpls/build-tpls.sh -je 
+        ./tpls/build-tpls.sh -je
+	export PYTHONPATH=/home/runner/work/tinerator/tinerator/tpls/seacas/install/lib/:${PYTHONPATH} 
     - name: Build TINerator
       run: |
         python -m pip install . -vv
