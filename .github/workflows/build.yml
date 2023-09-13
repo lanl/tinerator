@@ -28,7 +28,7 @@ jobs:
     - name: Build TPLs
       run: |
         ./tpls/build-tpls.sh -je
-        export PYTHONPATH=/home/runner/work/tinerator/tinerator/tpls/seacas/install/lib/:${PYTHONPATH}
+        echo "PYTHONPATH=/home/runner/work/tinerator/tinerator/tpls/seacas/install/lib/:${PYTHONPATH}" >> $GITHUB_ENV
     - name: Build TINerator
       run: |
         python -m pip install . -vv
