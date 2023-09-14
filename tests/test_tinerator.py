@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import tinerator as tin
 import meshio
+import pyvista as pv
 from tinerator import ExampleData
 from tempfile import TemporaryDirectory
 
@@ -274,7 +275,7 @@ def test_quad_mesh():
         hex_mesh.set_cell_materials(cell_ids, 5 + i)
 
     hex_mesh.view(active_scalar="material_id")
-    exit()
+    pv.close_all()
 
     with TemporaryDirectory() as tmp_dir:
         quad_mesh.save(os.path.join(tmp_dir, "quad_out.exo"))

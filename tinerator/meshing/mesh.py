@@ -614,7 +614,7 @@ class Mesh:
                 active_scalar = "material_id"
                 assert len(self.material_id) > 0
 
-            if not isinstance(sets, collections.Iterable):
+            if not isinstance(sets, collections.abc.Iterable):
                 sets = [sets]
 
             sets = flatten_list(sets)
@@ -700,7 +700,7 @@ class Mesh:
 
         if sets is not None:
 
-            if not isinstance(sets, collections.Iterable):
+            if not isinstance(sets, collections.abc.Iterable):
                 sets = [sets]
             sets = flatten_list(sets)
 
