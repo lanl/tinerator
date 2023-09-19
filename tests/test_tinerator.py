@@ -5,6 +5,7 @@ import numpy as np
 import tinerator as tin
 import meshio
 import pyvista as pv
+import matplotlib.pyplot as plt
 from tinerator import ExampleData
 from tempfile import TemporaryDirectory
 
@@ -107,6 +108,7 @@ def test_clip_raster():
     boundary = tin.gis.load_shapefile(data.watershed_boundary)
     new_dem = tin.gis.clip_raster(dem, boundary)
     new_dem.plot()
+    plt.close()
     assert new_dem.no_data_value == new_dem[0][0]
     assert round(np.nanmax(new_dem.data.data)) == 2279
 

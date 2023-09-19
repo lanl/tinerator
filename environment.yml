@@ -22,6 +22,7 @@ dependencies:
   - pyepsg
   - datashader
   - pytest
+  - pip
   - pip:
     - vtk
     - pyvista
