@@ -21,6 +21,7 @@ dependencies:
   - meshio
   - pyepsg
   - datashader
+  - panel
   - pytest
   - pip
   - pip:
